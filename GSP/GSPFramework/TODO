@@ -3,7 +3,6 @@
 * handle possibility for a module to know if it has some "clients" on an output
 * metamodules in .xml (a module as an assembly of modules)
 
-* typecheck on calls from Java to C (events)
-* use C++ typeid (http://en.wikipedia.org/wiki/Typeid) to implement a less macrofied version for c++ (keep both approaches)
+* typecheck on calls from Java to C (events), and from C to C
 
 * OPT: add a define that generate a human oriented version of the struct (use e.g. ___NL___ for new lines, then replace them all by a real new line in the helper script)

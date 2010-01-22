@@ -5,7 +5,6 @@
 
 package fr.prima.gsp.framework;
 
-import fr.prima.vsp.modules.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

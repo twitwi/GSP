@@ -12,8 +12,7 @@ import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import fr.prima.videoserviceclient.BufferedImageSourceListener;
 import fr.prima.videoserviceclient.ServiceImageSource;
-import fr.prima.vsp.modules.omiscid.OmiscidTools;
-import fr.prima.vsp.modules.opencv.CVTools;
+import fr.prima.gsp.demo.OmiscidTools;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -114,7 +113,6 @@ public class Main
                         return;
                     }
                     final Assembly assembly = new Assembly(source);
-                    assembly.addPrefix("cv", CVTools.class.getPackage().getName() + ".CV");
                     assembly.addPrefix("o", OmiscidTools.class.getPackage().getName() + ".Omiscid");
                     FileInputStream fileInputStream = null;
                     try {
@@ -158,7 +156,6 @@ public class Main
             vspFactory.addConnectorListener(factoryConnector, new ConnectorListener() {
                 public void messageReceived(Service arg0, String arg1, Message message) {
                     final Assembly assembly = new Assembly(source);
-                    assembly.addPrefix("cv", CVTools.class.getPackage().getName() + ".CV");
                     assembly.addPrefix("o", OmiscidTools.class.getPackage().getName() + ".Omiscid");
                     ByteArrayInputStream in = new ByteArrayInputStream(message.getBuffer());
                     assembly.readFromXML(in);

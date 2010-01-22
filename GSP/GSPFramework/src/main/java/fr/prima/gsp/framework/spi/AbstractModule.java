@@ -5,12 +5,12 @@
 
 package fr.prima.gsp.framework.spi;
 
+import fr.prima.gsp.framework.Assembly;
 import fr.prima.gsp.framework.BaseAbstractModule;
 import fr.prima.gsp.framework.Event;
 import fr.prima.gsp.framework.EventReceiver;
 import fr.prima.gsp.framework.Module;
 import fr.prima.gsp.framework.ModuleParameter;
-import fr.prima.vsp.Pipeline;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -131,7 +131,7 @@ public class AbstractModule extends BaseAbstractModule {
                 }
             } catch (Exception ex) {
                 // TODO
-                Logger.getLogger(Pipeline.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AbstractModule.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -155,13 +155,13 @@ public class AbstractModule extends BaseAbstractModule {
             }
             m.getClass().getMethod(change).invoke(m);
         } catch (Exception ex) {
-            Logger.getLogger(Pipeline.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AbstractModule.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     private Object readValue(Class<?> type, String svalue) throws Exception {
         Object value = null;
-        if (Pipeline.class.equals(type)) {
-            value = this;
+        if (Assembly.class.equals(type)) {
+            value = Assembly.last;
             //Logger.getLogger(Pipeline.class.getName()).log(Level.FINER, "Injecting pipeline into " + m.getClass() + portSeparator + field.getName());
         } else if (svalue.isEmpty()) {
         } else if (buildableFromString.containsKey(type)) {

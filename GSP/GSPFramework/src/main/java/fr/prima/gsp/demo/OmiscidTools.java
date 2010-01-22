@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package fr.prima.vsp.modules.omiscid;
+package fr.prima.gsp.demo;
 
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;

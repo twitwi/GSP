@@ -1,7 +1,7 @@
 <pipeline>
     <namespace demo="fr.prima.gsp.demo"/>
 
-    <m id="root" type="demo:CVGrabber"/>
+    <m id="root" type="demo:Grabber"/>
     <m id="cons" type="demo:ConsoleOutput"/>
     <m id="fps"  type="c:demo.FpsEstimator" samples="6"/>
     <m id="fps2" type="c:demo.FpsEstimator" samples="4"/>
@@ -22,7 +22,7 @@
     <c from="tr@outputImage" to="show@input"/>
 -->
 
-    <c from="root@imageOutput" to="fps@input"/>
+    <c from="root@tick" to="fps@input"/>
     <c from="fps@string" to="cons@info"/>
 
     <c from="fps@string"  to="fps2@input"/>

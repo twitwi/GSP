@@ -1,12 +1,12 @@
 <pipeline>
     <namespace demo="fr.prima.gsp.demo" />
-    <m id="root" type="demo:CVGrabber"/>
+    <m id="root" type="demo:Grabber"/>
     <m id="cons" type="demo:ConsoleOutput"/>
     <m id="fps" type="demo:FpsEstimator" samples="5"/>
     <m id="fps2" type="demo:FpsEstimator" samples="4"/>
     <m id="mul" type="demo:Mul" by="5"/>
 
-    <c from="root@imageOutput" to="fps@input"/>
+    <c from="root@output" to="fps@input"/>
     <c from="fps@string" to="cons@info"/>
 
     <c from="fps@string" to="fps2@input"/>

@@ -29,6 +29,10 @@ import org.w3c.dom.NodeList;
  * Stores the namespaces and dispatches the creation of modules to the right mechanism.
  */
 public class Assembly {
+
+    // TODO CLEAN THIS ABSOLUTELY
+    public  static Assembly last;
+
     public static String portSeparator = "@";
 
     // associations id->module and id->connector
@@ -58,6 +62,7 @@ public class Assembly {
                 }
             }
         });
+        last = this;
     }
     public void stop() {
         source.removeBufferedImageSourceListener(sourceListener);
