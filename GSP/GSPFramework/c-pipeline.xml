@@ -1,0 +1,41 @@
+<pipeline>
+    <namespace demo="fr.prima.gsp.demo"/>
+
+    <m id="root" type="demo:CVGrabber"/>
+    <m id="cons" type="demo:ConsoleOutput"/>
+    <m id="fps"  type="c:demo.FpsEstimator" samples="6"/>
+    <m id="fps2" type="c:demo.FpsEstimator" samples="4"/>
+    <m id="mul"  type="c:demo.Mul" by="2"/>
+    <m id="mul2" type="demo:Mul" by="30"/>
+
+    <m id="div"  type="c:demo.Div" by="5"/>
+    <m id="div2" type="c:demo.Div2" by="2"/>
+    <m id="tostring" type="demo:CharPointerToString"/>
+
+<!-- test with images
+    <m id="show" type="java:fr.prima.gsp.demo.CVShowIplImage"/>
+    <m id="tr" type="java:fr.prima.gsp.demo.GetIPLData"/>
+    <m id="ipl" type="c:demo.TestImage"/>
+
+    <c from="root@imageOutput" to="tr@input"/>
+    <c from="tr@output" to="ipl@input"/>
+    <c from="tr@outputImage" to="show@input"/>
+-->
+
+    <c from="root@imageOutput" to="fps@input"/>
+    <c from="fps@string" to="cons@info"/>
+
+    <c from="fps@string"  to="fps2@input"/>
+    <c from="fps2@float"  to="mul@input"/>
+    <c from="mul@float"   to="mul2@input"/>
+    <c from="mul2@float"  to="div@input"/>
+    <c from="div@float"   to="div2@input"/>
+    <c from="div2@string" to="tostring@input"/>
+    <c from="tostring@output" to="cons@error"/>
+
+    <!-- an idea: (TODO)
+    <advanced chain="fps@string - input#fps2#float - input#mul#string - cons@error" />
+    -->
+
+</pipeline>
+

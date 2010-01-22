@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet 
+     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     xmlns:xx="http://gnayacc.info/xslt/xxsl"
+     version="2.0">
+    <xsl:output method="text"/>
+    <xx:xxsl>
+"/" {
+      .text "digraph Pipeline {\n";
+      .text "rankdir=LR;\n";
+      .text "node [color = black, shape = egg];\n"
+      .apply "//m";
+      .apply "//c";
+      .text "}\n";
+  }
+"m" {
+    .text "subgraph \"cluster_" .eval "@id" .text "\" {\n";
+    .text "\"node_" .eval "@id".text "\" [label=\"" .eval "@id".text " [" .eval "@type" .text "]\", style = filled, fillcolor = palegreen, shape = component] ;\n";
+    .var id = "@id";
+    .for "//c" {
+            .var split = "tokenize(@from, '@')";
+        .if "$split[1] = $id" {
+                .text "\"" .eval "@from" .text "\" [label=\"" .eval "$split[2]" .text "\", style = filled, fillcolor = slategray2];\n";
+            }
+            .var split = "tokenize(@to, '@')";
+        .if "$split[1] = $id" {
+                .text "\"" .eval "@to" .text "\" [label=\"" .eval "$split[2]" .text "\", style = filled, fillcolor = plum];\n";
+            }
+        }
+    .text "}\n";
+}
+"c" {
+    .text "\"" .eval "@from" .text "\" -> \"" .eval "@to" .text "\" ;\n"
+}
+    </xx:xxsl>
+</xsl:stylesheet>

@@ -1,0 +1,9 @@
+install.sh:
+   installs jnaerator jar locally in the maven repository (.m2)
+
+generator.sh:
+   generate sources + give manual work to do
+
+deploy.sh:
+   unused (deploys remotely)
+

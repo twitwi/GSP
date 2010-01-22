@@ -1,0 +1,67 @@
+<pipeline>
+    <!-- root grabber and a console output -->
+    <m id="root" type="cv:Grabber"/>
+    <m id="cons" type="ConsoleOutput"/>
+
+    <!-- real pipeline -->
+    <m id="diff" type="cv:BackgroundSubtraction" threshold="40"/>
+    <m id="2->1" type="TwoToOne"/>
+    <m id="learner" type="cv:RegionLearner"/>
+    <m id="int" type="cv:IntegralImage"/>
+    <m id="strip" type="cv:StripletButton"    mode="1"/>
+
+    <c from="root@imageOutput" to="diff@imageInput"/>
+    <c from="diff@differenceOutput" to="int@imageInput"/>
+    <c from="int@integralOutput" to="strip@integralInput"/>
+
+<!--
+    <c from="diff@differenceOutput" to="2->1@in1"/>
+    <c from="diff@backgroundOutput" to="2->1@in2"/>
+    <c from="2->1@out" to="learner@input"/>
+-->
+    <c from="diff@differenceOutput" to="learner@imageInput"/>
+    <c from="learner@message" to="cons@info"/>
+    <c from="learner@rectangle" to="strip@smallRectangleInput"/>
+
+    <!-- swing controls -->
+    <m id="trigger" type="ButtonTrigger" title="Shoot"/>
+    <m id="trigger2" type="ButtonTrigger" title="Clear"/>
+    <m id="trigger3" type="ButtonTrigger" title="Commit"/>
+    <m id="trigger4" type="ArrowKeysTrigger"/>
+
+    <c from="trigger@out" to="learner@snapshot"/>
+    <c from="trigger2@out" to="learner@clear"/>
+    <c from="trigger3@out" to="learner@commit"/>
+
+    <c from="trigger@outThis" to="cons@info"/>
+
+    <c from="trigger4@left" to="learner@clear"/>
+    <c from="trigger4@right" to="learner@snapshot"/>
+    <c from="trigger4@up" to="learner@commit"/>
+
+    <!-- omiscid controls -->
+    <m id="omi" type="o:EventReceiver" serviceName="RegionLearner"/>
+    <c from="omi@shoot" to="learner@snapshot"/>
+    <c from="omi@clear" to="learner@clear"/>
+    <c from="omi@update" to="learner@commit"/>
+
+    <!-- omiscid output -->
+    <m id="omiout" type="o:MessageOutput" serviceName="Button"/>
+    <c from="strip@message" to="omiout@message"/>
+
+    <!-- display input and difference images -->
+
+    <m id="v" type="cv:ShowIplImage" title="Difference Image"/>
+    <m id="v2" type="cv:ShowIplImage" title="Learning Image"/>
+    <c from="diff@differenceOutput" to="v@imageInput"/>
+    <c from="learner@intersection" to="v2@imageInput"/>
+
+    <!-- output ctrl+click on images to the console -->
+    <c from="v@message" to="cons@info"/>
+    <c from="v2@message" to="cons@info"/>
+
+    <c from="strip@message" to="cons@info"/>
+
+
+</pipeline>
+

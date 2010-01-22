@@ -1,0 +1,16 @@
+<pipeline>
+    <!-- root grabber and a console output -->
+    <m id="root" type="cv:Grabber"/>
+    <m id="cons" type="ConsoleOutput"/>
+
+    <!-- real pipeline -->
+    <m id="diff" type="cv:BackgroundSubtraction"/>
+    <m id="integral" type="cv:IntegralImage"/>
+    <m id="strip" type="cv:StripletButton" rectangle="300, 387, 37, 35"/>
+    <c from="root@imageOutput" to="diff@imageInput"/>
+    <c from="diff@differenceOutput" to="integral@imageInput"/>
+    <c from="integral@integralOutput" to="strip@integralInput"/>
+    <c from="strip@message" to="cons@info"/>
+
+</pipeline>
+
