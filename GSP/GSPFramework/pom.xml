@@ -7,6 +7,23 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>GSPFramework</name>
+    <repositories>
+        <repository>
+            <id>primaven</id>
+            <name>repository hosting omiscidgui</name>
+            <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
+            <!--url>http://www-prima.imag.fr/maven</url-->
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>prima.public</id>
+            <name>Public PRIMA Repository</name>
+            <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <!--plugin>
