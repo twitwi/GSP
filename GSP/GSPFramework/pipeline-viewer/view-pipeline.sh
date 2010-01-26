@@ -7,6 +7,7 @@ function getpath {
 
 function xslt {
     saxonb-xslt -xsl:$1 -s:$2 -o:$3
+
 }
 
 function usage {
@@ -38,5 +39,6 @@ out=/tmp/pipeline-$((echo ${inpath}/$(basename $1)) | sed 's@/@-@g').dot
 
 test $1 -nt ${out} && xslt ${exepath}/view-pipeline.xsl $1 ${out}
 echo "dot file is: $out"
+cat ${out}
 dotty ${out}
 

@@ -5,33 +5,78 @@
      xmlns:xx="http://gnayacc.info/xslt/xxsl"
      version="2.0">
     <xsl:output method="text"/>
+    <!--
+        preprocessing generates all-split elements:
+        e.g. <c fromModule="root" fromPort="image" toModule="diff" toPort="input"/>)
+      -->
     <xx:xxsl>
+
 "/" {
-      .text "digraph Pipeline {\n";
-      .text "rankdir=LR;\n";
-      .text "node [color = black, shape = egg];\n"
-      .apply "//m";
-      .apply "//c";
-      .text "}\n";
-  }
-"m" {
-    .text "subgraph \"cluster_" .eval "@id" .text "\" {\n";
-    .text "\"node_" .eval "@id".text "\" [label=\"" .eval "@id".text " [" .eval "@type" .text "]\", style = filled, fillcolor = palegreen, shape = component] ;\n";
-    .var id = "@id";
-    .for "//c" {
-            .var split = "tokenize(@from, '@')";
-        .if "$split[1] = $id" {
-                .text "\"" .eval "@from" .text "\" [label=\"" .eval "$split[2]" .text "\", style = filled, fillcolor = slategray2];\n";
-            }
-            .var split = "tokenize(@to, '@')";
-        .if "$split[1] = $id" {
-                .text "\"" .eval "@to" .text "\" [label=\"" .eval "$split[2]" .text "\", style = filled, fillcolor = plum];\n";
-            }
-        }
-    .text "}\n";
-}
-"c" {
-    .text "\"" .eval "@from" .text "\" -> \"" .eval "@to" .text "\" ;\n"
+        .text "digraph Pipeline {\n";
+         .text "rankdir=LR;\n";
+         .text "node [color = black, shape = egg];\n";
+
+         xsl:message {.text "=== Doing preprocessing ==="};
+         .var preProcessed = {.apply "//m | //module | //c | //connector"}
+
+         xsl:message {.text "=== Doing generation ==="};
+         xsl:message {.eval "$preProcessed"};
+         .for "$preProcessed/m"
+              {
+                  .text "subgraph \"cluster_" .eval "@id" .text "\" {\n";
+                  .text "\"node_" .eval "@id".text "\" [label=\"" .eval "@id".text " [" .eval "@type" .text "]\", style = filled, fillcolor = palegreen, shape = component] ;\n";
+                  .var m = ".";
+                  .for "$preProcessed/c"
+                       {
+                           .if "$m/@id = @fromModule" {
+                                   .text "\"" .eval "@fromModule" .text "@" .eval "@fromPort" .text "\" [label=\"" .eval "@fromPort" .text "\", style = filled, fillcolor = slategray2];\n";
+                               }
+                           .if "$m/@id = @toModule" {
+                                   .text "\"" .eval "@toModule" .text "@" .eval "@toPort" .text "\" [label=\"" .eval "@toPort" .text "\", style = filled, fillcolor = plum];\n";
+                               }
+                       }
+                  .text "}\n";
+              }
+         .for "$preProcessed/c"
+              {
+                  .text "\"" .eval "@fromModule" .text "@" .eval "@fromPort" .text "\" -> \"" .eval "@toModule" .text "@" .eval "@toPort".text "\" ;\n"
+              }
+         .text "}\n";
+     }
+
+"m | module" {.copy-apply {}}
+"c|connector" {
+    .when "@chain" {
+        .var elements = "tokenize(@chain, '\\s*-\\s*')";
+        .for "$elements[position() != last()]"
+             {
+                 .var i = "position()";
+                 .var last = "last()";
+                 .var e1 = ".";
+                 .var e2 = "$elements[1+$i]";
+                 
+                 .var from = "if ($i = 1) then tokenize($e1, '@') else tokenize($e1, '#')[position() > 1]";
+                 .var to = "if ($i = $last) then tokenize($e2, '@') else reverse(tokenize($e2, '#')[position() = (1,2)])";
+                 xsl:message{.eval "$from" .text "'     '".eval "$to"}
+                 .var fromModule = "if (count($from)=2) then $from[1] else $e1";
+                 .var toModule = "if (count($to)=2) then $to[1] else $e2";
+                 .var fromPort = "if (count($from)=2) then $from[2] else 'output'";
+                 .var toPort = "if (count($to[2])=2) then $to[2] else 'input'";
+                 c fromModule="{$fromModule}" fromPort="{$fromPort}" toModule="{$toModule}" toPort="{$toPort}" {}
+             }
+    }
+    .otherwise {
+        .var from = "tokenize(@from, '@')";
+        .var to = "tokenize(@to, '@')";
+        .var fromPort = "if ($from[2]) then $from[2] else 'output'";
+        .var toPort = "if ($to[2]) then $to[2] else 'input'";
+        c
+            fromModule="{$from[1]}"
+            fromPort="{$fromPort}"
+            toModule="{$to[1]}"
+            toPort="{$toPort}"
+            {}
+    }
 }
     </xx:xxsl>
 </xsl:stylesheet>
