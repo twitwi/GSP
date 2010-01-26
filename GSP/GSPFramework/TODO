@@ -1,7 +1,7 @@
 
 * helpers in .xml file (see c-pipeline.xml)
 * handle possibility for a module to know if it has some "clients" on an output
-* metamodules in .xml (a module as an assembly of modules)
+* metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
 
 * typecheck on calls from Java to C (events), and from C to C
 
