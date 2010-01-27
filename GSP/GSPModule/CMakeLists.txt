@@ -12,3 +12,6 @@ INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 
 add_library( ImageLoader SHARED ImageLoader )
 target_link_libraries( ImageLoader ${Boost_LIBRARIES} ${OPENCV_LIBRARIES})
+
+add_library( ImageViewer SHARED ImageViewer )
+target_link_libraries( ImageViewer ${OPENCV_LIBRARIES})
