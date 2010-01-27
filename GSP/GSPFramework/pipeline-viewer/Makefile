@@ -12,3 +12,6 @@ view-pipeline.xsl: view-pipeline.xxsl
 view: ,,$f.dot
 	dotty ,,$f.dot
 
+quick-test:
+	make && touch ../c-pipeline.xml && ./view-pipeline.sh ../c-pipeline.xml
+

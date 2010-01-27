@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +31,12 @@ import org.w3c.dom.NodeList;
  */
 public class Assembly {
 
-    // TODO CLEAN THIS ABSOLUTELY
-    public  static Assembly last;
+    // TODO CLEAN THIS
+    public static Assembly last;
 
     public static String portSeparator = "@";
+    public static String chainSeparator = "\\s*-\\s*";
+    public static String chainPortSeparator = "#";
 
     // associations id->module and id->connector
     Map<String, Module> modules = new HashMap<String, Module>();
@@ -166,9 +169,51 @@ public class Assembly {
                 addModule(e.getAttribute("id"), e.getAttribute("type"), e);
             }
             for (Element e : list(root.getElementsByTagName("c"), root.getElementsByTagName("connector"))) {
-                String id = e.getAttribute("id");
-                if (id.isEmpty()) id = generatedIdPrefix+(generatedId--);
-                addConnector(id, e.getAttribute("from"), e.getAttribute("to"));
+                if (e.hasAttribute("chain")) {
+                    String[] parts = e.getAttribute("chain").split(chainSeparator);
+                    int imax = parts.length - 2;
+                    for (int i = 0; i < parts.length - 1; i++) {
+                        String e1 = parts[i];
+                        String e2 = parts[i+1];
+                        String id = generatedIdPrefix + (generatedId--);
+                        String fromModule;
+                        String fromPort = "";
+                        {
+                            String[] from = i == 0 ? e1.split(portSeparator, -1) : e1.split(chainPortSeparator, -1);
+                            if (from.length == 1) {
+                                fromModule = from[0];
+                            } else {
+                                fromModule = i == 0 ? from[0] : from[1];
+                                fromPort = i == 0 ? from[1] : from[2];
+                            }
+                            if (fromPort.isEmpty()) {
+                                fromPort = "output";
+                            }
+                        }
+                        String toModule;
+                        String toPort = "";
+                        {
+                            String[] to = i == imax ? e2.split(portSeparator, -1) : e2.split(chainPortSeparator, -1);
+                            System.err.println(Arrays.toString(to));
+                            if (to.length ==  1) {
+                                toModule = to[0];
+                            } else {
+                                toModule = i == imax ? to[0] : to[1];
+                                toPort = i == imax ? to[1] : to[0];
+                            }
+                            if (toPort.isEmpty()) {
+                                toPort = "input";
+                            }
+                        }
+                        addConnector(id, fromModule, fromPort, toModule, toPort);
+                    }
+                } else {
+                    String id = e.getAttribute("id");
+                    if (id.isEmpty()) {
+                        id = generatedIdPrefix + (generatedId--);
+                    }
+                    addConnector(id, e.getAttribute("from"), e.getAttribute("to"));
+                }
             }
         } catch (Exception ex) {
             Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
@@ -178,6 +223,12 @@ public class Assembly {
     public void addConnector(String id, String from, String to) {
         String[] fromSplit = from.split(portSeparator);
         String[] toSplit = to.split(portSeparator);
+        if (fromSplit.length == 1) {
+            fromSplit = new String[] {from, "output"};
+        }
+        if (toSplit.length == 1) {
+            toSplit = new String[] {to, "input"};
+        }
         if (fromSplit.length != 2) {
             throw new IllegalArgumentException("While creating connector, 'from' must be of the form 'module"+portSeparator+"port' but is '"+from+"'");
         }

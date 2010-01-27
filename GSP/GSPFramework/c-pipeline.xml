@@ -22,17 +22,26 @@
     <c from="tr@outputImage" to="show@input"/>
 -->
 
+    <c chain="root@tick - #fps#string - cons@info"/>
+    <!-- replaces: (as input/output are optionnal
+    <chain chain="root#tick - input#fps#string - info#cons"/>
+    -->
+    <!-- replaces: (without the shortcut)
     <c from="root@tick" to="fps@input"/>
     <c from="fps@string" to="cons@info"/>
+    -->
 
+
+    <c chain="fps@string - #fps2#float - #mul#float - #mul2#float - #div#float - #div2#string - tostring - cons@error"/>
+    <!--
     <c from="fps@string"  to="fps2@input"/>
     <c from="fps2@float"  to="mul@input"/>
     <c from="mul@float"   to="mul2@input"/>
     <c from="mul2@float"  to="div@input"/>
     <c from="div@float"   to="div2@input"/>
     <c from="div2@string" to="tostring@input"/>
-    <c from="tostring@output" to="cons@error"/>
-
+    <c fnrom="tostring@output" to="cons@error"/>
+-->
     <!-- an idea: (TODO)
     <advanced chain="fps@string - input#fps2#float - input#mul#string - cons@error" />
     -->
