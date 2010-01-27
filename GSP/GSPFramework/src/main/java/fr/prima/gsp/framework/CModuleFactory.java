@@ -241,7 +241,7 @@ public class CModuleFactory {
                 Object[] eventParameters = new Object[parameters.length / 2];
                 String[] eventParametersTypes = new String[parameters.length / 2];
                 for (int i = 1; i < parameters.length; i += 2) {
-                    String type = parameters[i].getString(0);
+                    String type = patchReportedType(parameters[i].getString(0));
                     Object value = getValueFromNative(type, parameters[i + 1]);
                     eventParameters[i / 2] = value;
                     eventParametersTypes[i / 2] = type;
@@ -254,7 +254,7 @@ public class CModuleFactory {
 
 
 
-        
+        // used for xml parameter interpretation
         private static Object getNativeFromString(String type, String text) {
             // could find a way to reuse jna mapping but I didn't managed to :(
             return stringToNatives.get(type).toNative(text);
@@ -272,6 +272,31 @@ public class CModuleFactory {
                 bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
                 // could cache here
             }
+        }
+
+
+        private Map<String, String> cTypeToTypeid = new HashMap<String, String>() {{
+            put("int", "i");
+            put("float", "f");
+            put("long", "l");
+            put("double", "d");
+            put("char", "c");
+        }};
+        private String patchReportedType(String type) {
+            boolean isPointer = true;
+            if (type.startsWith("A")) {
+                type = type.replaceFirst("A\\d+_", "P");
+            } else if (type.startsWith("P")) {
+                type = type.substring(1);
+            } else if (type.endsWith("*")) {
+                type = type.substring(0, type.length() - 1);
+            } else {
+                isPointer = false;
+            }
+            type = type.trim();
+            String res = cTypeToTypeid.get(type);
+            if (res != null) type = res;
+            return isPointer ? "P" + type : type;
         }
         private static interface StringToNative {
             Object toNative(String text);
@@ -310,35 +335,26 @@ public class CModuleFactory {
         }
         private static Map<String, NativeInterpreter> nativeInterpreters = new HashMap<String, NativeInterpreter>() {
             {
-                put("float", new NativeInterpreter() {
+                put("f", new NativeInterpreter() {
                     public Object interpret(Pointer pointer) {
                         return pointer.getFloat(0);
                     }
                 });
-                put("double", new NativeInterpreter() {
+                put("d", new NativeInterpreter() {
                     public Object interpret(Pointer pointer) {
                         return pointer.getDouble(0);
                     }
                 });
-                put("int", new NativeInterpreter() {
+                put("i", new NativeInterpreter() {
                     public Object interpret(Pointer pointer) {
                         return pointer.getInt(0);
                     }
                 });
-                put("long", new NativeInterpreter() {
+                put("l", new NativeInterpreter() {
                     public Object interpret(Pointer pointer) {
                         return pointer.getLong(0);
                     }
                 });
-                put("void*", new NativeInterpreter() {
-                    public Object interpret(Pointer pointer) {
-                        return pointer;
-                    }
-                });
-                put("f", get("float"));
-                put("i", get("int"));
-                put("char*", get("void*"));
-                put("Pc", get("char*"));
             }
         };
         private static Object getValueFromNative(String type, Pointer pointer) {

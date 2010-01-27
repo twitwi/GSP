@@ -97,7 +97,7 @@ public class Main
         final ServiceImageSource source = ServiceImageSource.createSmartImageSourceAndConnect(vsp, imageInput, videoService);
         for (final File file : new File(".").listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.endsWith(".xml") && !Arrays.asList("pom.xml").contains(name);
+                return name.endsWith(".xml") && !Arrays.asList("pom.xml", "nbactions.xml").contains(name);
             }
         })) {
             f.getContentPane().add(new JButton(new AbstractAction("start: " + file.getName()) {

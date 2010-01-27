@@ -69,7 +69,6 @@ class Div2 {
 
 public:
     Div2();
-    void plop(Div2*);
     Framework _framework; // the module must have such a public field
     // WITH_FRAMEWORK(); // could provide this macro
 

@@ -61,10 +61,28 @@ void imageInput(TestImage* m, void *image) {
     //    emitImage(m, image);
 }
 
-Div2::Div2() : by(12){}
-
 // Div2
-void plop(Div2*){}
+Div2::Div2() : by(12) {
+
+    // only for testing purpose (nothing to do with a classical module)
+    float in;
+    char buf[200];
+    float fbuf[200];
+    
+    // testing typeid
+#define doo(a) fprintf(stderr, "====== typeof(%s) is '%s'\n", #a, typeid(a).name());
+    doo(buf);
+    doo(fbuf);
+    doo(int);
+    doo(long);
+    doo(double);
+    doo(float);
+    doo(in);
+    doo((char*)buf);
+    doo((const char *)buf);
+    doo((char const *)buf);
+    doo((void *)buf);
+}
 
 void Div2::input(float in) {
     fprintf(stderr, "by: %f\n", by);
@@ -80,4 +98,3 @@ void Div2::input(float in) {
 void Div2::setBy(float by) {
     this->by = by;
 }
-

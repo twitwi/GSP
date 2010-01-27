@@ -6,6 +6,7 @@
 package fr.prima.gsp.framework;
 
 import com.sun.jna.NativeLibrary;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,11 +46,13 @@ public class CppMangler {
 
     static Map<Class, String> types = new LinkedHashMap<Class, String>();
     static Map<String, String> readableTypes = new LinkedHashMap<String, String>();
+    static Map<String, String> patches = new HashMap<String, String>();
 
     static {
         types.put(Float.class, "f");
         types.put(Integer.class, "i");
         types.put(String.class, "Pc");
+        
         readableTypes.put("f", "float");
         readableTypes.put("i", "int");
         readableTypes.put("Pc", "char*");
