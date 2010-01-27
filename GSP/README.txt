@@ -1,4 +1,19 @@
 
+= Visualizing a pipeline =
+==========================
+
+== Get dotty, etc. ==
+aptitude install libsaxonb-java graphviz
+
+== View the pipeline ==
+# just run:
+PipelineViewer/view-pipeline.sh your-pipeline.xml
+
+== Export as a svg file ==
+PipelineViewer/view-pipeline.sh   -svg output.svg   your-pipeline.xml
+
+
+
 = Building the java executable =
 ================================
 

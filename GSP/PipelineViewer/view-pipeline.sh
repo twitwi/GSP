@@ -16,6 +16,7 @@ function usage {
     echo "       sudo aptitude install libsaxonb-java graphviz"
     echo "usage:"
     echo "       $0 mypipeline.xml"
+    echo "       $0 -svg myoutput.svg mypipeline.xml"
     echo "       $0 --help"
 }
 
@@ -34,11 +35,28 @@ missing saxonb-xslt && usage && exit
 missing dotty && usage && exit
 
 exepath=$(getpath $0)
+svg=
+if test "x$1" = x-svg
+then
+    shift
+    svg=$1
+    if echo "${svg}" | egrep -v -q -e '[.]svg$'
+    then
+        usage && exit
+    fi
+    shift
+fi
+
 inpath=$(getpath $1)
 out=/tmp/pipeline-$((echo ${inpath}/$(basename $1)) | sed 's@/@-@g').dot
 
 test $1 -nt ${out} && xslt ${exepath}/view-pipeline.xsl $1 ${out}
 echo "dot file is: $out"
-cat ${out}
-dotty ${out}
-
+#cat ${out}
+if test "x$svg" = x
+then
+    dotty ${out}
+else
+    echo "svg file is: $svg"
+    dot -Tsvg -o ${svg} ${out}
+fi
