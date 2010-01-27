@@ -115,21 +115,38 @@ public class CModuleFactory {
         }
 
         private void initModule(String moduleTypeName, Pointer that) {
-            fOpt(moduleTypeName, "init", that);
+            try {
+                f(moduleTypeName, "init").invoke(new Object[]{that});
+            } catch (UnsatisfiedLinkError err) {
+                try {
+                    f(mangler.mangleVoidMethod(moduleTypeName, "initModule", new Object[]{})).invoke(new Object[]{that});
+                } catch (UnsatisfiedLinkError err2) {
+                    // swallow exception
+                }
+            }
         }
 
         private void stopModule(String moduleTypeName, Pointer that) {
-            fOpt(moduleTypeName, "stop", that);
+            try {
+                f(moduleTypeName, "stop").invoke(new Object[]{that});
+            } catch (UnsatisfiedLinkError err) {
+                try {
+                    f(mangler.mangleVoidMethod(moduleTypeName, "stopModule", new Object[]{})).invoke(new Object[]{that});
+                } catch (UnsatisfiedLinkError err2) {
+                    // swallow exception
+                }
+            }
         }
 
-        private void receiveEvent(String moduleTypeName, Pointer that, String portName, Object[] information) {
+        private void receiveEvent(String moduleTypeName, Pointer that, String portName, Event e) {
+            Object[] information = e.getInformation();
             Object[] allParams = new Object[information.length + 1];
             System.arraycopy(information, 0, allParams, 1, information.length);
             allParams[0] = that;
             try {
                 f(moduleTypeName, "event" + sep + portName).invoke(allParams);
             } catch (UnsatisfiedLinkError err) {
-                f(mangler.mangleVoidMethod(moduleTypeName, portName, information)).invoke(allParams);
+                f(mangler.mangleVoidMethod(moduleTypeName, portName, information, e.getAdditionalTypeInformation())).invoke(allParams);
             }
         }
 
@@ -184,7 +201,7 @@ public class CModuleFactory {
         public EventReceiver getEventReceiver(final String portName) {
             return new EventReceiver() {
                 public void receiveEvent(Event e) {
-                    bundle.receiveEvent(moduleTypeName, that, portName, e.getInformation());
+                    bundle.receiveEvent(moduleTypeName, that, portName, e);
                 }
             };
         }
@@ -222,12 +239,14 @@ public class CModuleFactory {
                 parameterTypes.put(parameters[1].getString(0), parameters[0].getString(0));
             } else if ("emit".equals(commandName)) {
                 Object[] eventParameters = new Object[parameters.length / 2];
+                String[] eventParametersTypes = new String[parameters.length / 2];
                 for (int i = 1; i < parameters.length; i += 2) {
                     String type = parameters[i].getString(0);
                     Object value = getValueFromNative(type, parameters[i + 1]);
                     eventParameters[i / 2] = value;
+                    eventParametersTypes[i / 2] = type;
                 }
-                emitNamedEvent(parameters[0].getString(0), eventParameters);
+                emitNamedEvent(parameters[0].getString(0), eventParameters, eventParametersTypes);
             } else {
                 System.err.println("Unsupported callback type " + commandName);
             }
@@ -323,6 +342,9 @@ public class CModuleFactory {
             }
         };
         private static Object getValueFromNative(String type, Pointer pointer) {
+            if (type.startsWith("P")) {
+                return pointer.getPointer(0);
+            }
             // could find a way to reuse jna mapping but I didn't managed to :(
             try {
                 return nativeInterpreters.get(type).interpret(pointer);

@@ -3,6 +3,8 @@
 #include <highgui.h>
 #include <cstring>
 
+#include <stdio.h>
+
 ImageViewer::ImageViewer()
 	:name_(0)
 {}

@@ -7,17 +7,12 @@ package fr.prima.gsp.framework;
 
 /**
  *
- * Must not be modified! Be a good citizen.
+ * Data inside this structure MUST not be modified! Be a good citizen.
  */
 public class Event {
     
     private Object[] information;
     private String[] additionalTypeInformation;
-
-    public Event(Object[] information) {
-        this.information = information;
-        this.additionalTypeInformation = new String[this.information.length];
-    }
 
     public Event(Object[] information, String[] additionalTypeInformation) {
         this.information = information;

@@ -15,13 +15,18 @@ import java.util.Map;
  */
 public class CppMangler {
 
-    public String mangleVoidMethod(String className, String method, Object ... params) {
+    public String mangleVoidMethod(String className, String method, Object[] params, String[] additionalParamTypes) {
         String base = "_ZN" + className.length() + className + method.length() + method;
         String paramSignature = "";
-        for (Object p : params) {
-            paramSignature += types.get(p.getClass());
+        for (int i = 0; i < params.length; i++) {
+            paramSignature += additionalParamTypes[i] != null ? additionalParamTypes[i] : types.get(params[i].getClass());
         }
+        if (paramSignature.isEmpty()) paramSignature = "v";
         return base + "E" + paramSignature;
+    }
+
+    public String mangleVoidMethod(String className, String method, Object ... params) {
+        return mangleVoidMethod(className, method, params, new String[params.length]);
     }
 
     public String findSingleParameterTypeForSingleVoidMethod(NativeLibrary library, String className, String method) {
