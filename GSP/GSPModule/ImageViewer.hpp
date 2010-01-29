@@ -1,5 +1,5 @@
 #include <framework.h>
-#include <cxcore.h>
+#include <opencv/cxcore.h>
 
 class ImageViewer
 {

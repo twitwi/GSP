@@ -1,5 +1,5 @@
 #include "ImageLoader.hpp"
-#include <highgui.h>
+#include <opencv/highgui.h>
 #include <boost/bind.hpp>
 #include <unistd.h>
 

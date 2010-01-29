@@ -1,0 +1,17 @@
+<pipeline>
+    <namespace demo="fr.prima.gsp.demo"/>
+
+    <m id="load" type="c:ImageLoader.ImageLoader" filename="/home/prometheus/emonet/projects/MINImage-svn/SimpleJavaLauncher/lena.jpg"/>
+    <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
+    <m id="view2" type="c:ImageViewer.ImageViewer" name="test view 2"/>
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+
+    <c chain="load@image - view@image"/>
+    <c chain="load@image - view2@image"/>
+
+    <m id="out" type="demo:ConsoleOutput"/>
+
+    <c chain="load@image - out@info"/>
+
+</pipeline>
+

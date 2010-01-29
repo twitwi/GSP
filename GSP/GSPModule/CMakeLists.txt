@@ -2,16 +2,39 @@ project ( GSPModule )
 
 cmake_minimum_required(VERSION 2.6)
 
-set(Boost_USE_MULTITHREADED ON)
-find_package( Boost COMPONENTS thread)
+find_package(PkgConfig REQUIRED)
+
+PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
+PKG_CHECK_MODULES(GTHREAD REQUIRED gthread-2.0)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake)
 
-FIND_PACKAGE( OpenCV REQUIRED )
+FIND_PACKAGE( OpenCV COMPONENTS CV CXCORE HIGHGUI )
+
+set(Boost_USE_MULTITHREADED ON)
+find_package( Boost COMPONENTS thread)
+
+INCLUDE_DIRECTORIES(${BOOST_INCLUDEDIR}
+  ${GTK_INCLUDE_DIRS}
+  ${GTHREAD_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIR}
+  ${PROJECT_SOURCE_DIR}
+  )
+
+LINK_DIRECTORIES(
+  ${BOOST_LIBRARYDIR}
+  ${GTK_LIBRARY_DIRS}
+  ${GTHREAD_LIBRARY_DIRS}
+  ${OPENCV_LIBRARY_DIR}
+  )
+
 INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 
 add_library( ImageLoader SHARED ImageLoader )
-target_link_libraries( ImageLoader ${Boost_LIBRARIES} ${OPENCV_LIBRARIES})
+target_link_libraries( ImageLoader ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
 
 add_library( ImageViewer SHARED ImageViewer )
-target_link_libraries( ImageViewer ${OPENCV_LIBRARIES})
+target_link_libraries( ImageViewer ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY} ${GTK_LIBRARIES} ${GTHREAD_LIBRARIES})
+
+add_library( GTKModule SHARED GTKModule )
+target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK_LIBRARIES} )
