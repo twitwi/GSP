@@ -5,11 +5,14 @@
 
 package fr.prima.gsp.demo;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.Assembly;
 import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModuleEnablable;
 import fr.prima.videoserviceclient.BufferedImageSourceListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 
 /**
@@ -29,8 +32,22 @@ public class Grabber extends AbstractModuleEnablable implements BufferedImageSou
         if (!isEnabled()) return;
         tick();
         output(image);
+        Pointer imageDataPointer;
+        if (imageDataOrNull != null && imageDataOrNull.isDirect()) {
+            imageDataPointer = Native.getDirectBufferPointer(imageDataOrNull);
+        } else {
+            WritableRaster raster = image.getRaster();
+            int bufferSize = raster.getWidth() * raster.getHeight() * raster.getNumDataElements();
+            ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
+            buffer.put((byte[]) raster.getDataElements(0, 0, raster.getWidth(), raster.getHeight(), null));
+            imageDataPointer = Native.getDirectBufferPointer(buffer);
+        }
+        outputRaw(imageDataPointer, image.getWidth(), image.getWidth(), image.getHeight(), 0);
     }
-
+    // Type = 24 for BGR
+    private void outputRaw(Pointer data, int w, int h, int widthStep, int type) {
+        emitEvent(data, w, h, widthStep, type);
+    }
     private void output(BufferedImage im) {
         emitEvent(im);
     }
