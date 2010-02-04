@@ -6,6 +6,7 @@
 package fr.prima.gsp.framework;
 
 import com.sun.jna.NativeLibrary;
+import com.sun.jna.Pointer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,6 +53,7 @@ public class CppMangler {
         types.put(Float.class, "f");
         types.put(Integer.class, "i");
         types.put(String.class, "Pc");
+        types.put(Pointer.class, "Pv");
         
         readableTypes.put("f", "float");
         readableTypes.put("i", "int");
