@@ -33,15 +33,12 @@ public class AbstractModule extends BaseAbstractModule {
     public final void addConnector(String portName, EventReceiver eventReceiver) {
         if (!allowOpenEvents) {
             if (1 != countMethods(this.getClass(), portName)) {
-                throw new IllegalArgumentException();
-                // TODO
-
-//                throw new IllegalArgumentException("Source port is invalid: you must either have a method with its name or as set allowOpenEvents to true in your module", e);
+                throw new IllegalArgumentException("Source port '" + portName + "' is invalid: you must either have a single method with its name or as set allowOpenEvents to true in your module (method count is " + countMethods(this.getClass(), portName) + ") (module class is '" + this.getClass().getName() + "')");
             }
         }
         listenersFor(portName).add(eventReceiver);
     }
-
+    
     public final EventReceiver getEventReceiver(String portName) {
         if (1 == countMethods(this.getClass(), portName)) {
             final Method m = findUniqueMethod(this.getClass(), portName);
