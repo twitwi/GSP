@@ -2,7 +2,7 @@ project ( GSPModule )
 
 cmake_minimum_required(VERSION 2.6)
 
-find_package(PkgConfig REQUIRED)
+find_package( PkgConfig )
 
 PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
 PKG_CHECK_MODULES(GTHREAD REQUIRED gthread-2.0)
@@ -11,6 +11,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake)
 
 FIND_PACKAGE( OpenCV COMPONENTS CV CXCORE HIGHGUI )
 
+find_package(Omiscid REQUIRED)
+
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost COMPONENTS thread)
 
@@ -18,6 +20,8 @@ INCLUDE_DIRECTORIES(${BOOST_INCLUDEDIR}
   ${GTK_INCLUDE_DIRS}
   ${GTHREAD_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIR}
+  ${Omiscid_INCLUDE_DIR}
+  /usr/include/servicevideo
   ${PROJECT_SOURCE_DIR}
   )
 
@@ -26,9 +30,8 @@ LINK_DIRECTORIES(
   ${GTK_LIBRARY_DIRS}
   ${GTHREAD_LIBRARY_DIRS}
   ${OPENCV_LIBRARY_DIR}
+  ${Omiscid_LIBRARY_DIRS}
   )
-
-INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 
 add_library( ImageLoader SHARED ImageLoader )
 target_link_libraries( ImageLoader ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
@@ -38,3 +41,12 @@ target_link_libraries( ImageViewer ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIB
 
 add_library( GTKModule SHARED GTKModule )
 target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK_LIBRARIES} )
+
+set( CMAKE_CXX_FLAGS "${Omiscid_CFLAGS}")
+
+find_library( SERVICE_VIDEO_LIB servicevideo )
+if( SERVICE_VIDEO_LIB AND Omiscid_FOUND)
+  add_library( ServiceVideoModule SHARED ServiceVideoModule )
+  target_link_libraries( ServiceVideoModule ${SERVICE_VIDEO_LIB} ${Omiscid_LIBRARIES} )
+endif( SERVICE_VIDEO_LIB )
+

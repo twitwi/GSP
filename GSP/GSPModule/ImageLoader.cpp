@@ -36,7 +36,7 @@ void ImageLoader::mainThread()
 {
 	while(!stop_pending)
 	{
-		emitNamedEvent("image", img);
+		emitNamedEvent("output", img);
 		usleep(50000);
 	}
 }

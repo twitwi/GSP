@@ -10,7 +10,7 @@ public:
 	ImageViewer();
 	void initModule();
 	void stopModule();
-	void image(IplImage* img);
+	void input(IplImage* img);
 	void setName(char *name);
 	Framework _framework;
 

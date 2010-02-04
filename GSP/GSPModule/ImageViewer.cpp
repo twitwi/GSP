@@ -45,7 +45,7 @@ void ImageViewer::setName(char *name)
 }
 
 
-void ImageViewer::image(IplImage* img)
+void ImageViewer::input(IplImage* img)
 {
 	gdk_threads_enter();
 	cvShowImage(name_, img);
