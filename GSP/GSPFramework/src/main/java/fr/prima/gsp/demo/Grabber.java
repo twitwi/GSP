@@ -42,7 +42,7 @@ public class Grabber extends AbstractModuleEnablable implements BufferedImageSou
             buffer.put((byte[]) raster.getDataElements(0, 0, raster.getWidth(), raster.getHeight(), null));
             imageDataPointer = Native.getDirectBufferPointer(buffer);
         }
-        outputRaw(imageDataPointer, image.getWidth(), image.getWidth(), image.getHeight(), 0);
+        outputRaw(imageDataPointer, image.getWidth(), image.getWidth(), image.getHeight(), 24);
     }
     // Type = 24 for BGR
     private void outputRaw(Pointer data, int w, int h, int widthStep, int type) {
