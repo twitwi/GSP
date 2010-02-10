@@ -1,0 +1,13 @@
+<pipeline>
+    <namespace demo="fr.prima.gsp.demo"/>
+
+    <m id="clock" type="demo:Clock" period="20"/>
+    <m id="testGL" type="c:TestGLModule.TestGLModule"/>
+
+    <c chain="clock - testGL@clock"/>
+
+    <!--<m id="out" type="demo:ConsoleOutput"/>-->
+    <!--<c chain="load - out@info"/>-->
+
+</pipeline>
+

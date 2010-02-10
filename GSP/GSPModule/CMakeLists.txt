@@ -14,7 +14,12 @@ FIND_PACKAGE( OpenCV COMPONENTS CV CXCORE HIGHGUI )
 find_package(Omiscid REQUIRED)
 
 set(Boost_USE_MULTITHREADED ON)
-find_package( Boost COMPONENTS thread)
+find_package( Boost COMPONENTS thread date_time)
+
+find_package( OpenGL )
+
+find_library( SERVICE_VIDEO_LIB servicevideo )
+find_library( GLEW_LIB GLEW )
 
 INCLUDE_DIRECTORIES(${BOOST_INCLUDEDIR}
   ${GTK_INCLUDE_DIRS}
@@ -23,6 +28,7 @@ INCLUDE_DIRECTORIES(${BOOST_INCLUDEDIR}
   ${Omiscid_INCLUDE_DIR}
   /usr/include/servicevideo
   ${PROJECT_SOURCE_DIR}
+  ${OPENGL_INCLUDE_DIR}
   )
 
 LINK_DIRECTORIES(
@@ -44,9 +50,16 @@ target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${
 
 set( CMAKE_CXX_FLAGS "${Omiscid_CFLAGS}")
 
-find_library( SERVICE_VIDEO_LIB servicevideo )
-if( SERVICE_VIDEO_LIB AND Omiscid_FOUND)
+if( SERVICE_VIDEO_LIB AND Omiscid_FOUND )
   add_library( ServiceVideoModule SHARED ServiceVideoModule )
   target_link_libraries( ServiceVideoModule ${SERVICE_VIDEO_LIB} ${Omiscid_LIBRARIES} )
-endif( SERVICE_VIDEO_LIB )
+endif( SERVICE_VIDEO_LIB AND Omiscid_FOUND )
 
+
+if( OPENGL_FOUND AND GLEW_LIB )
+  add_library( GLModule SHARED GLModule )
+  target_link_libraries( GLModule  ${OPENGL_LIBRARIES} ${GLEW_LIB})
+  
+  add_library( TestGLModule SHARED TestGLModule )
+  target_link_libraries( TestGLModule GLModule ${Boost_THREAD_LIBRARY})
+endif( OPENGL_FOUND AND GLEW_LIB )
