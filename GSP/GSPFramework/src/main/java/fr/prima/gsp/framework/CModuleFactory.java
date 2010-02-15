@@ -257,7 +257,12 @@ public class CModuleFactory {
         // used for xml parameter interpretation
         private static Object getNativeFromString(String type, String text) {
             // could find a way to reuse jna mapping but I didn't managed to :(
-            return stringToNatives.get(type).toNative(text);
+            try {
+                return stringToNatives.get(type).toNative(text);
+            } catch (NullPointerException ex) {
+                System.err.println("problem with type '" + type + "' to interpret '" + text + "'");
+                throw ex;
+            }
         }
 
         private void setParameter(String parameterName, String text) {
@@ -326,6 +331,11 @@ public class CModuleFactory {
                 put("long", new StringToNative() {
                     public Object toNative(String text) {
                         return Long.parseLong(text);
+                    }
+                });
+                put("bool", new StringToNative() {
+                    public Object toNative(String text) {
+                        return Boolean.parseBoolean(text);
                     }
                 });
             }

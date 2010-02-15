@@ -18,6 +18,7 @@ import java.util.Map;
 public class CppMangler {
 
     public String mangleVoidMethod(String className, String method, Object[] params, String[] additionalParamTypes) {
+        //new Function(Function.Type.CppMethod, null, )
         String base = "_ZN" + className.length() + className + method.length() + method;
         String paramSignature = "";
         for (int i = 0; i < params.length; i++) {
@@ -49,15 +50,20 @@ public class CppMangler {
     static Map<String, String> readableTypes = new LinkedHashMap<String, String>();
     static Map<String, String> patches = new HashMap<String, String>();
 
+    class UINT{}
     static {
         types.put(Float.class, "f");
         types.put(Integer.class, "i");
         types.put(String.class, "Pc");
         types.put(Pointer.class, "Pv");
+        types.put(Boolean.class, "b");
+        types.put(UINT.class, "j");
         
         readableTypes.put("f", "float");
         readableTypes.put("i", "int");
         readableTypes.put("Pc", "char*");
+        readableTypes.put("b", "bool");
+        readableTypes.put("j", "unsigned int");
         /*
         signatures.put(Void.class, "v");
         signatures.put(Character.class, "c");
