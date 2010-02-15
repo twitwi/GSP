@@ -282,10 +282,12 @@ public class CModuleFactory {
 
         private Map<String, String> cTypeToTypeid = new HashMap<String, String>() {{
             put("int", "i");
+            put("unsigned int", "j");
             put("float", "f");
             put("long", "l");
             put("double", "d");
             put("char", "c");
+            put("bool", "b");
         }};
         private String patchReportedType(String type) {
             boolean isPointer = true;
@@ -368,7 +370,7 @@ public class CModuleFactory {
             }
         };
         private static Object getValueFromNative(String type, Pointer pointer) {
-            if (type.startsWith("P")) {
+            if (type.startsWith("P") || type.equals("j")) {
                 return pointer.getPointer(0);
             }
             // could find a way to reuse jna mapping but I didn't managed to :(
