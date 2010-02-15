@@ -362,6 +362,11 @@ public class CModuleFactory {
                         return pointer.getInt(0);
                     }
                 });
+                put("j", new NativeInterpreter() {
+                    public Object interpret(Pointer pointer) {
+                        return pointer.getInt(0);
+                    }
+                });
                 put("l", new NativeInterpreter() {
                     public Object interpret(Pointer pointer) {
                         return pointer.getLong(0);
@@ -370,7 +375,7 @@ public class CModuleFactory {
             }
         };
         private static Object getValueFromNative(String type, Pointer pointer) {
-            if (type.startsWith("P") || type.equals("j")) {
+            if (type.startsWith("P")) {
                 return pointer.getPointer(0);
             }
             // could find a way to reuse jna mapping but I didn't managed to :(
