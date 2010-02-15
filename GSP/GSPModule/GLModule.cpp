@@ -174,6 +174,10 @@ GLModule::GLModule()
 		t = false;
 		gl_thread = thread(mainThread);
 	}
+	while(!ready)
+	{
+		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+	}
 }
 
 GLModule::~GLModule()
@@ -385,7 +389,7 @@ void GLModule::updateEvents()
 void GLModule::mainThread()
 {
 	initGL();
-
+	
 	cout << "OpenGL Context OK" << endl;
 	
 	ready = true;

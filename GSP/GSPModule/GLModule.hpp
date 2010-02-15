@@ -111,5 +111,4 @@ public:
 	~GLModule();
 };
 
-
 #endif // __GL_CONTEXT_HPP

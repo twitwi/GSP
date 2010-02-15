@@ -58,8 +58,14 @@ endif( SERVICE_VIDEO_LIB AND Omiscid_FOUND )
 
 if( OPENGL_FOUND AND GLEW_LIB )
   add_library( GLModule SHARED GLModule )
-  target_link_libraries( GLModule  ${OPENGL_LIBRARIES} ${GLEW_LIB})
+  target_link_libraries( GLModule  ${OpenGL_LIBRARIES} ${GLEW_LIB})
   
   add_library( TestGLModule SHARED TestGLModule )
   target_link_libraries( TestGLModule GLModule ${Boost_THREAD_LIBRARY})
+  
+  add_library( LadybugCubeMap SHARED CubeMapModule LadybugCubeMap )
+  target_link_libraries( LadybugCubeMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
+  
+  add_library( SphericMap SHARED SphericMap )
+  target_link_libraries( SphericMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} )
 endif( OPENGL_FOUND AND GLEW_LIB )

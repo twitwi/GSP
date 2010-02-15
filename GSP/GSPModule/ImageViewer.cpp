@@ -20,6 +20,7 @@ void ImageViewer::stopModule()
 	{
 		gdk_threads_enter();
 		cvDestroyWindow( name_ );
+		cvWaitKey(5);
 		gdk_threads_leave();
 		delete[] name_;
 	}
@@ -49,5 +50,6 @@ void ImageViewer::input(IplImage* img)
 {
 	gdk_threads_enter();
 	cvShowImage(name_, img);
+	cvWaitKey(5);
 	gdk_threads_leave();
 }
