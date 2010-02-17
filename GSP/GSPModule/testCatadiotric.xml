@@ -3,13 +3,14 @@
 
     <m id="grabber" type="demo:Grabber"/>
     <m id="cataCM" type="c:CatadioptricCubeMap.CatadioptricCubeMap"
-       parameters="/local/src/LadybugService/trunk/config_sentech.xml" />
+       parameters="/local/src/LadybugService/trunk/config_cata.xml" />
     <m id="uv" type="c:SphericMap.SphericMap" />
-    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
+    <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
     <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
 
     <c chain="grabber@outputRaw - cataCM@inputRaw"/>
-    <c chain="cataCM - uv - view"/>
+    <c chain="cataCM - uv - service"/>
+    <!--<c chain="uv - service"/>-->
     
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
     <!--<c chain="load - out@info"/>-->

@@ -6,11 +6,11 @@
        Mesh="/local/src/LadybugService/trunk/mesh_3m.txt"
        AlphaMasks="/local/src/LadybugService/trunk/alphamask" />
     <m id="uv" type="c:SphericMap.SphericMap" />
-    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
-    <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
+    <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
+    <!--<m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>-->
 
     <c chain="grabber@outputRaw - ladybugCM@inputRaw"/>
-    <c chain="ladybugCM - uv - view"/>
+    <c chain="ladybugCM - uv - service"/>
     
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
     <!--<c chain="load - out@info"/>-->
