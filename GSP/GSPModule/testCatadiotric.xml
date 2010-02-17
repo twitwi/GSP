@@ -1,0 +1,18 @@
+<pipeline>
+    <namespace demo="fr.prima.gsp.demo"/>
+
+    <m id="grabber" type="demo:Grabber"/>
+    <m id="cataCM" type="c:CatadioptricCubeMap.CatadioptricCubeMap"
+       parameters="/local/src/LadybugService/trunk/config_sentech.xml" />
+    <m id="uv" type="c:SphericMap.SphericMap" />
+    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
+    <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
+
+    <c chain="grabber@outputRaw - cataCM@inputRaw"/>
+    <c chain="cataCM - uv - view"/>
+    
+    <!--<m id="out" type="demo:ConsoleOutput"/>-->
+    <!--<c chain="load - out@info"/>-->
+
+</pipeline>
+

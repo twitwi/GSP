@@ -17,6 +17,7 @@ set(Boost_USE_MULTITHREADED ON)
 find_package( Boost COMPONENTS thread date_time)
 
 find_package( OpenGL )
+find_package( LibXml2 )
 
 find_library( SERVICE_VIDEO_LIB servicevideo )
 find_library( GLEW_LIB GLEW )
@@ -29,6 +30,7 @@ INCLUDE_DIRECTORIES(${BOOST_INCLUDEDIR}
   /usr/include/servicevideo
   ${PROJECT_SOURCE_DIR}
   ${OPENGL_INCLUDE_DIR}
+  ${LIBXML2_INCLUDE_DIR}
   )
 
 LINK_DIRECTORIES(
@@ -65,7 +67,11 @@ if( OPENGL_FOUND AND GLEW_LIB )
   
   add_library( LadybugCubeMap SHARED CubeMapModule LadybugCubeMap )
   target_link_libraries( LadybugCubeMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
+
+  add_library( CatadioptricCubeMap SHARED CubeMapModule CatadioptricCubeMap )
+  target_link_libraries( CatadioptricCubeMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY} ${LIBXML2_LIBRARIES} )
   
   add_library( SphericMap SHARED SphericMap )
   target_link_libraries( SphericMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} )
+
 endif( OPENGL_FOUND AND GLEW_LIB )
