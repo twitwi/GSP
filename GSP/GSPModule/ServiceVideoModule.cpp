@@ -19,8 +19,16 @@ ServiceVideoModule::~ServiceVideoModule()
 
 void ServiceVideoModule::initModule()
 {
+	fnumber = 0;
+	
 	service = ServiceFactory.Create("ServiceVideo");
 
+	service->AddVariable(GRABBER_VARIABLE_CURRENTFRAME, "fnumber", "euh", ReadAccess);
+	service->AddVariable(GRABBER_VARIABLE_STATE, "current_frame", "euh", ReadWriteAccess);
+	
+	service->SetVariableValue(GRABBER_VARIABLE_CURRENTFRAME, 0);
+	service->SetVariableValue(GRABBER_VARIABLE_STATE, 1);
+	
 	SVPipelineEnding::SVProperties properties = {
 		id,
 		service,
@@ -59,6 +67,7 @@ void ServiceVideoModule::input( IplImage *img)
 		format = FMT_BGR24;
 		break;
 	};
+	service->SetVariableValue(GRABBER_VARIABLE_CURRENTFRAME, fnumber);
 
 	SendFrameCallback( img->imageData,
 					   img->imageSize,
@@ -70,7 +79,7 @@ void ServiceVideoModule::input( IplImage *img)
 }
 
 void ServiceVideoModule::inputRaw(void *data, int w, int h, int widthStep, int type)
-{
+{	
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	StdPixelFormat format = FMT_UNKNOWN;
@@ -83,7 +92,9 @@ void ServiceVideoModule::inputRaw(void *data, int w, int h, int widthStep, int t
 		format = FMT_BGR24;
 		break;
 	};
-
+	
+	service->SetVariableValue(GRABBER_VARIABLE_CURRENTFRAME, fnumber);
+	
 	SendFrameCallback( (char*) data,
 					   widthStep*h,
 					   w,

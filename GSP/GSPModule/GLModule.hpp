@@ -46,6 +46,9 @@ private:
 	// initialize the OpenGL context
 	static void initGL();
 
+	void mapWindow(void*);
+	void unmapWindow(void*);
+	
 protected:
 	
 	// swap buffers
@@ -109,6 +112,9 @@ protected:
 public:
 	GLModule();
 	~GLModule();
+
+	void unhideWindow();
+	void hideWindow();
 };
 
 #endif // __GL_CONTEXT_HPP

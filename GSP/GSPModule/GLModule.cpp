@@ -106,7 +106,7 @@ void GLModule::initGL()
 		| FocusChangeMask ;
     XSelectInput( dpy, win, event_mask );
 	
-	XMapWindow( dpy, win );
+// 	XMapWindow( dpy, win );
 	
 	// Create GLX rendering context
 	ctx = glXCreateContext( dpy, visinfo, NULL, True );
@@ -432,4 +432,16 @@ void GLModule::exec( GLModule* obj, void (GLModule::*f)(void *), void* data )
 
 		tmp_cond.wait(lock);
 	}
+}
+
+void GLModule::hideWindow()
+{
+	XUnmapWindow(dpy, win);
+	updateEvents();
+}
+
+void GLModule::unhideWindow()
+{
+	XMapWindow( dpy, win );
+	updateEvents();
 }

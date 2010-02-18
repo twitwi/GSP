@@ -13,6 +13,7 @@ private:
 	Omiscid::Service *service;
 	SVPipelineEnding *svpipeline;
 	int id;
+	int fnumber;
 	
 public:
 	ServiceVideoModule();

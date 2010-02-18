@@ -12,9 +12,12 @@ TestGLModule::TestGLModule() : t(0.) {}
 TestGLModule::~TestGLModule() {};
 
 void TestGLModule::initModule(){
+	unhideWindow();
 }
 
-void TestGLModule::stopModule() {};
+void TestGLModule::stopModule() {
+	hideWindow();
+};
 
 void TestGLModule::clock()
 {
