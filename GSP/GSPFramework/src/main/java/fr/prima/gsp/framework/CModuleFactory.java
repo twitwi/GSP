@@ -132,6 +132,7 @@ public class CModuleFactory {
             } catch (UnsatisfiedLinkError err) {
                 try {
                     f(mangler.mangleVoidMethod(moduleTypeName, "stopModule", new Object[]{})).invoke(new Object[]{that});
+                    f(moduleTypeName, "delete").invoke(new Object[]{that});
                 } catch (UnsatisfiedLinkError err2) {
                     // swallow exception
                 }

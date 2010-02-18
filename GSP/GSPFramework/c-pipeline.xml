@@ -11,6 +11,11 @@
     <m id="div"  type="c:demo.Div" by="5"/>
     <m id="div2" type="c:demo.Div2" by="2"/>
     <m id="tostring" type="demo:CharPointerToString"/>
+    
+    <!-- idea:
+         if many converters are used, we can propose some factory notation, e.g.
+         <factory id="tostring" type="demo:CharPointerToString"/>
+         then, each time "tostring" is used, a new anonymous instance of module (of type demo:CharPointerToString) will be created
 
 <!-- test with images
     <m id="show" type="java:fr.prima.gsp.demo.CVShowIplImage"/>
@@ -42,9 +47,6 @@
     <c from="div2@string" to="tostring@input"/>
     <c fnrom="tostring@output" to="cons@error"/>
 -->
-    <!-- an idea: (TODO)
-    <advanced chain="fps@string - input#fps2#float - input#mul#string - cons@error" />
-    -->
-
+    
 </pipeline>
 

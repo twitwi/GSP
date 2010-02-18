@@ -13,9 +13,6 @@
     <c from="fps@string" to="fps2"/>
     <c from="fps2@float" to="mul"/>
     <c from="mul@string" to="cons@error"/>
-    <!-- an idea:
-    <advanced chain="fps@string - input#fps2#float - input#mul#string - cons@error" />
-    -->
 
 </pipeline>
 
