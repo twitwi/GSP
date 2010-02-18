@@ -231,7 +231,9 @@ public:                                                                 \
         m(EXTERNAL_REGISTER_PARAMETERS, m)                              \
         return res;                                                     \
     }                                                                   \
-    C_FUNCTION__ void SEP(m,delete)(m* m___m) {}                        \
+    C_FUNCTION__ void SEP(m,delete)(m* m___m) {							\
+        delete m___m;										\
+    }												\
     m(CPP_EXTERNAL_HEADERS, m)
 
 
