@@ -22,7 +22,7 @@ aptitude install maven2
 
 == Compile and setup for execution ==
 cd GSPFramework
-mvn dependency:copy-dependencies jar:jar
+mvn dependency:copy-dependencies install jar:jar
 rm -f target/lib && ln -s dependency target/lib
 cd ..
 
