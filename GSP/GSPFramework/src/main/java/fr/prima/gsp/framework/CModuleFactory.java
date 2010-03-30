@@ -56,6 +56,16 @@ public class CModuleFactory {
         Bundle bundle = bundles.get(bundleName);
         if (bundle == null) {
             NativeLibrary.addSearchPath(bundleName, ".");
+
+            String module_path = System.getenv("GSP_MODULES_PATH");
+            if(!module_path.isEmpty()) {
+                String delims = ":";
+                String[] tokens = module_path.split(delims);
+                for (int i = 0; i < tokens.length; i++) {
+                    NativeLibrary.addSearchPath(bundleName, tokens[i]);
+                }
+            }
+
             try {
                 bundle = new Bundle(NativeLibrary.getInstance(bundleName));
                 bundles.put(bundleName, bundle);
