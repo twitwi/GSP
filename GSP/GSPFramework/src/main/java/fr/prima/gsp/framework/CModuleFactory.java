@@ -62,7 +62,8 @@ public class CModuleFactory {
                 String delims = ":";
                 String[] tokens = module_path.split(delims);
                 for (int i = 0; i < tokens.length; i++) {
-                    NativeLibrary.addSearchPath(bundleName, tokens[i]);
+                    if(!tokens[i].isEmpty())
+                        NativeLibrary.addSearchPath(bundleName, tokens[i]);
                 }
             }
 
