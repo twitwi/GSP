@@ -47,6 +47,9 @@ target_link_libraries( ImageLoader ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRA
 add_library( ImageViewer SHARED ImageViewer )
 target_link_libraries( ImageViewer ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY} ${GTK_LIBRARIES} ${GTHREAD_LIBRARIES})
 
+add_library( RawToIpl SHARED RawToIpl )
+target_link_libraries( RawToIpl ${OpenCV_CXCORE_LIBRARY} )
+
 add_library( GTKModule SHARED GTKModule )
 target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK_LIBRARIES} )
 
@@ -73,5 +76,8 @@ if( OPENGL_FOUND AND GLEW_LIB )
   
   add_library( SphericMap SHARED SphericMap )
   target_link_libraries( SphericMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} )
-
+  
 endif( OPENGL_FOUND AND GLEW_LIB )
+
+
+add_subdirectory(Detectors)

@@ -5,6 +5,7 @@
 #include <gtk/gtk.h>
 
 #include <stdio.h>
+#include <iostream>
 
 ImageViewer::ImageViewer()
 	:name_(0)
@@ -48,8 +49,8 @@ void ImageViewer::setName(char *name)
 
 void ImageViewer::input(IplImage* img)
 {
-	gdk_threads_enter();
-	cvShowImage(name_, img);
-	cvWaitKey(5);
-	gdk_threads_leave();
+  gdk_threads_enter();
+  cvShowImage(name_, img);
+  //cvWaitKey(10);
+  gdk_threads_leave();
 }

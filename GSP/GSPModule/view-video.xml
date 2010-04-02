@@ -1,0 +1,17 @@
+<pipeline>
+    <namespace demo="fr.prima.gsp.demo"/>
+
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+    <m id="raw2ipl" type="c:RawToIpl.RawToIpl"/>
+    <m id="view" type="c:ImageViewer.ImageViewer" name="view"/>
+    <m id="grabber" type="demo:Grabber"/>
+    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
+
+    <c chain="grabber@outputRaw - raw2ipl - view"/>
+    <!--<c chain="load - service"/>-->
+
+    <!--<m id="out" type="demo:ConsoleOutput"/>-->
+    <!--<c chain="load - out@info"/>-->
+
+</pipeline>
+
