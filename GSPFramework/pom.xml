@@ -90,6 +90,12 @@
                 <groupId>com.jnaerator</groupId>
                  <artifactId>jnaerator-runtime</artifactId>
                  <version>0.9.3</version>
+                   <exclusions>
+                           <exclusion>
+                                   <artifactId>nl4j-runtime-structs-jna</artifactId>
+                                   <groupId>com.nativelibs4java</groupId>
+                           </exclusion>
+                   </exclusions>
            </dependency>
            <!--dependency>
                 <groupId>fr.prima</groupId>
@@ -98,6 +104,8 @@
             </dependency-->
         </dependencies>
     </project>
+
+
 
 
 
