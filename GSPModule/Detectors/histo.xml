@@ -1,0 +1,23 @@
+<pipeline>
+    <namespace demo="fr.prima.gsp.demo"/>
+
+    <m id="grabber" type="demo:Grabber"/>
+    <m id="raw2ipl" type="c:RawToIpl.RawToIpl"/>
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+    <m id="view" type="c:ImageViewer.ImageViewer" name="img"/>
+    <m id="histo" type="c:Detectors.HistoDetector" filename="histo.hist"/>
+    <m id="service" type="c:DetectorService.DetectorService"/>
+    <m id="viewHisto" type="c:ImageViewer.ImageViewer" name="histo"/>
+
+    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
+
+    <c chain="grabber@outputRaw - raw2ipl - view"/>
+    <c chain="raw2ipl - histo - viewHisto"/>
+    <c chain="service - histo@inputROI"/>
+    <c chain="view@selection - histo@inputSelection"/>
+
+    <!--<m id="out" type="demo:ConsoleOutput"/>-->
+    <!--<c chain="load - out@info"/>-->
+
+</pipeline>
+
