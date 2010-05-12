@@ -7,22 +7,35 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>GSPFramework</name>
+
     <repositories>
         <repository>
+            <id>jnaerator</id>
+            <name>JNAerator Maven Repository</name>
+            <url>http://jnaerator.sourceforge.net/maven</url>
+        </repository>
+        <!--repository>
             <id>primaven</id>
             <name>repository hosting omiscidgui</name>
             <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
-            <!--url>http://www-prima.imag.fr/maven</url-->
-        </repository>
+            <url>http://www-prima.imag.fr/maven</url>
+        </repository-->
     </repositories>
 
-    <distributionManagement>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jnaerator</id>
+            <url>http://jnaerator.sourceforge.net/maven</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!--distributionManagement>
         <repository>
             <id>prima.public</id>
             <name>Public PRIMA Repository</name>
             <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement-->
 
     <build>
         <plugins>
@@ -73,16 +86,16 @@
                 <version>3.8.1</version>
                 <scope>test</scope>
             </dependency>
-                <dependency>
-                        <groupId>fr.prima</groupId>
-                        <artifactId>video-service-client</artifactId>
-                        <version>1.0.1</version>
-                </dependency>
-                <dependency>
-                        <groupId>com.ochafik</groupId>
-                        <artifactId>jnaerator</artifactId>
-                        <version>0.9.2</version>
-                </dependency>
+           <dependency>
+                <groupId>com.jnaerator</groupId>
+                 <artifactId>jnaerator-runtime</artifactId>
+                 <version>0.9.3</version>
+           </dependency>
+           <!--dependency>
+                <groupId>fr.prima</groupId>
+                <artifactId>video-service-client</artifactId>
+                <version>1.0.1</version>
+            </dependency-->
         </dependencies>
     </project>
 

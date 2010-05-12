@@ -1,47 +1,10 @@
 package fr.prima.gsp;
 
-import fr.prima.gsp.framework.Assembly;
-import fr.prima.omiscid.user.connector.ConnectorListener;
-import fr.prima.omiscid.user.connector.ConnectorType;
-import fr.prima.omiscid.user.connector.Message;
-import fr.prima.omiscid.user.service.Service;
-import fr.prima.omiscid.user.service.ServiceFilter;
-import fr.prima.omiscid.user.service.ServiceFilters;
-import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
-import fr.prima.omiscid.user.variable.VariableAccessType;
-import fr.prima.videoserviceclient.BufferedImageSourceListener;
-import fr.prima.videoserviceclient.ServiceImageSource;
-import fr.prima.gsp.demo.OmiscidTools;
 import java.awt.MouseInfo;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
 /**
  * Hello world!
@@ -89,6 +52,7 @@ public class Main
         Logger.getLogger(Pipeline.class.getName()).addHandler(consoleHandler);
          */
 
+    }        /*
         Service vsp = new ServiceFactoryImpl().create("VSPJava");
         vsp.addConnector(imageInput, "to input images/headers from video service", ConnectorType.INPUT);
         ServiceFilter filter = readServiceFilter(stringFilter);
@@ -168,49 +132,6 @@ public class Main
             });
             vspFactory.start();
         }
-
-
-        {
-            /*
-            Pipeline p = new Pipeline();
-            p.addPrefix("cv", CVTools.class.getPackage().getName() + ".CV");
-            p.addPrefix("o", OmiscidTools.class.getPackage().getName() + ".Omiscid");
-
-            final CVGrabber root = new CVGrabber();
-            p.addModule("root", root); // test instance add
-            p.addModule("diff", CVBackgroundSubtraction.class, null);
-            p.addModule("idiff", CVImageDifference.class, null);
-            p.addModule("view", CVShowIplImage.class, null);
-            p.addModule("viewN", CVShowIplImage.class, null);
-            p.addModule("integral", CVIntegralImage.class, null);
-            p.addModule("strip", "cv:StripletButton", null); // test namespaced string add
-            p.addModule("console", "ConsoleOutCVBackgroundSubtractionput", null); // test un-namespaced string add
-
-            int i = 0;
-            //p.addConnector(""+i++, "root", "imageOutput", "view", "imageInput");
-            p.addConnector("" + i++, "view", "message", "console", "info");
-            p.addConnector("" + i++, "strip", "message", "console", "info");
-            //p.addConnector(""+i++, "diff", "differenceOutput", "viewN", "imageInput");
-            //p.addConnector(""+i++, "integral", "integralOutput", "view", "imageInput");
-
-            p.addConnector(""+i++, "root", "imageOutput", "diff", "imageInput");
-            p.addConnector(""+i++, "diff", "differenceOutput", "integral", "imageInput");
-            p.addConnector(""+i++, "integral", "integralOutput", "strip", "integralInput");
-            
-            p.addConnector(""+i++, "root", "imageOutput", "idiff", "imageInput");
-
-
-            source.addBufferedImageSourceListener(new BufferedImageSourceListener() {
-
-                public void bufferedImageReceived(BufferedImage image, ByteBuffer imageDataOrNull) {
-                    root.imageReceived(image, imageDataOrNull);
-                }
-
-                public void stopped() {
-                }
-            });
-             */
-        }
     }
 
     private static void view(final ServiceImageSource source) {
@@ -248,6 +169,7 @@ public class Main
         viewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         viewer.setVisible(true);
     }
+         */
 
     // TODO INTEGRATE IN OMISCID (REFERENCE IS NOW IN THE OMiSCIDServiceTree netbeans module)
     /*
@@ -262,6 +184,7 @@ public class Main
      *         -> CONSTANT | READ | READ_WRITE
      *         -> INPUT | OUTPUT | INOUTPUT
      */
+    /*
     public static ServiceFilter readServiceFilter(String stringFilter) {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine scriptEngine = manager.getEngineByName("js");
@@ -303,6 +226,7 @@ public class Main
             return null;
         }
     }
+    */
     /*
     public static ServiceFilter readServiceFilter(String stringFilter) {
         try {

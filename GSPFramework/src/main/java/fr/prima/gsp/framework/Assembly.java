@@ -6,11 +6,7 @@
 package fr.prima.gsp.framework;
 
 import fr.prima.gsp.Main;
-import fr.prima.videoserviceclient.BufferedImageSourceListener;
-import fr.prima.videoserviceclient.ServiceImageSource;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,12 +39,15 @@ public class Assembly {
     Map<String, Connector> connectors = new HashMap<String, Connector>();
 
     Map<String, StringRewriter> prefixes = new HashMap<String, StringRewriter>();
+
+    /*
     ServiceImageSource source;
     BufferedImageSourceListener sourceListener;
     List<BufferedImageSourceListener> grabbers = new ArrayList<BufferedImageSourceListener>();
-
+*/
     CModuleFactory cModuleFactory = new CModuleFactory();
 
+    /*
     public Assembly(ServiceImageSource source) {
         this.source = source;
         this.addPrefix("c", "[C-CODE]");
@@ -73,7 +72,7 @@ public class Assembly {
             module.stop();
         }
     }
-
+*/
     public void addModule(String moduleId, final String typeAttribute, Element conf) {
         String typeDescriptor;
         if (typeAttribute.contains(":")) {
@@ -133,17 +132,18 @@ public class Assembly {
 
 
 
-
     public void addModule(String moduleId, Module m) {
         if (modules.containsKey(moduleId)) {
             throw new IllegalArgumentException("Module with id '" + moduleId + "' is already present.");
         }
         modules.put(moduleId, m);
         Logger.getLogger(Assembly.class.getName()).log(Level.FINER, "Added module " + moduleId + " -> " + modules.get(moduleId));
+        /*
         if (m instanceof BufferedImageSourceListener) {
             grabbers.add((BufferedImageSourceListener) m);
             Logger.getLogger(Assembly.class.getName()).log(Level.FINER, "Added grabber " + moduleId + " -> " + modules.get(moduleId));
         }
+         */
     }
 
     public int generatedId = 999999;

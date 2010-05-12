@@ -5,21 +5,11 @@
 
 package fr.prima.gsp.demo;
 
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import fr.prima.gsp.framework.Assembly;
-import fr.prima.gsp.framework.ModuleParameter;
-import fr.prima.gsp.framework.spi.AbstractModuleEnablable;
-import fr.prima.videoserviceclient.BufferedImageSourceListener;
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.nio.ByteBuffer;
-
 /**
  *
  * @author emonet
  */
-public class Grabber extends AbstractModuleEnablable implements BufferedImageSourceListener {
+public class Grabber {/*extends AbstractModuleEnablable  implements BufferedImageSourceListener {
     
     @ModuleParameter(initOnly=true)
     public Assembly assembly;
@@ -61,5 +51,5 @@ public class Grabber extends AbstractModuleEnablable implements BufferedImageSou
     public void closePipeline2(Object o1, Object o2) {assembly.stop();}
     public void closePipeline3(Object o1, Object o2, Object o3) {assembly.stop();}
     public void closePipeline4(Object o1, Object o2, Object o3, Object o4) {assembly.stop();}
-
+*/
 }
