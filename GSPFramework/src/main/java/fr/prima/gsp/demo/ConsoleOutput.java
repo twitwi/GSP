@@ -27,4 +27,7 @@ public class ConsoleOutput extends AbstractModule {
         if (level > 1) System.err.println("WARNING: " + msg);
     }
 
+    public void input(Object msg) {
+        info(msg);
+    }
 }

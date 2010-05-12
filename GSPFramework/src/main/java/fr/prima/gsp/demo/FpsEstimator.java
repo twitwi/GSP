@@ -24,7 +24,10 @@ public class FpsEstimator extends AbstractModule {
 
     int count = 0;
     Long last = null;
-    public void input(Object o) {
+    public void input() {
+        inputObject(null);
+    }
+    public void inputObject(Object o) {
         if (last == null) {
             last = System.currentTimeMillis();
             return;
@@ -38,6 +41,9 @@ public class FpsEstimator extends AbstractModule {
     private void string(float fps) {
         emitEvent("" + fps);
     }
+    private void output(float fps) {
+        emitEvent("" + fps);
+    }
 
     public long processFps() {
         if (last == null) return 0;
@@ -46,6 +52,7 @@ public class FpsEstimator extends AbstractModule {
         count = 0;
         emitNamedEvent("float", fps);
         string(fps);
+        output(fps);
         return now;
     }
 

@@ -1,0 +1,10 @@
+<pipeline>
+    <namespace demo="fr.prima.gsp.demo" />
+    <m id="root" type="demo:Clock" period="${p}"/>
+    <m id="fps" type="demo:FpsEstimator" samples="${s}"/>
+    <m id="cons" type="demo:ConsoleOutput"/>
+
+    <!-- @output and @input are optionnal -->
+    <c chain="root - fps - cons"/>
+</pipeline>
+
