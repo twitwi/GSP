@@ -22,7 +22,7 @@ public class Clock extends AbstractModuleEnablable {
     @ModuleParameter(initOnly = true)
     public long warmupDelay = 0;
 
-    Timer timer = new Timer("Timer Thread for the Clock GSPÂ Module");
+    Timer timer = new Timer("Timer Thread for the Clock GSP Module");
     @Override
     protected synchronized void initModule() {
         timer.scheduleAtFixedRate(new TimerTask() {
