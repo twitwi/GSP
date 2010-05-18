@@ -1,0 +1,14 @@
+
+C/CPP:
+check framework.h synchronicity
+
+CPP:
+check in Div::input that the local vars are still needed.
+namespace the example
+
+java:
+check README instructions (how to compile, framework jar path)
+
+
+run:
+java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.0-SNAPSHOT.jar:java fr.prima.gsp.Launcher pipeline-pure-java-3.xml
