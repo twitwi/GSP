@@ -1,0 +1,11 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="tick" type="ex:Counter" maxCount="4"/>
+    <m id="log" type="c:NativeCppDemo.Log"/>
+
+    <c chain="tick@asString - log"/>
+
+</pipeline>
+

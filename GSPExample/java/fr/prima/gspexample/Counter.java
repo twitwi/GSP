@@ -40,9 +40,15 @@ public class Counter extends AbstractModuleEnablable {
 
     private void output() {
         emitEvent(count);
+        asString();
         count++;
         if (count == maxCount) {
             timer.cancel();
         }
     }
+
+    private void asString() {
+        emitEvent("" + count);
+    }
+
 }

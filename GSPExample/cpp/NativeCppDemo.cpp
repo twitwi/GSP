@@ -26,6 +26,9 @@ void Div::input(float value) {
     emitNamedEvent("string", toSend);
 }
 
+void Div::intInput(int value) {
+    input((float) value);
+}
 
 Log::Log() {
     printf("info: creating Log object\n");
@@ -41,12 +44,12 @@ void Log::stopModule() {
 Log::~Log() {
     printf("info: destroying Log object\n");
 }
-void Log::setHello(const char *value) {
+void Log::setHello(/*const*/ char *value) {
     printf("info: setter call with value '%s'\n", value);
 }
-void Log::input(const char *message) {
+void Log::input(/*const*/ char *message) {
     printf("message: %s\n", message);
 }
-void Log::highlight(const char *message) {
+void Log::highlight(/*const*/ char *message) {
     printf("MESSAGE: === %s ===\n", message);
 }
