@@ -7,6 +7,7 @@ package fr.prima.gsp.framework;
 
 import fr.prima.gsp.Main;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,39 +41,16 @@ public class Assembly {
 
     Map<String, StringRewriter> prefixes = new HashMap<String, StringRewriter>();
 
-    /*
-    ServiceImageSource source;
-    BufferedImageSourceListener sourceListener;
-    List<BufferedImageSourceListener> grabbers = new ArrayList<BufferedImageSourceListener>();
-*/
     CModuleFactory cModuleFactory = new CModuleFactory();
 
-    /*
-    public Assembly(ServiceImageSource source) {
-        this.source = source;
+    public Assembly() {
         this.addPrefix("c", "[C-CODE]");
         this.addPrefix("java", identityStringRewriter());
-        source.addBufferedImageSourceListener(sourceListener = new BufferedImageSourceListener() {
-            public void bufferedImageReceived(BufferedImage image, ByteBuffer imageDataOrNull) {
-                for (BufferedImageSourceListener g : grabbers) {
-                    g.bufferedImageReceived(image, imageDataOrNull);
-                }
-            }
-            public void stopped() {
-                for (BufferedImageSourceListener g : grabbers) {
-                    g.stopped();
-                }
-            }
-        });
-        last = this;
     }
     public void stop() {
-        source.removeBufferedImageSourceListener(sourceListener);
-        for (Module module : modules.values()) {
-            module.stop();
-        }
+        // TODO could call the registered hook (registered by modules, e.g. the grabber)
+        // not sure it is really usefull
     }
-*/
     public void addModule(String moduleId, final String typeAttribute, Element conf) {
         String typeDescriptor;
         if (typeAttribute.contains(":")) {
@@ -102,7 +80,6 @@ public class Assembly {
             addModule(moduleId, newModule);
         }
         newModule.configure(conf);
-        newModule.init();
     }
 
 
@@ -110,7 +87,22 @@ public class Assembly {
     private Module createJavaModule(String className) {
         try {
             Class<? extends Module> cl = (Class<? extends Module>) Class.forName(className);
-            return cl.newInstance();
+            Module res = cl.newInstance();
+            { // possibly inject the assembly in the module (if it has an Assembly assembly field)
+                Class<?> classType = Assembly.class;
+                String fieldName = classType.getSimpleName();
+                fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+                for (Field f : cl.getDeclaredFields()) {
+                    debug("Looking for field " + fieldName + " for injection, have field " + f.getName() + " of type " + f.getType());
+                    if (fieldName.equals(f.getName()) && classType.equals(f.getType())) {
+                        // TODO could check for public, final etc
+                        f.set(res, this);
+                        System.err.println("ERR: Injected Assembly into field " + fieldName + " for instance of class " + className);
+                        log("Injected Assembly into field " + fieldName + " for instance of class " + className);
+                    }
+                }
+            }
+            return res;
         } catch (InstantiationException ex) {
             Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
@@ -125,6 +117,7 @@ public class Assembly {
         String[] parts = cLibAndType.split("[.]");
         if (parts.length == 2) {
             return cModuleFactory.createModule(parts[0], parts[1]);
+            //throw new IllegalStateException("commented out, change this");
         } else {
             throw new IllegalArgumentException("Cannot find a single '.' in the C module type name: " + cLibAndType);
         }
@@ -215,6 +208,9 @@ public class Assembly {
                     addConnector(id, e.getAttribute("from"), e.getAttribute("to"));
                 }
             }
+            for (Map.Entry<String, Module> e : modules.entrySet()) {
+                e.getValue().init();
+            }
         } catch (Exception ex) {
             Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -266,6 +262,13 @@ public class Assembly {
             }
         }
         return res;
+    }
+
+    private void debug(String message) {
+        Logger.getLogger(Assembly.class.getName()).log(Level.FINEST, message);
+    }
+    private void log(String message) {
+        Logger.getLogger(Assembly.class.getName()).log(Level.FINE, message);
     }
 
     public static interface StringRewriter {
