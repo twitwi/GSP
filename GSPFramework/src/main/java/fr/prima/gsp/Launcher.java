@@ -15,6 +15,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,6 +38,19 @@ public class Launcher {
             showHelp();
             return;
         }
+
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(new Formatter() {
+            @Override
+            public String format(LogRecord record) {
+                return "=== " + record.getLevel().getName() + ": " + record.getMessage();
+            }
+        });
+        consoleHandler.setLevel(Level.ALL);
+        Logger.getLogger(Assembly.class.getName()).addHandler(consoleHandler);
+        Logger.getLogger(Assembly.class.getName()).setLevel(Level.FINE);
+
+
         Launcher cli = new Launcher();
         Assembly assembly = cli.load(args).get();
     }
