@@ -3,12 +3,12 @@
 package fr.prima.gspexample;
 
 import fr.prima.gsp.framework.ModuleParameter;
-import fr.prima.gsp.framework.spi.AbstractModuleEnablable;
+import fr.prima.gsp.framework.spi.AbstractModule;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class Counter extends AbstractModuleEnablable {
+public class Counter extends AbstractModule {
 
     @ModuleParameter(initOnly=true)
     public long period = 1000;

@@ -10,6 +10,13 @@
 * => update the examples (Cpp::Log) accordingly
 
 
+* could pass a more opaque structure as Pointer (when invoking a java
+   method with a C/C++ pointer)
+=> it would also minize the requirements to build some java module (do
+   not require jna if the op on pointers are usual)
+=> could also put some custom metatype info in it (to pass it back to C)
+
+
 * handle possibility for a module to know if it has some "clients" on an output
 * metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
 
