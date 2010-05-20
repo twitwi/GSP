@@ -2,6 +2,7 @@
 
 package fr.prima.gspexample;
 
+import fr.prima.gsp.framework.Assembly;
 import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModule;
 import java.util.Timer;
@@ -18,6 +19,10 @@ public class Counter extends AbstractModule {
 
     @ModuleParameter(initOnly=true)
     public int maxCount = -1;
+
+    // this will be automatically injected by the framework
+    @ModuleParameter(initOnly=true)
+    public Assembly assembly;
 
     private int count = 0;
 
@@ -44,6 +49,7 @@ public class Counter extends AbstractModule {
         count++;
         if (count == maxCount) {
             timer.cancel();
+            assembly.stop();
         }
     }
 
