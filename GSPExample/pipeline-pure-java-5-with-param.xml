@@ -1,0 +1,13 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="tick1" type="ex:Counter" maxCount="${c1}" period="300" warmupDelay="1050"/>
+    <m id="tick2" type="ex:Counter" maxCount="${c2}" period="300"/>
+    <m id="cons" type="ex:Console"/>
+
+    <c chain="tick1 - cons"/>
+    <c chain="tick2 - warning#cons"/>
+
+</pipeline>
+

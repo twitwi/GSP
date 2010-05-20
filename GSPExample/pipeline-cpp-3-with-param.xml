@@ -2,7 +2,7 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="tick" type="ex:Counter" maxCount="61" period="30"/>
+    <m id="tick" type="ex:Counter" maxCount="61" period="${p}"/>
     <m id="d1" type="c:NativeCppDemo.Div" divisor="1.41421356"/>
     <m id="d2" type="c:NativeCppDemo.Div" divisor="1.41421356"/>
     <m id="d3" type="c:NativeCppDemo.Div" divisor="3"/>
