@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import org.w3c.dom.Element;
 
 /**
- * Base class for java modules.
+ * Base class for Java modules.
  */
 public class AbstractModule extends BaseAbstractModule {
     ////////////////////////////////////////////

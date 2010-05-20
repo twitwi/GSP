@@ -10,10 +10,10 @@ import fr.prima.gsp.Option;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -44,6 +44,7 @@ public class Assembly {
 
     CModuleFactory cModuleFactory = new CModuleFactory();
 
+
     public Assembly() {
         this.addPrefix("c", "[C-CODE]");
         this.addPrefix("java", identityStringRewriter());
@@ -52,7 +53,7 @@ public class Assembly {
         // TODO could call the registered hook (registered by modules, e.g. the grabber)
         // not sure it is really usefull
     }
-    public void addModule(String moduleId, final String typeAttribute, Element conf) {
+    public String addModule(String moduleId, final String typeAttribute, Element conf) {
         String typeDescriptor;
         if (typeAttribute.contains(":")) {
             String[] split = typeAttribute.split(":");
@@ -81,10 +82,37 @@ public class Assembly {
             addModule(moduleId, newModule);
         }
         newModule.configure(conf);
+        return moduleId;
     }
 
 
-    
+    private Map<String, Callable<String>> factories = new HashMap<String, Callable<String>>();
+    private void addModuleFactory(String factoryId, final String type, final Element e) {
+        factories.put(factoryId, new Callable<String>() {
+            public String call() {
+                String moduleId = generateId();
+                addModule(moduleId, type, e);
+                debug("Instantiated module '" + moduleId + "' for type '" + type + "'");
+                return moduleId;
+            }
+        });
+    }
+    private String createModuleIfIdIsFactory(String id) {
+        debug("Looking for factory '" + id + "'");
+        Callable<String> factory = factories.get(id);
+        if (factory != null) {
+            try {
+                return factory.call();
+            } catch (Exception ex) {
+                Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return id;
+    }
+
+
+
+
     private Module createJavaModule(String className) {
         try {
             Class<? extends Module> cl = (Class<? extends Module>) Class.forName(className);
@@ -130,13 +158,17 @@ public class Assembly {
             throw new IllegalArgumentException("Module with id '" + moduleId + "' is already present.");
         }
         modules.put(moduleId, m);
-        Logger.getLogger(Assembly.class.getName()).log(Level.FINER, "Added module " + moduleId + " -> " + modules.get(moduleId));
+        log("Added module " + moduleId + " -> " + modules.get(moduleId));
         /*
         if (m instanceof BufferedImageSourceListener) {
             grabbers.add((BufferedImageSourceListener) m);
             Logger.getLogger(Assembly.class.getName()).log(Level.FINER, "Added grabber " + moduleId + " -> " + modules.get(moduleId));
         }
          */
+    }
+
+    private String generateId() {
+        return generatedIdPrefix + (generatedId--);
     }
 
     private int is(boolean b) {
@@ -171,16 +203,27 @@ public class Assembly {
             }
             for (Element e : list(root.getElementsByTagName("m"), root.getElementsByTagName("module"))) {
                 h.module(e);
-                addModule(e.getAttribute("id"), e.getAttribute("type"), e);
+                String sp = e.getAttribute("special");
+                if ("factory".equals(sp)) {
+                    e.removeAttribute("special");
+                    String id = e.getAttribute("id");
+                    String type = e.getAttribute("type");
+                    addModuleFactory(e.getAttribute("id"), type, e);
+                    log("Registered factory with id '" + id + "' for type '" + type + "'");
+                } else {
+                    addModule(e.getAttribute("id"), e.getAttribute("type"), e);
+                }
             }
             for (Element e : list(root.getElementsByTagName("c"), root.getElementsByTagName("connector"))) {
                 h.connector(e);
                 if (e.hasAttribute("chain")) {
                     String[] parts = e.getAttribute("chain").split(chainSeparator);
+                    //int imax = parts.length - 2;
                     for (int i = 0; i < parts.length - 1; i++) {
                         String e1 = parts[i];
                         String e2 = parts[i+1];
-                        String id = generatedIdPrefix + (generatedId--);
+
+                        String id = generateId();
                         String fromModule;
                         String fromPort = "";
                         {
@@ -197,6 +240,7 @@ public class Assembly {
                         }
                         String toModule;
                         String toPort = "";
+                        String nextFrom = "";
                         {
                             String[] to = e2.split(chainPortSeparator, -1);
                             if (to.length ==  1) {
@@ -204,12 +248,18 @@ public class Assembly {
                             } else {
                                 toModule = to[1];
                                 toPort = to[0];
+                                if (to.length == 3) {
+                                    nextFrom = to[2];
+                                }
                             }
                             if (toPort.isEmpty()) {
                                 toPort = "input";
                             }
                         }
+                        fromModule = createModuleIfIdIsFactory(fromModule);
+                        toModule = createModuleIfIdIsFactory(toModule);
                         addConnector(id, fromModule, fromPort, toModule, toPort);
+                        parts[i + 1] = chainPortSeparator + toModule + chainPortSeparator + nextFrom;
                     }
                 } else {
                     // TODO should report an error
@@ -263,7 +313,7 @@ public class Assembly {
         }
         mSource.addConnector(sourcePort, mTarget.getEventReceiver(targetPort));
         connectors.put(connectorId, new Connector(mSource, sourcePort, mTarget, targetPort));
-        Logger.getLogger(Assembly.class.getName()).log(Level.FINER, "Added connector " + connectorId + " -> " + connectors.get(connectorId));
+        log("Added connector " + connectorId + ": " + sourceModule + "#" + sourcePort + " - " + targetPort + "#" + targetModule);
     }
 
     private static List<Element> list(NodeList ...lists) {

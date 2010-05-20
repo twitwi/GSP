@@ -45,7 +45,7 @@ public class Launcher {
         consoleHandler.setFormatter(new Formatter() {
             @Override
             public String format(LogRecord record) {
-                return "=== " + record.getLevel().getName() + ": " + record.getMessage();
+                return "=== " + record.getLevel().getName() + ": " + record.getMessage() + "\n";
             }
         });
         consoleHandler.setLevel(Level.ALL);

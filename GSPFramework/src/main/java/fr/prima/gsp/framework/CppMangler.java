@@ -6,7 +6,6 @@
 package fr.prima.gsp.framework;
 
 import com.sun.jna.NativeLibrary;
-import com.sun.jna.Pointer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
