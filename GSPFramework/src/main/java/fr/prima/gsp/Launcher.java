@@ -6,10 +6,10 @@
 package fr.prima.gsp;
 
 import fr.prima.gsp.framework.Assembly;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +20,8 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
 /**
  *
@@ -30,7 +32,7 @@ public class Launcher {
     public static void main(String[] args) throws IOException {
         // TODO catch anything and display correct message (and localized)
         if (args.length == 0) {
-            main(new String[]{"pipeline-simple-with-parameter.xml", "p=200", "s=1"});
+            main(new String[]{"pipeline-simple-with-parameter.xml", "p=100", "s=10"});
             main(new String[]{"--help"});
             return;
         }
@@ -59,31 +61,55 @@ public class Launcher {
         System.err.println("TODO");
     }
 
-    private Option<Assembly> load(FileInputStream inputStream, String[] parameters) throws IOException {
-        String content = Utils.streamToString(inputStream);
+    private Option<Assembly> load(InputStream inputStream, String[] parameters) throws IOException {
         final Map<String, String> settings = readParameters(parameters);
         final List<String> unreplaced = new ArrayList<String>();
-        content = Utils.replaceAll(content, "[$][{][a-zA-Z0-9-_]*[}]", new Utils.Replacement() {
-            public String getReplacement(String matched) {
-                String var = matched.substring(2, matched.length() - 1);
-                String res = settings.get(var);
-               if (res == null) {
-                    unreplaced.add(var);
-                    return matched;
-                }
-                return res;
+
+        Assembly a = new Assembly();
+        a.readFromXML(inputStream, Option.<Assembly.ReadFromXMLHandler>create(new Assembly.ReadFromXMLHandler() {
+
+            @Override
+            public void namespace(Element e) {
+                patch(e);
             }
-        });
+
+            @Override
+            public void module(Element e) {
+                patch(e);
+            }
+
+            @Override
+            public void connector(Element e) {
+                patch(e);
+            }
+
+            private void patch(Element e) {
+                NamedNodeMap attributes = e.getAttributes();
+                for (int i = 0; i < attributes.getLength(); i++) {
+                    String val = attributes.item(i).getTextContent();
+                    val = Utils.replaceAll(val, "[$][{][a-zA-Z0-9-_]*[}]", new Utils.Replacement() {
+                        public String getReplacement(String matched) {
+                            String var = matched.substring(2, matched.length() - 1);
+                            String res = settings.get(var);
+                            if (res == null) {
+                                unreplaced.add(var);
+                                return matched;
+                            }
+                            return res;
+                        }
+                    });
+                    attributes.item(i).setTextContent(val);
+                }
+            };
+        }));
+        // TODO there should be some error reporting when readFromXML fails (currently it swallows exceptions)
         if (!unreplaced.isEmpty()) {
             throw new IllegalArgumentException("Found some unreplaced variables " + unreplaced.toString());
         }
-        Assembly a = new Assembly();
-        a.readFromXML(new ByteArrayInputStream(content.getBytes()));
-        // TODO there should be some error reporting when readFromXML fails (currently it swallows exceptions)
         return Option.create(a);
     }
 
-    public Map<String, String> readParameters(String[] parameters) {
+    private Map<String, String> readParameters(String[] parameters) {
         Map<String, String> res = new HashMap<String, String>();
         // TODO use iterator and implement advanced stuffs (grouping)
         for (String p : parameters) {

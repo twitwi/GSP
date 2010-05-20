@@ -6,6 +6,7 @@
 package fr.prima.gsp.framework;
 
 import fr.prima.gsp.Main;
+import fr.prima.gsp.Option;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -139,15 +140,22 @@ public class Assembly {
          */
     }
 
+    public static abstract class ReadFromXMLHandler {
+        public void namespace(Element e) {}
+        public void module(Element e) {}
+        public void connector(Element e) {}
+    }
     public int generatedId = 999999;
     public String generatedIdPrefix = "_auto_gen_";
-    public void readFromXML(InputStream input) {
+    public void readFromXML(InputStream input, Option<ReadFromXMLHandler> obs) {
         try {
+            ReadFromXMLHandler h = obs.getOr(new ReadFromXMLHandler() {});
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(input);
             Element root = doc.getDocumentElement();
             for (Element e : list(root.getElementsByTagName("ns"), root.getElementsByTagName("namespace"))) {
+                h.namespace(e);
                 NamedNodeMap attributes = e.getAttributes();
                 for (int i = 0; i < attributes.getLength(); i++) {
                     String name = attributes.item(i).getNodeName();
@@ -159,9 +167,11 @@ public class Assembly {
                 }
             }
             for (Element e : list(root.getElementsByTagName("m"), root.getElementsByTagName("module"))) {
+                h.module(e);
                 addModule(e.getAttribute("id"), e.getAttribute("type"), e);
             }
             for (Element e : list(root.getElementsByTagName("c"), root.getElementsByTagName("connector"))) {
+                h.connector(e);
                 if (e.hasAttribute("chain")) {
                     String[] parts = e.getAttribute("chain").split(chainSeparator);
                     int imax = parts.length - 2;
