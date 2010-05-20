@@ -4,8 +4,6 @@ package fr.prima.gspexample;
 
 import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModule;
-import java.util.Timer;
-import java.util.TimerTask;
 import com.sun.jna.Pointer;
 
 
