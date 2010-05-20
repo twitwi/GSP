@@ -29,7 +29,7 @@ public class CModuleFactory {
     {
         // code to avoid freeze in library loading (don't know why)
         // we just access to the Native class before anything else
-        if (Native.POINTER_SIZE < 4) {
+        if (Native.POINTER_SIZE < 4 || NativeLibrary.class.getName().isEmpty()) {
             System.err.println("This is quite strange");
         }
     }
@@ -37,8 +37,8 @@ public class CModuleFactory {
     Map<String, Bundle> bundles = new HashMap<String, Bundle>();
     List<Module> modules = new LinkedList<Module>();
     CModuleFactory() {
-
     }
+
 
     public Module createModule(String bundleName, String moduleTypeName) {
         //System.err.println("loading " + bundleName);
@@ -58,7 +58,7 @@ public class CModuleFactory {
             NativeLibrary.addSearchPath(bundleName, ".");
 
             String module_path = System.getenv("GSP_MODULES_PATH");
-            if( module_path!=null && !module_path.isEmpty()) {
+            if (module_path != null && !module_path.isEmpty()) {
                 String delims = ":";
                 String[] tokens = module_path.split(delims);
                 for (int i = 0; i < tokens.length; i++) {
@@ -101,6 +101,7 @@ public class CModuleFactory {
     
     private static String sep = "__v__";
     private static CppMangler mangler = new CppMangler();
+
     private class Bundle {
 
         NativeLibrary library;
@@ -110,6 +111,7 @@ public class CModuleFactory {
         }
 
         private Pointer createModule(String moduleTypeName, FrameworkCallback f) {
+            //Pointer res = f(moduleTypeName, "create").invokePointer(new Object[]{f.toPointer()});
             Pointer res = f(moduleTypeName, "create").invokePointer(new Object[]{f});
             if (res != Pointer.NULL) {
                 fOpt(moduleTypeName, "created", res);
@@ -179,8 +181,24 @@ public class CModuleFactory {
 
     }
 
+    //private static abstract class FrameworkCallback extends Callback {
     private static interface FrameworkCallback extends Callback {
-        void callback(String commandName, Pointer parameters);
+        public abstract void callback(String commandName, Pointer parameters);
+    }
+
+    private static Pointer[] extractNullTerminatedPointerArray(Pointer args) {
+        return args.getPointerArray(0);
+        /*
+        int pointerSize = JNI.POINTER_SIZE;
+        ArrayList<Pointer> res = new ArrayList<Pointer>();
+        Pointer cur;
+        int index = 0;
+        while (Pointer.NULL != (cur = args.getPointer(index * pointerSize))) {
+            res.add(cur);
+            index++;
+        }
+        return res.toArray(new Pointer[res.size()]);
+         */
     }
 
     private static class CModule extends BaseAbstractModule implements Module {
@@ -203,7 +221,7 @@ public class CModuleFactory {
             this.moduleTypeName = moduleTypeName;
             this.framework = new FrameworkCallback() {
                 public void callback(String commandName, Pointer parameters) {
-                    cCallback(commandName, parameters.getPointerArray(0));
+                    cCallback(commandName, extractNullTerminatedPointerArray(parameters));
                 }
             };
             that = bundle.createModule(moduleTypeName, framework);
@@ -399,5 +417,4 @@ public class CModuleFactory {
         }
 
     }
-
 }
