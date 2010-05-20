@@ -10,7 +10,7 @@
     <c chain="load - service"/>
 
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
-    <!--<c chain="load - out@info"/>-->
+    <!--<c chain="load - info#out"/>-->
 
 </pipeline>
 

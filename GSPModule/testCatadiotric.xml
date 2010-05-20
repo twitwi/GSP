@@ -8,12 +8,12 @@
     <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
     <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
 
-    <c chain="grabber@outputRaw - cataCM@inputRaw"/>
+    <c chain="grabber#outputRaw - inputRaw#cataCM"/>
     <c chain="cataCM - uv - service"/>
     <!--<c chain="uv - service"/>-->
     
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
-    <!--<c chain="load - out@info"/>-->
+    <!--<c chain="load - info#out"/>-->
 
 </pipeline>
 

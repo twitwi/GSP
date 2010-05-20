@@ -4,10 +4,10 @@
     <m id="clock" type="demo:Clock" period="20"/>
     <m id="testGL" type="c:TestGLModule.TestGLModule"/>
 
-    <c chain="clock - testGL@clock"/>
+    <c chain="clock - clock#testGL"/>
 
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
-    <!--<c chain="load - out@info"/>-->
+    <!--<c chain="load - info#out"/>-->
 
 </pipeline>
 

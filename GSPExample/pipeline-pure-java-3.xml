@@ -5,8 +5,8 @@
     <m id="tick" type="ex:Counter" maxCount="10" period="300"/>
     <m id="cons" type="ex:Console" />
 
-    <c chain="tick - cons@error"/>
-    <c chain="tick - cons@warning"/>
+    <c chain="tick - error#cons"/>
+    <c chain="tick - warning#cons"/>
 
 </pipeline>
 

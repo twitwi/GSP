@@ -11,12 +11,12 @@
 
     <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
 
-    <c chain="grabber@outputRaw - raw2ipl - view"/>
+    <c chain="grabber#outputRaw - raw2ipl - view"/>
     <c chain="raw2ipl - histo - viewHisto"/>
-    <c chain="service - histo@inputROI"/>
+    <c chain="service - inputROI#histo"/>
 
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
-    <!--<c chain="load - out@info"/>-->
+    <!--<c chain="load - info#out"/>-->
 
 </pipeline>
 

@@ -7,7 +7,7 @@
     <m id="cons" type="ex:Console"/>
 
     <c chain="tick1 - cons"/>
-    <c chain="tick2 - cons@warning"/>
+    <c chain="tick2 - warning#cons"/>
 
 </pipeline>
 
