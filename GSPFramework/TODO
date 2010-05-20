@@ -1,8 +1,8 @@
 
-* replace the mod@outport - mod2@inport    by    mod#outport - inport#mod2
-  (or maybe use only @s)
-* ^ patch the viewer accordingly
-* decide if we keep the old « from="" to="" » version 
+* DONE: replace the mod@outport - mod2@inport    by    mod#outport - inport#mod2
+* DONE: decide to drop the old « from="" to="" » version 
+* ^ patch the PipelineViewer accordingly
+* ^ fix the PipelineViewer when using <c chain="tick - intInput#d1# - d2 - #d3#string - log"/>
 
 
 * handle const in mangling (calling with a -const should work if the

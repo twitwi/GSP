@@ -96,9 +96,8 @@ public class Assembly {
                 for (Field f : cl.getDeclaredFields()) {
                     debug("Looking for field " + fieldName + " for injection, have field " + f.getName() + " of type " + f.getType());
                     if (fieldName.equals(f.getName()) && classType.equals(f.getType())) {
-                        // TODO could check for public, final etc
+                        // TODO could check for public, final etc
                         f.set(res, this);
-                        System.err.println("ERR: Injected Assembly into field " + fieldName + " for instance of class " + className);
                         log("Injected Assembly into field " + fieldName + " for instance of class " + className);
                     }
                 }
@@ -140,6 +139,10 @@ public class Assembly {
          */
     }
 
+    private int is(boolean b) {
+        return b ? 1 : 0;
+    }
+
     public static abstract class ReadFromXMLHandler {
         public void namespace(Element e) {}
         public void module(Element e) {}
@@ -174,7 +177,6 @@ public class Assembly {
                 h.connector(e);
                 if (e.hasAttribute("chain")) {
                     String[] parts = e.getAttribute("chain").split(chainSeparator);
-                    int imax = parts.length - 2;
                     for (int i = 0; i < parts.length - 1; i++) {
                         String e1 = parts[i];
                         String e2 = parts[i+1];
@@ -182,12 +184,12 @@ public class Assembly {
                         String fromModule;
                         String fromPort = "";
                         {
-                            String[] from = i == 0 ? e1.split(portSeparator, -1) : e1.split(chainPortSeparator, -1);
+                            String[] from = e1.split(chainPortSeparator, -1);
                             if (from.length == 1) {
                                 fromModule = from[0];
                             } else {
-                                fromModule = i == 0 ? from[0] : from[1];
-                                fromPort = i == 0 ? from[1] : from[2];
+                                fromModule = from[1 - is(i == 0)];
+                                fromPort = from[2 - is(i == 0)];
                             }
                             if (fromPort.isEmpty()) {
                                 fromPort = "output";
@@ -196,13 +198,12 @@ public class Assembly {
                         String toModule;
                         String toPort = "";
                         {
-                            String[] to = i == imax ? e2.split(portSeparator, -1) : e2.split(chainPortSeparator, -1);
-                            System.err.println(Arrays.toString(to));
+                            String[] to = e2.split(chainPortSeparator, -1);
                             if (to.length ==  1) {
                                 toModule = to[0];
                             } else {
-                                toModule = i == imax ? to[0] : to[1];
-                                toPort = i == imax ? to[1] : to[0];
+                                toModule = to[1];
+                                toPort = to[0];
                             }
                             if (toPort.isEmpty()) {
                                 toPort = "input";
@@ -211,11 +212,14 @@ public class Assembly {
                         addConnector(id, fromModule, fromPort, toModule, toPort);
                     }
                 } else {
+                    // TODO should report an error
+                    /*
                     String id = e.getAttribute("id");
                     if (id.isEmpty()) {
                         id = generatedIdPrefix + (generatedId--);
                     }
                     addConnector(id, e.getAttribute("from"), e.getAttribute("to"));
+                     */
                 }
             }
             for (Map.Entry<String, Module> e : modules.entrySet()) {
