@@ -6,16 +6,16 @@
     </complexType>
     <complexType name="ConnectorType">
         <attribute name="id" type="string" use="optional"/>
-        <attribute name="from" type="string"/>
-        <attribute name="to" type="string"/>
+        <attribute name="chain" type="string"/>
     </complexType>
-    <complexType name="PrefixType">
+    <!--complexType name="PrefixType">
         <attribute name="short" type="string"/>
         <attribute name="long" type="string"/>
-    </complexType>
+    </complexType-->
     <complexType name="PipelineType">
         <choice minOccurs="0" maxOccurs="unbounded">
-            <element name="prefix"/>
+            <element name="namespace"/>
+            <element name="ns"/>
             <element name="module" type="omiscid:ModuleType"/>
             <element name="m" type="omiscid:ModuleType"/>
             <element name="connector" type="omiscid:ConnectorType"/>
