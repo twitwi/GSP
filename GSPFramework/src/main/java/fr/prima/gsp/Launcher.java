@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
@@ -32,7 +32,7 @@ public class Launcher {
     public static void main(String[] args) throws IOException {
         // TODO catch anything and display correct message (and localized)
         if (args.length == 0) {
-            main(new String[]{"pipeline-simple-with-parameter.xml", "p=100", "s=10"});
+            main(new String[]{"pipeline-simple-with-parameter.xml", "p=100", "s=10", "fps.samples=2"});
             main(new String[]{"--help"});
             return;
         }
@@ -65,6 +65,13 @@ public class Launcher {
         final Map<String, String> settings = readParameters(parameters);
         final List<String> unreplaced = new ArrayList<String>();
 
+        final List<String> modulesNotFound = new ArrayList<String>();
+        for (String p : settings.keySet()) {
+            if (p.contains(".")) {
+                modulesNotFound.add(p.split("[.]")[0]);
+            }
+        }
+
         Assembly a = new Assembly();
         a.readFromXML(inputStream, Option.<Assembly.ReadFromXMLHandler>create(new Assembly.ReadFromXMLHandler() {
 
@@ -76,6 +83,16 @@ public class Launcher {
             @Override
             public void module(Element e) {
                 patch(e);
+                String id = e.getAttribute("id");
+                if (modulesNotFound.remove(id)) {
+                    // there were some parameters to apply
+                    for (String p : settings.keySet()) {
+                        if (p.startsWith(id + ".")) {
+                            String att = p.split("[.]")[1];
+                            e.setAttribute(att, settings.get(p));
+                        }
+                    }
+                }
             }
 
             @Override
@@ -103,18 +120,17 @@ public class Launcher {
             };
         }));
         // TODO there should be some error reporting when readFromXML fails (currently it swallows exceptions)
-        if (!unreplaced.isEmpty()) {
-            throw new IllegalArgumentException("Found some unreplaced variables " + unreplaced.toString());
+        if (!unreplaced.isEmpty() || !modulesNotFound.isEmpty()) {
+            throw new IllegalArgumentException("Unreplaced variables " + unreplaced.toString() + " ; Not found modules " + modulesNotFound.toString());
         }
         return Option.create(a);
     }
 
     private Map<String, String> readParameters(String[] parameters) {
-        Map<String, String> res = new HashMap<String, String>();
+        Map<String, String> res = new LinkedHashMap<String, String>(); // preserve insertion order
         // TODO use iterator and implement advanced stuffs (grouping)
         for (String p : parameters) {
-            System.err.println("P:"+p+";");
-            if (p.matches("[a-zA-Z0-9-_.]*=.*")) {
+            if (p.matches("[a-zA-Z0-9-_]+(.[a-zA-Z0-9-_]+)?=.*")) {
                 String[] parts = p.split("=", 2);
                 res.put(parts[0], parts[1]);
             }
