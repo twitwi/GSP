@@ -1,0 +1,16 @@
+<pipeline>
+    <!--
+java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:../GSPExample/java/ fr.prima.gsp.Launcher pipeline-test-view-image-1-sec.xml
+-->
+    <namespace demo="fr.prima.gsp.demo"/>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="2" period="1000"/>
+    <m id="load" type="c:ImageLoader.ImageLoader" filename="/home/twilight/projects/MINImage-data/lena.jpg"/>
+    <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+
+    <c chain="load - view"/>
+
+</pipeline>
+
