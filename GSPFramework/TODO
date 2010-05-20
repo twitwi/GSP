@@ -1,4 +1,7 @@
 
+* allow factory-syntax in pipelines (e.g. c2s of type CharPointerToString get instantiated each time it appear in the pipeline)
+
+* VIEWER UPDATE
 * DONE: replace the mod@outport - mod2@inport    by    mod#outport - inport#mod2
 * DONE: decide to drop the old « from="" to="" » version 
 * ^ patch the PipelineViewer accordingly
