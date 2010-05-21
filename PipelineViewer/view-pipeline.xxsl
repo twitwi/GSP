@@ -24,22 +24,22 @@
          .for "$preProcessed/m"
               {
                   .text "subgraph \"cluster_" .eval "@id" .text "\" {\n";
-                  .text "\"node_" .eval "@id".text "\" [label=\"" .eval "@id".text " [" .eval "@type" .text "]\", style = filled, fillcolor = palegreen, shape = component] ;\n";
+                  .text "\"node_" .eval "@id".text "\" [label=\"" .eval "(@m___label,@id)[1]".text " [" .eval "@type" .text "]\", style = filled, fillcolor = palegreen, shape = component] ;\n";
                   .var m = ".";
                   .for "$preProcessed/c"
                        {
                            .if "$m/@id = @fromModule" {
-                                   .text "\"" .eval "@fromModule" .text "@" .eval "@fromPort" .text "\" [label=\"" .eval "@fromPort" .text "\", style = filled, fillcolor = slategray2];\n";
+                                   .text "\"" .eval "@fromModule" .text "#" .eval "@fromPort" .text "\" [label=\"" .eval "@fromPort" .text "\", style = filled, fillcolor = slategray2];\n";
                                }
                            .if "$m/@id = @toModule" {
-                                   .text "\"" .eval "@toModule" .text "@" .eval "@toPort" .text "\" [label=\"" .eval "@toPort" .text "\", style = filled, fillcolor = plum];\n";
+                                   .text "\"" .eval "@toModule" .text "#" .eval "@toPort" .text "\" [label=\"" .eval "@toPort" .text "\", style = filled, fillcolor = plum];\n";
                                }
                        }
                   .text "}\n";
               }
          .for "$preProcessed/c"
               {
-                  .text "\"" .eval "@fromModule" .text "@" .eval "@fromPort" .text "\" -> \"" .eval "@toModule" .text "@" .eval "@toPort".text "\" ;\n"
+                  .text "\"" .eval "@fromModule" .text "#" .eval "@fromPort" .text "\" -> \"" .eval "@toModule" .text "#" .eval "@toPort".text "\" ;\n"
               }
          .text "}\n";
      }
@@ -49,6 +49,7 @@
 .define preprocess-chain chain="@chain" {
     .var elements = "tokenize(@chain, '\\s*-\\s*')"
     .var doc = "/";
+    .var newchainid = "generate-id(.)";
     .for "$elements" {
         .var i = "position()";
         .var last = "last()";
@@ -58,17 +59,17 @@
             .when "$i=$last" {.eval "if (count($split)=1) then concat('#',.,'#') else concat(.,'#')"}
             .otherwise {.eval "if (count($split)=1) then concat('#',.,'#') else ."}
         }
-        .var parts = "tokenize($addIO, '1')";
-            xsl:message {.eval "$parts[2]"}
-        .for "$doc//m[@special='factory' and @id=$parts[2]]" {
-            .var id = "generate-id(.)";
-            m m___label="$parts[2]" {
+        .var parts = "tokenize($addIO, '#')";
+        .var id = "concat($newchainid, '.', $i)";
+        .for "$doc//f[@id=$parts[2]]" {
+            m m___label="{$parts[2]}" {
                 xsl:copy-of select="@*" {}
                 xsl:attribute name="id" select="$id" {}
             }
-            e {.eval "string-join((parts[1], $i, parts[2]), '#')"}
+                xsl:message {.eval "concat(parts[1], '#', $id, '#', $parts[3])"}
+            e {.eval "concat(parts[1], '#', $id, '#', $parts[3])"}
         }
-        .if "count($doc//m[@special='factory' and @id=$parts[2]]) = 0" {e {.eval "$addIO"}}
+        .if "count($doc//f[@id=$parts[2]]) = 0" {e {.eval "$addIO"}}
     }
 }
 
@@ -85,7 +86,7 @@
                  .var e1 = ".";
                  .var e2 = "$elements[1+$i]";
                  
-                 .var from = "tokenize(if ($i = 1) then concat('#',$e1) else $e1, '#')[position() > 1]";
+                 .var from = "tokenize($e1, '#')[position() > 1]";
                  .var to = "reverse(tokenize($e2, '#')[position() = (1,2)])";
                  .var fromModule = "if (count($from)=2) then $from[1] else $e1";
                  .var toModule = "if (count($to)=2) then $to[1] else $e2";

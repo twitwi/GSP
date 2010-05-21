@@ -32,7 +32,7 @@
          <xsl:text>"node_</xsl:text>
          <xsl:value-of select="@id"/>
          <xsl:text>" [label="</xsl:text>
-         <xsl:value-of select="@id"/>
+         <xsl:value-of select="(@m___label,@id)[1]"/>
          <xsl:text> [</xsl:text>
          <xsl:value-of select="@type"/>
          <xsl:text>]", style = filled, fillcolor = palegreen, shape = component] ;
@@ -42,7 +42,7 @@
             <xsl:if test="$m/@id = @fromModule">
                <xsl:text>"</xsl:text>
                <xsl:value-of select="@fromModule"/>
-               <xsl:text>@</xsl:text>
+               <xsl:text>#</xsl:text>
                <xsl:value-of select="@fromPort"/>
                <xsl:text>" [label="</xsl:text>
                <xsl:value-of select="@fromPort"/>
@@ -52,7 +52,7 @@
             <xsl:if test="$m/@id = @toModule">
                <xsl:text>"</xsl:text>
                <xsl:value-of select="@toModule"/>
-               <xsl:text>@</xsl:text>
+               <xsl:text>#</xsl:text>
                <xsl:value-of select="@toPort"/>
                <xsl:text>" [label="</xsl:text>
                <xsl:value-of select="@toPort"/>
@@ -66,11 +66,11 @@
       <xsl:for-each select="$preProcessed/c">
          <xsl:text>"</xsl:text>
          <xsl:value-of select="@fromModule"/>
-         <xsl:text>@</xsl:text>
+         <xsl:text>#</xsl:text>
          <xsl:value-of select="@fromPort"/>
          <xsl:text>" -&gt; "</xsl:text>
          <xsl:value-of select="@toModule"/>
-         <xsl:text>@</xsl:text>
+         <xsl:text>#</xsl:text>
          <xsl:value-of select="@toPort"/>
          <xsl:text>" ;
 </xsl:text>
@@ -87,6 +87,7 @@
       <xsl:param name="chain" select="@chain"/>
       <xsl:variable name="elements" select="tokenize(@chain, '\s*-\s*')"/>
       <xsl:variable name="doc" select="/"/>
+      <xsl:variable name="newchainid" select="generate-id(.)"/>
       <xsl:for-each select="$elements">
          <xsl:variable name="i" select="position()"/>
          <xsl:variable name="last" select="last()"/>
@@ -104,21 +105,21 @@
                </xsl:otherwise>
             </xsl:choose>
          </xsl:variable>
-         <xsl:variable name="parts" select="tokenize($addIO, '1')"/>
-         <message xmlns="http://www.w3.org/1999/XSL/Transform">
-            <xsl:value-of xmlns="" select="$parts[2]"/>
-         </message>
-         <xsl:for-each select="$doc//m[@special='factory' and @id=$parts[2]]">
-            <xsl:variable name="id" select="generate-id(.)"/>
-            <m m___label="$parts[2]">
+         <xsl:variable name="parts" select="tokenize($addIO, '#')"/>
+         <xsl:variable name="id" select="concat($newchainid, '.', $i)"/>
+         <xsl:for-each select="$doc//f[@id=$parts[2]]">
+            <m m___label="{$parts[2]}">
                <copy-of xmlns="http://www.w3.org/1999/XSL/Transform" select="@*"/>
                <attribute xmlns="http://www.w3.org/1999/XSL/Transform" name="id" select="$id"/>
             </m>
+            <message xmlns="http://www.w3.org/1999/XSL/Transform">
+               <xsl:value-of xmlns="" select="concat(parts[1], '#', $id, '#', $parts[3])"/>
+            </message>
             <e>
-               <xsl:value-of select="string-join((parts[1], $i, parts[2]), '#')"/>
+               <xsl:value-of select="concat(parts[1], '#', $id, '#', $parts[3])"/>
             </e>
          </xsl:for-each>
-         <xsl:if test="count($doc//m[@special='factory' and @id=$parts[2]]) = 0">
+         <xsl:if test="count($doc//f[@id=$parts[2]]) = 0">
             <e>
                <xsl:value-of select="$addIO"/>
             </e>
@@ -142,8 +143,7 @@
                <xsl:variable name="last" select="last()"/>
                <xsl:variable name="e1" select="."/>
                <xsl:variable name="e2" select="$elements[1+$i]"/>
-               <xsl:variable name="from"
-                             select="tokenize(if ($i = 1) then concat('#',$e1) else $e1, '#')[position() &gt; 1]"/>
+               <xsl:variable name="from" select="tokenize($e1, '#')[position() &gt; 1]"/>
                <xsl:variable name="to" select="reverse(tokenize($e2, '#')[position() = (1,2)])"/>
                <xsl:variable name="fromModule" select="if (count($from)=2) then $from[1] else $e1"/>
                <xsl:variable name="toModule" select="if (count($to)=2) then $to[1] else $e2"/>
