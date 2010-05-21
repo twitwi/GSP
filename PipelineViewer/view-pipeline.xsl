@@ -79,16 +79,65 @@
 </xsl:text>
    </xsl:template>
    <xsl:template match="m | module">
-      <xsl:copy>
-         <xsl:copy-of select="@*"/>
-         <xsl:apply-templates/>
-      </xsl:copy>
+      <m>
+         <copy-of xmlns="http://www.w3.org/1999/XSL/Transform" select="@*"/>
+      </m>
+   </xsl:template>
+   <xsl:template name="preprocess-chain">
+      <xsl:param name="chain" select="@chain"/>
+      <xsl:variable name="elements" select="tokenize(@chain, '\s*-\s*')"/>
+      <xsl:variable name="doc" select="/"/>
+      <xsl:for-each select="$elements">
+         <xsl:variable name="i" select="position()"/>
+         <xsl:variable name="last" select="last()"/>
+         <xsl:variable name="addIO">
+            <xsl:variable name="split" select="tokenize(., '#')"/>
+            <xsl:choose>
+               <xsl:when test="$i=1">
+                  <xsl:value-of select="if (count($split)=1) then concat('#',.,'#') else concat('#',.)"/>
+               </xsl:when>
+               <xsl:when test="$i=$last">
+                  <xsl:value-of select="if (count($split)=1) then concat('#',.,'#') else concat(.,'#')"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:value-of select="if (count($split)=1) then concat('#',.,'#') else ."/>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
+         <xsl:variable name="parts" select="tokenize($addIO, '1')"/>
+         <message xmlns="http://www.w3.org/1999/XSL/Transform">
+            <xsl:value-of xmlns="" select="$parts[2]"/>
+         </message>
+         <xsl:for-each select="$doc//m[@special='factory' and @id=$parts[2]]">
+            <xsl:variable name="id" select="generate-id(.)"/>
+            <m m___label="$parts[2]">
+               <copy-of xmlns="http://www.w3.org/1999/XSL/Transform" select="@*"/>
+               <attribute xmlns="http://www.w3.org/1999/XSL/Transform" name="id" select="$id"/>
+            </m>
+            <e>
+               <xsl:value-of select="string-join((parts[1], $i, parts[2]), '#')"/>
+            </e>
+         </xsl:for-each>
+         <xsl:if test="count($doc//m[@special='factory' and @id=$parts[2]]) = 0">
+            <e>
+               <xsl:value-of select="$addIO"/>
+            </e>
+         </xsl:if>
+      </xsl:for-each>
    </xsl:template>
    <xsl:template match="c|connector">
       <xsl:choose>
          <xsl:when test="@chain">
-            <xsl:variable name="elements" select="tokenize(@chain, '\s*-\s*')"/>
+            <xsl:variable name="c">
+               <xsl:call-template name="preprocess-chain"/>
+            </xsl:variable>
+            <copy-of xmlns="http://www.w3.org/1999/XSL/Transform" select="$c/./m"/>
+            <xsl:variable name="elements" select="($c/./e/text())"/>
             <xsl:for-each select="$elements[position() != last()]">
+               <message xmlns="http://www.w3.org/1999/XSL/Transform">
+                  <xsl:text xmlns="">E: </xsl:text>
+                  <xsl:value-of xmlns="" select="."/>
+               </message>
                <xsl:variable name="i" select="position()"/>
                <xsl:variable name="last" select="last()"/>
                <xsl:variable name="e1" select="."/>
@@ -96,11 +145,6 @@
                <xsl:variable name="from"
                              select="tokenize(if ($i = 1) then concat('#',$e1) else $e1, '#')[position() &gt; 1]"/>
                <xsl:variable name="to" select="reverse(tokenize($e2, '#')[position() = (1,2)])"/>
-               <message xmlns="http://www.w3.org/1999/XSL/Transform">
-                  <xsl:value-of xmlns="" select="$from"/>
-                  <xsl:text xmlns="">'     '</xsl:text>
-                  <xsl:value-of xmlns="" select="$to"/>
-               </message>
                <xsl:variable name="fromModule" select="if (count($from)=2) then $from[1] else $e1"/>
                <xsl:variable name="toModule" select="if (count($to)=2) then $to[1] else $e2"/>
                <xsl:variable name="fromPort"
@@ -112,12 +156,11 @@
             </xsl:for-each>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:variable name="from" select="tokenize(@from, '@')"/>
-            <xsl:variable name="to" select="tokenize(@to, '@')"/>
-            <xsl:variable name="fromPort" select="if ($from[2]) then $from[2] else 'output'"/>
-            <xsl:variable name="toPort" select="if ($to[2]) then $to[2] else 'input'"/>
-            <c fromModule="{$from[1]}" fromPort="{$fromPort}" toModule="{$to[1]}"
-               toPort="{$toPort}"/>
+            <message xmlns="http://www.w3.org/1999/XSL/Transform">
+               <xsl:text xmlns="">ERR: found a </xsl:text>
+               <xsl:value-of xmlns="" select="local-name()"/>
+               <xsl:text xmlns=""> without chain attribute</xsl:text>
+            </message>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:template>

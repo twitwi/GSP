@@ -44,12 +44,42 @@
          .text "}\n";
      }
 
-"m | module" {.copy-apply {}}
+"m | module" {m {xsl:copy-of select="@*"{}}}
+
+.define preprocess-chain chain="@chain" {
+    .var elements = "tokenize(@chain, '\\s*-\\s*')"
+    .var doc = "/";
+    .for "$elements" {
+        .var i = "position()";
+        .var last = "last()";
+        .var addIO = {
+            .var split = "tokenize(., '#')";
+            .when "$i=1" {.eval "if (count($split)=1) then concat('#',.,'#') else concat('#',.)"}
+            .when "$i=$last" {.eval "if (count($split)=1) then concat('#',.,'#') else concat(.,'#')"}
+            .otherwise {.eval "if (count($split)=1) then concat('#',.,'#') else ."}
+        }
+        .var parts = "tokenize($addIO, '1')";
+            xsl:message {.eval "$parts[2]"}
+        .for "$doc//m[@special='factory' and @id=$parts[2]]" {
+            .var id = "generate-id(.)";
+            m m___label="$parts[2]" {
+                xsl:copy-of select="@*" {}
+                xsl:attribute name="id" select="$id" {}
+            }
+            e {.eval "string-join((parts[1], $i, parts[2]), '#')"}
+        }
+        .if "count($doc//m[@special='factory' and @id=$parts[2]]) = 0" {e {.eval "$addIO"}}
+    }
+}
+
 "c|connector" {
     .when "@chain" {
-        .var elements = "tokenize(@chain, '\\s*-\\s*')";
+        .var c = {.call preprocess-chain};
+        xsl:copy-of select="$c/./m" {}
+        .var elements = "($c/./e/text())";
         .for "$elements[position() != last()]"
              {
+                 xsl:message {.text "E: " .eval "."}
                  .var i = "position()";
                  .var last = "last()";
                  .var e1 = ".";
@@ -57,7 +87,6 @@
                  
                  .var from = "tokenize(if ($i = 1) then concat('#',$e1) else $e1, '#')[position() > 1]";
                  .var to = "reverse(tokenize($e2, '#')[position() = (1,2)])";
-                 xsl:message{.eval "$from" .text "'     '".eval "$to"}
                  .var fromModule = "if (count($from)=2) then $from[1] else $e1";
                  .var toModule = "if (count($to)=2) then $to[1] else $e2";
                  .var fromPort = "if (count($from)=2 and not($from[2]='')) then $from[2] else 'output'";
@@ -66,16 +95,7 @@
              }
     }
     .otherwise {
-        .var from = "tokenize(@from, '@')";
-        .var to = "tokenize(@to, '@')";
-        .var fromPort = "if ($from[2]) then $from[2] else 'output'";
-        .var toPort = "if ($to[2]) then $to[2] else 'input'";
-        c
-            fromModule="{$from[1]}"
-            fromPort="{$fromPort}"
-            toModule="{$to[1]}"
-            toPort="{$toPort}"
-            {}
+        xsl:message {.text "ERR: found a " .eval "local-name()" .text " without chain attribute"};
     }
 }
     </xx:xxsl>
