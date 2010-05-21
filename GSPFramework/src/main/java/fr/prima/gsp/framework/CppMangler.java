@@ -54,7 +54,7 @@ public class CppMangler {
         types.put(Float.class, "f");
         types.put(Integer.class, "i");
         types.put(String.class, "Pc");
-        types.put(Pointer.class, "Pv");
+        types.put(com.sun.jna.Pointer.class, "Pv");
         types.put(Boolean.class, "b");
         types.put(UINT.class, "j");
         
