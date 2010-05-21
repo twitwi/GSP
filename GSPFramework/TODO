@@ -27,3 +27,7 @@
 * metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
 
 * OPT: add a define that generate a human oriented version of the struct (use e.g. ___NL___ for new lines, then replace them all by a real new line in the helper script)
+
+
+java -Djava.library.path=. -cp  ../GSPExample/java:../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:java fr.prima.gsp.Launcher ../GSPExample/pipeline-cpp-3-with-param.xml p=20
+

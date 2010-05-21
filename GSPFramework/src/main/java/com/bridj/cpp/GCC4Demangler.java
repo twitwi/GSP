@@ -1,9 +1,7 @@
 package com.bridj.cpp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.bridj.Demangler;
 import com.bridj.JNI;
@@ -42,8 +40,9 @@ public class GCC4Demangler extends Demangler {
 		case 'c':
 		case 'a':
 		case 'h': // unsigned
-		case 'b': // bool
 			return classType(Byte.TYPE);
+		case 'b': // bool
+			return classType(Boolean.TYPE);
 		case 'l':
 		case 'm': // unsigned
 			return classType(JNI.is64Bits() ? Long.TYPE : Integer.TYPE);
@@ -90,7 +89,9 @@ public class GCC4Demangler extends Demangler {
 			mr.setMemberName(str);
 			return mr;
 		}
-		consumeCharIf('_');
+		// REVIEW-IT: ignore __ instead of counting it as _
+		if (peekChar() == '_')
+			return null; // can be a type info, a virtual table or strange things like that
 		expectChars('Z');
 		
 		if (peekChar() == 'T')
