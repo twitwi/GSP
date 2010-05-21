@@ -14,7 +14,19 @@
             <name>Java.net Repository for Maven</name>
             <url>http://download.java.net/maven/2/</url>
         </repository>
+        <repository>
+            <id>nativelibs4java-repo</id>
+            <name>Nativelibs4java Repository</name>
+            <url>http://nativelibs4java.sourceforge.net/maven</url>
+        </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nativelibs4java-repo</id>
+            <name>Nativelibs4java Repository</name>
+            <url>http://nativelibs4java.sourceforge.net/maven</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <plugins>
@@ -40,6 +52,19 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.nativelibs4java</groupId>
+                <artifactId>maven-velocity-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         </build>
