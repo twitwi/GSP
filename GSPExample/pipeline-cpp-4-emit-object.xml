@@ -3,10 +3,10 @@
     <namespace ex="fr.prima.gspexample"/>
 
     <m id="tick" type="ex:Counter" maxCount="7" period="100"/>
-    <m id="half" special="factory" type="c:NativeCppDemo.Div" divisor="2"/>
+    <f id="half" type="c:NativeCppDemo.Div" divisor="2"/>
 
     <m id="th" type="c:AdvancedDemo.ToThing" forceInt="false"/>
-    <m id="cmp" special="factory" type="c:AdvancedDemo.CompareThings"/>
+    <f id="cmp" type="c:AdvancedDemo.CompareThings"/>
     <m id="log" type="c:NativeCppDemo.Log"/>
 
     <c chain="tick - intInput#half# - #th#string - log"/>

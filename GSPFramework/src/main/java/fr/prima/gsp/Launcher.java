@@ -100,6 +100,11 @@ public class Launcher {
                 patch(e);
             }
 
+            @Override
+            public void factory(Element e) {
+                patch(e);
+            }
+
             private void patch(Element e) {
                 NamedNodeMap attributes = e.getAttributes();
                 for (int i = 0; i < attributes.getLength(); i++) {

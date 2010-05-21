@@ -3,8 +3,8 @@
     <namespace ex="fr.prima.gspexample"/>
 
     <m id="tick" type="ex:Counter" maxCount="65" period="10"/>
-    <m id="sqrt" type="ex:Square" special="factory" power="0.70710678118654"/>
     <m id="cons" type="ex:Console"/>
+    <f id="sqrt" type="ex:Square" power="0.70710678118654"/>
 
     <!-- This would be a loop if "sqrt" weren't a factory -->
     <c chain="tick - cons"/>

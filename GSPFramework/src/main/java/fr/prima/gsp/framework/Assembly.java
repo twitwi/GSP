@@ -179,6 +179,7 @@ public class Assembly {
         public void namespace(Element e) {}
         public void module(Element e) {}
         public void connector(Element e) {}
+        public void factory(Element e) {}
     }
     public int generatedId = 999999;
     public String generatedIdPrefix = "_auto_gen_";
@@ -201,18 +202,16 @@ public class Assembly {
                     addPrefix(name, content + ".");
                 }
             }
+            for (Element e : list(root.getElementsByTagName("f"), root.getElementsByTagName("factory"))) {
+                h.factory(e);
+                String id = e.getAttribute("id");
+                String type = e.getAttribute("type");
+                addModuleFactory(e.getAttribute("id"), type, e);
+                log("Registered factory with id '" + id + "' for type '" + type + "'");
+            }
             for (Element e : list(root.getElementsByTagName("m"), root.getElementsByTagName("module"))) {
                 h.module(e);
-                String sp = e.getAttribute("special");
-                if ("factory".equals(sp)) {
-                    e.removeAttribute("special");
-                    String id = e.getAttribute("id");
-                    String type = e.getAttribute("type");
-                    addModuleFactory(e.getAttribute("id"), type, e);
-                    log("Registered factory with id '" + id + "' for type '" + type + "'");
-                } else {
-                    addModule(e.getAttribute("id"), e.getAttribute("type"), e);
-                }
+                addModule(e.getAttribute("id"), e.getAttribute("type"), e);
             }
             for (Element e : list(root.getElementsByTagName("c"), root.getElementsByTagName("connector"))) {
                 h.connector(e);
