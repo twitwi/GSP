@@ -48,6 +48,16 @@ public abstract class NativeType {
         }
         return areSame(t1.getToWhat(), t2.getToWhat());
     }
+    // moving specifications...
+    static boolean areCloseEnough(NativeType t1, NativeType t2) {
+        if (t1 == t2) {
+            return true;
+        }
+        if (t1 == null || !t1.isPointer() || t2 == null || !t2.isPointer()) {
+            return false;
+        }
+        return true;
+    }
 
     // API
     public final boolean isPointer() {

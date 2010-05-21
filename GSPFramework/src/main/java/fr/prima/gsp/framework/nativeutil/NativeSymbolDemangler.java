@@ -8,6 +8,7 @@ package fr.prima.gsp.framework.nativeutil;
 import com.bridj.BridJ;
 import com.bridj.Demangler.DemanglingException;
 import com.bridj.Demangler.MemberRef;
+import com.bridj.Demangler.SpecialName;
 import com.bridj.Demangler.TypeRef;
 import com.bridj.cpp.GCC4Demangler;
 import java.io.FileNotFoundException;
@@ -27,34 +28,26 @@ public abstract class NativeSymbolDemangler {
         return createBridjGccBasedDemangler();
     }
 
-    public static class Info {
-        public String mangledName;
-        public String name;
-        public String[] fullName;
-        public NativeType returnType;
-        public NativeType[] parameterTypes;
-    }
-
     // API
-    public final Info demangle(String libraryName, String symbol) {
+    public final NativeSymbolInfo demangle(String libraryName, String symbol) {
         return demangleImpl(libraryName, symbol);
     }
     
     // SPI
-    protected abstract Info demangleImpl(String libraryName, String symbol);
+    protected abstract NativeSymbolInfo demangleImpl(String libraryName, String symbol);
 
     // inner
     static NativeSymbolDemangler createBridjGccBasedDemangler() {
         return new NativeSymbolDemangler() {
 
             @Override
-            protected Info demangleImpl(String libraryName, String symbol) {
+            protected NativeSymbolInfo demangleImpl(String libraryName, String symbol) {
                 try {
-                    Info res = new Info();
+                    NativeSymbolInfo res = new NativeSymbolInfo();
                     res.mangledName = symbol;
                     GCC4Demangler dem = new GCC4Demangler(BridJ.getNativeLibrary(libraryName), symbol);
                     MemberRef parsed = dem.parseSymbol();
-                    if (parsed == null || parsed.paramTypes == null) {
+                    if (parsed == null) {
                         // not a c++ thing?
                         return null;
                     }
@@ -81,6 +74,8 @@ public abstract class NativeSymbolDemangler {
                     return res;
                 } else if (memberName instanceof String) {
                     return new String[]{(String) memberName};
+                } else if (memberName instanceof SpecialName) {
+                    return new String[]{"Special: " + ((SpecialName) memberName).name()};
                 } else {
                     throw new IllegalArgumentException("Wrong type " + memberName.getClass());
                 }
@@ -88,6 +83,9 @@ public abstract class NativeSymbolDemangler {
 
 
             private NativeType[] getParameterTypes(TypeRef[] paramTypes) {
+                if (paramTypes == null) {
+                    return new NativeType[0];
+                }
                 NativeType[] res = new NativeType[paramTypes.length];
                 for (int i = 0; i < res.length; i++) {
                     res[i] = getParameterType(paramTypes[i]);

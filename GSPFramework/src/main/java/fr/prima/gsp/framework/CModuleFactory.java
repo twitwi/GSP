@@ -11,8 +11,8 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.nativeutil.NativeFunctionFinder;
-import fr.prima.gsp.framework.nativeutil.NativeMethod;
 import fr.prima.gsp.framework.nativeutil.NativeType;
+import fr.prima.gsp.framework.nativeutil.NativeSymbolInfo;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,7 +106,6 @@ public class CModuleFactory {
     }
     
     private static String sep = "__v__";
-    private static CppMangler mangler = new CppMangler();
 
     private class Bundle {
 
@@ -122,53 +121,32 @@ public class CModuleFactory {
             //Pointer res = f(moduleTypeName, "create").invokePointer(new Object[]{f.toPointer()});
             Pointer res = f(moduleTypeName, "create").invokePointer(new Object[]{f});
             if (res != Pointer.NULL) {
-                fOpt(moduleTypeName, "created", res);
+                callCFunctionOptionally(moduleTypeName, "created", res);
             }
             return res;
         }
 
         private void setModuleParameter(String moduleTypeName, Pointer that, String parameterName, Object value) {
-            try {
-                f(moduleTypeName, "set" + sep + parameterName).invoke(new Object[]{that, value});
-            } catch (UnsatisfiedLinkError err) {
-                f(mangler.mangleVoidMethod(moduleTypeName, setter(parameterName), new Object[]{value})).invoke(new Object[]{that, value});
-            }
+            callCFunctionOrCppMethodOptionally(moduleTypeName, "set" + sep + parameterName, setter(parameterName), that, value);
         }
 
         private void initModule(String moduleTypeName, Pointer that) {
-            try {
-                f(moduleTypeName, "init").invoke(new Object[]{that});
-            } catch (UnsatisfiedLinkError err) {
-                try {
-                    f(mangler.mangleVoidMethod(moduleTypeName, "initModule", new Object[]{})).invoke(new Object[]{that});
-                } catch (UnsatisfiedLinkError err2) {
-                    // swallow exception
-                }
-            }
+            callCFunctionOrElseCppMethodOptionallyIsCppCalled(moduleTypeName, "init", "initModule", that);
         }
 
         private void stopModule(String moduleTypeName, Pointer that) {
-            try {
-                f(moduleTypeName, "stop").invoke(new Object[]{that});
-            } catch (UnsatisfiedLinkError err) {
-                try {
-                    f(mangler.mangleVoidMethod(moduleTypeName, "stopModule", new Object[]{})).invoke(new Object[]{that});
-                    f(moduleTypeName, "delete").invoke(new Object[]{that});
-                } catch (UnsatisfiedLinkError err2) {
-                    // swallow exception
-                }
+            if (callCFunctionOrElseCppMethodOptionallyIsCppCalled(moduleTypeName, "stop", "stopModule", that)) {
+                f(moduleTypeName, "delete").invoke(new Object[]{that});
             }
         }
 
         private void receiveEvent(String moduleTypeName, Pointer that, String portName, Event e) {
             Object[] information = e.getInformation();
-            Object[] allParams = new Object[information.length + 1];
-            System.arraycopy(information, 0, allParams, 1, information.length);
-            allParams[0] = that;
-            try {
-                f(moduleTypeName, "event" + sep + portName).invoke(allParams);
-            } catch (UnsatisfiedLinkError err) {
-                f(mangler.mangleVoidMethod(moduleTypeName, portName, information, e.getAdditionalTypeInformation())).invoke(allParams);
+            Object[] thatAndParams = new Object[information.length + 1];
+            System.arraycopy(information, 0, thatAndParams, 1, information.length);
+            thatAndParams[0] = that;
+            if (!callCFunctionOrCppMethodOptionally(moduleTypeName, "event" + sep + portName, portName, thatAndParams)) {
+                throw new RuntimeException("cannot receive this event " + portName + "#" + moduleTypeName + Arrays.asList(e.getInformation()) + " " + Arrays.asList(e.getAdditionalTypeInformation()));
             }
         }
 
@@ -179,13 +157,58 @@ public class CModuleFactory {
             return library.getFunction((prefix == null ? "" : prefix + sep) + functionName);
         }
 
-        private void fOpt(String prefix, String functionName, Object... args) {
+        /**
+         * @return whether the cpp method was called (we need this particular case so we take it :) )
+         */
+        private boolean callCFunctionOrElseCppMethodOptionallyIsCppCalled(String moduleTypeName, String c, String cpp, Object that) {
+            // try c function
+            if (!callCFunctionOptionally(moduleTypeName, c, that)) {
+                // try c++ method
+                return callCppMethodOptionally(moduleTypeName, cpp, that);
+            }
+            return false;
+        }
+
+        /**
+         * @return whether something has been called
+         */
+        private boolean callCFunctionOrCppMethodOptionally(String moduleTypeName, String c, String cpp, Object... thatAndParams) {
+            if (!callCFunctionOptionally(moduleTypeName, c, thatAndParams)) {
+                if (!callCppMethodOptionally(moduleTypeName, cpp, thatAndParams)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private boolean callCFunctionOptionally(String prefix, String functionName, Object... params) {
             try {
-                f(prefix, functionName).invoke(args);
+                f(prefix, functionName).invoke(params);
+                return true;
             } catch (UnsatisfiedLinkError err) {
                 // swallow exception
+                return false;
             }
         }
+
+        private boolean callCppMethodOptionally(String moduleTypeName, String cpp, Object... thatAndParams) {
+            try {
+                NativeType[] types = new NativeType[thatAndParams.length - 1];
+                for (int i = 0; i < types.length; i++) {
+                    types[i] = getNativeTypeForObject(thatAndParams[i+1]);
+                }
+                NativeSymbolInfo info = finder.findAnyMethodForParameters(moduleTypeName, cpp, types);
+                //System.err.println("FOR: " + moduleTypeName + " " + cpp + " " + Arrays.asList(types) + " -> " + info);
+                if (info != null) {
+                    f(info.mangledName).invoke(thatAndParams);
+                    return true;
+                }
+            } catch (UnsatisfiedLinkError err2) {
+                // swallow exception
+            }
+            return false;
+        }
+
 
     }
 
@@ -208,6 +231,26 @@ public class CModuleFactory {
         return res.toArray(new Pointer[res.size()]);
          */
     }
+
+    private NativeType getNativeTypeForObject(Object o) {
+        if (o == null) {
+            return NativeType.VOID_POINTER;
+        } else {
+            return javaTypeToNativeType.get(o.getClass());
+        }
+    }
+    private Map<Class<?>, NativeType> javaTypeToNativeType = new HashMap<Class<?>, NativeType>() {
+        {
+            put(Integer.TYPE, NativeType.INT);
+            put(Integer.class, NativeType.INT);
+            put(Float.TYPE, NativeType.FLOAT);
+            put(Float.class, NativeType.FLOAT);
+            put(Boolean.TYPE, NativeType.BOOL);
+            put(Boolean.class, NativeType.BOOL);
+            put(String.class, NativeType.CHAR_POINTER);
+            put(Pointer.class, NativeType.VOID_POINTER);
+        }
+    };
 
     private static class CModule extends BaseAbstractModule implements Module {
 
@@ -294,7 +337,7 @@ public class CModuleFactory {
 
 
         // used for xml parameter interpretation
-        private Object getNativeFromString(NativeType type, String text) {
+        private Object getNativeValueFromString(NativeType type, String text) {
             // could we reuse some mapping for a lib? (not that useful)
             try {
                 return stringToNatives.get(type).toNative(text);
@@ -308,18 +351,18 @@ public class CModuleFactory {
             String registeredType = parameterTypes.get(parameterName);
             Object value;
             if (registeredType != null) { // registered from plain C
-                value = getNativeFromString(cStringTypeToNativeType.get(parameterName), text);
+                value = getNativeValueFromString(cStringTypeToNativeType.get(parameterName), text);
             } else {
                 NativeType type = findBestParameterType(parameterName, text);
-                value = getNativeFromString(type, text);
+                value = getNativeValueFromString(type, text);
             }
             bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
             // could cache here
         }
         private NativeType findBestParameterType(String parameterName, String text) {
-            // TODO could infer type more precisely from value (currently ignored)
+            // TODO could infer type more precisely from text value (currently ignored)
             for (NativeType t : Arrays.asList(NativeType.INT, NativeType.FLOAT, NativeType.BOOL, NativeType.CHAR_POINTER)) {
-                NativeMethod f = bundle.finder.findAnyMethodForParameters(moduleTypeName, setter(parameterName), t);
+                NativeSymbolInfo f = bundle.finder.findAnyMethodForParameters(moduleTypeName, setter(parameterName), t);
                 if (f != null) {
                     return t;
                 }

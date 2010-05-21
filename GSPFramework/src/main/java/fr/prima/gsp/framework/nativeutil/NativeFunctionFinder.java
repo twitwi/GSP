@@ -5,7 +5,6 @@
 
 package fr.prima.gsp.framework.nativeutil;
 
-import fr.prima.gsp.framework.nativeutil.NativeSymbolDemangler.Info;
 import java.util.List;
 
 /**
@@ -29,24 +28,24 @@ public class NativeFunctionFinder {
         return this;
     }
 
-    public NativeMethod findAnyMethodForParameters(String className, String functionName, NativeType... types) {
+    public NativeSymbolInfo findAnyMethodForParameters(String className, String functionName, NativeType... types) {
         List<String> symbols = lister.getSymbols(libraryName);
         
         withNextSymbol:
         for (String symbol : symbols) {
-            Info info = null;
+            NativeSymbolInfo info = null;
             info = demangler.demangle(libraryName, symbol);
             if (info == null || !functionName.equals(info.name) || info.parameterTypes.length != types.length) {
                 continue;
             }
             for (int i = 0; i < types.length; i++) {
-                if (!NativeType.areSame(types[i], info.parameterTypes[i])) {
+                if (!NativeType.areCloseEnough(types[i], info.parameterTypes[i])) {
                     continue withNextSymbol;
                 }
-                //System.err.println(i + ": " + types[i] + " and " + info.parameterTypes[i] + " ARE THE SAME");
+                //System.err.println(i + ": " + types[i] + " and " + info.parameterTypes[i] + " ARE CLOSE ENOUGH");
             }
             //System.err.println("FOUND " + className + "::" + functionName + " " + Arrays.toString(info.parameterTypes));
-            return new NativeMethod(info);
+            return info;
         }
         return null;
     }
@@ -54,6 +53,8 @@ public class NativeFunctionFinder {
     public static void main(String[] args) throws InterruptedException {
         {
             NativeFunctionFinder finder = new NativeFunctionFinder("NativeCppDemo");
+            finder.findAnyMethodForParameters("Log", "input", NativeType.VOID_POINTER);
+            finder.findAnyMethodForParameters("Log", "initModule", NativeType.FLOAT);
             finder.findAnyMethodForParameters("Div", "setDivisor", NativeType.INT);
             finder.findAnyMethodForParameters("Div", "setDivisor", NativeType.BOOL);
             finder.findAnyMethodForParameters("Div", "setDivisor", NativeType.FLOAT);

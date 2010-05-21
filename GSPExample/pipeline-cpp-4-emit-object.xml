@@ -9,7 +9,7 @@
     <f id="cmp" type="c:AdvancedDemo.CompareThings"/>
     <m id="log" type="c:NativeCppDemo.Log"/>
 
-    <c chain="tick - intInput#half# - #th#string - log"/>
+    <c chain="tick - intInput#half# - half - #th#string - log"/>
     <c chain="th - #cmp#string - log"/>
 
  </pipeline>
