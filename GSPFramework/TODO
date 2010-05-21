@@ -1,12 +1,7 @@
 
 * allow factory-syntax in pipelines (e.g. c2s of type CharPointerToString get instantiated each time it appear in the pipeline)
 
-* VIEWER UPDATE
-* DONE: replace the mod@outport - mod2@inport    by    mod#outport - inport#mod2
-* DONE: decide to drop the old « from="" to="" » version 
-* ^ patch the PipelineViewer accordingly
-* ^ fix the PipelineViewer when using <c chain="tick - intInput#d1# - d2 - #d3#string - log"/>
-
+* VIEWER: implement factories
 
 * handle const in mangling (calling with a -const should work if the
    interface has const)

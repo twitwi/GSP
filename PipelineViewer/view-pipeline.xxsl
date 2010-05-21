@@ -55,13 +55,13 @@
                  .var e1 = ".";
                  .var e2 = "$elements[1+$i]";
                  
-                 .var from = "if ($i = 1) then tokenize($e1, '@') else tokenize($e1, '#')[position() > 1]";
-                 .var to = "if ($i = $last) then tokenize($e2, '@') else reverse(tokenize($e2, '#')[position() = (1,2)])";
+                 .var from = "tokenize(if ($i = 1) then concat('#',$e1) else $e1, '#')[position() > 1]";
+                 .var to = "reverse(tokenize($e2, '#')[position() = (1,2)])";
                  xsl:message{.eval "$from" .text "'     '".eval "$to"}
                  .var fromModule = "if (count($from)=2) then $from[1] else $e1";
                  .var toModule = "if (count($to)=2) then $to[1] else $e2";
-                 .var fromPort = "if (count($from)=2) then $from[2] else 'output'";
-                 .var toPort = "if (count($to[2])=2) then $to[2] else 'input'";
+                 .var fromPort = "if (count($from)=2 and not($from[2]='')) then $from[2] else 'output'";
+                 .var toPort = "if (count($to[2])=2 and not($to[2]='')) then $to[2] else 'input'";
                  c fromModule="{$fromModule}" fromPort="{$fromPort}" toModule="{$toModule}" toPort="{$toPort}" {}
              }
     }
