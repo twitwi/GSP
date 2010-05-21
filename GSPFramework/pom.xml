@@ -50,11 +50,11 @@
                 <version>3.8.1</version>
                 <scope>test</scope>
             </dependency>
-            <!--dependency>
-                    <groupId>asm</groupId>
-                    <artifactId>asm</artifactId>
-                    <version>3.2</version>
-                </dependency-->
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>3.2</version>
+            </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>

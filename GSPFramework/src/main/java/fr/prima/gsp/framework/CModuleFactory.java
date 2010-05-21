@@ -10,6 +10,10 @@ import com.sun.jna.Function;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
+import fr.prima.gsp.framework.nativeutil.NativeFunctionFinder;
+import fr.prima.gsp.framework.nativeutil.NativeMethod;
+import fr.prima.gsp.framework.nativeutil.NativeType;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -68,11 +72,13 @@ public class CModuleFactory {
             }
 
             try {
-                bundle = new Bundle(NativeLibrary.getInstance(bundleName));
+                bundle = new Bundle(NativeLibrary.getInstance(bundleName), NativeFunctionFinder.create(bundleName));
                 bundles.put(bundleName, bundle);
             } catch (Exception e) {
+                // TODO test NativeFunctionFinder also (add exceptions in it, or in the create or ...)
+
                 // cannot load
-                // TODO
+                // TODO report
             }
         }
         return bundle;
@@ -105,9 +111,11 @@ public class CModuleFactory {
     private class Bundle {
 
         NativeLibrary library;
+        NativeFunctionFinder finder;
 
-        private Bundle(NativeLibrary library) {
+        private Bundle(NativeLibrary library,  NativeFunctionFinder finder) {
             this.library = library;
+            this.finder = finder;
         }
 
         private Pointer createModule(String moduleTypeName, FrameworkCallback f) {
@@ -266,6 +274,7 @@ public class CModuleFactory {
         // callback from C
         private void cCallback(String commandName, Pointer[] parameters) {
             if ("param".equals(commandName)) {
+                // this is of pure C (non C++)
                 parameterTypes.put(parameters[1].getString(0), parameters[0].getString(0));
             } else if ("emit".equals(commandName)) {
                 Object[] eventParameters = new Object[parameters.length / 2];
@@ -285,8 +294,8 @@ public class CModuleFactory {
 
 
         // used for xml parameter interpretation
-        private static Object getNativeFromString(String type, String text) {
-            // could find a way to reuse jna mapping but I didn't managed to :(
+        private Object getNativeFromString(NativeType type, String text) {
+            // could we reuse some mapping for a lib? (not that useful)
             try {
                 return stringToNatives.get(type).toNative(text);
             } catch (NullPointerException ex) {
@@ -297,16 +306,25 @@ public class CModuleFactory {
 
         private void setParameter(String parameterName, String text) {
             String registeredType = parameterTypes.get(parameterName);
-            if (registeredType != null) {
-                Object value = getNativeFromString(registeredType, text);
-                bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
+            Object value;
+            if (registeredType != null) { // registered from plain C
+                value = getNativeFromString(cStringTypeToNativeType.get(parameterName), text);
             } else {
-                String type = mangler.findSingleParameterTypeForSingleVoidMethod(bundle.library, moduleTypeName, setter(parameterName));
-                System.err.println("TYPE is "+type);
-                Object value = getNativeFromString(type, text);
-                bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
-                // could cache here
+                NativeType type = findBestParameterType(parameterName, text);
+                value = getNativeFromString(type, text);
             }
+            bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
+            // could cache here
+        }
+        private NativeType findBestParameterType(String parameterName, String text) {
+            // TODO could infer type more precisely from value (currently ignored)
+            for (NativeType t : Arrays.asList(NativeType.INT, NativeType.FLOAT, NativeType.BOOL, NativeType.CHAR_POINTER)) {
+                NativeMethod f = bundle.finder.findAnyMethodForParameters(moduleTypeName, setter(parameterName), t);
+                if (f != null) {
+                    return t;
+                }
+            }
+            return null;
         }
 
 
@@ -335,37 +353,55 @@ public class CModuleFactory {
             if (res != null) type = res;
             return isPointer ? "P" + type : type;
         }
+
+        private static Map<String, NativeType> cStringTypeToNativeType = new HashMap<String, NativeType>() {
+            {
+                put("char*", NativeType.CHAR_POINTER);
+                put("float", NativeType.FLOAT);
+                //put("double", NativeType.);
+                put("int", NativeType.INT);
+                //put("long", NativeType.);
+                put("bool", NativeType.BOOL);
+                //put("", NativeType.);
+            }
+        };
+
         private static interface StringToNative {
             Object toNative(String text);
         }
-        private static Map<String, StringToNative> stringToNatives = new HashMap<String, StringToNative>() {
+        private static Map<NativeType, StringToNative> stringToNatives = new HashMap<NativeType, StringToNative>() {
             {
-                put("char*", new StringToNative() {
+                put(null, new StringToNative() {
+                    public Object toNative(String text) {
+                        throw new RuntimeException("null access in stringToNatives (missing mapping in cStringTypeToNativeType?)");
+                    }
+                });
+                put(NativeType.CHAR_POINTER, new StringToNative() {
                     public Object toNative(String text) {
                         return text;
                     }
                 });
-                put("float", new StringToNative() {
+                put(NativeType.FLOAT, new StringToNative() {
                     public Object toNative(String text) {
                         return Float.parseFloat(text);
                     }
                 });
-                put("double", new StringToNative() {
-                    public Object toNative(String text) {
-                        return Double.parseDouble(text);
-                    }
-                });
-                put("int", new StringToNative() {
+//                put(NativeType.DOUBLE, new StringToNative() {
+//                    public Object toNative(String text) {
+//                        return Double.parseDouble(text);
+//                    }
+//                });
+                put(NativeType.INT, new StringToNative() {
                     public Object toNative(String text) {
                         return Integer.parseInt(text);
                     }
                 });
-                put("long", new StringToNative() {
-                    public Object toNative(String text) {
-                        return Long.parseLong(text);
-                    }
-                });
-                put("bool", new StringToNative() {
+//                put("long", new StringToNative() {
+//                    public Object toNative(String text) {
+//                        return Long.parseLong(text);
+//                    }
+//                });
+                put(NativeType.BOOL, new StringToNative() {
                     public Object toNative(String text) {
                         return Boolean.parseBoolean(text);
                     }
