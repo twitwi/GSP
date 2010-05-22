@@ -1,4 +1,4 @@
-package fr.prima.vsp;
+package fr.prima.gsp;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
