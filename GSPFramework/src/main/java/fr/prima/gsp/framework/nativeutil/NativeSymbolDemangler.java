@@ -107,7 +107,7 @@ public abstract class NativeSymbolDemangler {
                     return NativeType.pointer(getParameterType(p.pointedType));
                 }
                 if (res == null) {
-                    throw new UnsupportedOperationException("TODO for type '" + pType + "'");
+                    throw new UnsupportedOperationException("TODO for type '" + pType + "' (" + pType.getClass() + ")");
                 }
                 return res;
             }

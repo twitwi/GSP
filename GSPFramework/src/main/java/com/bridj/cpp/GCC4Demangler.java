@@ -6,27 +6,56 @@ import java.util.List;
 import com.bridj.Demangler;
 import com.bridj.JNI;
 import com.bridj.NativeLibrary;
-import com.bridj.Pointer;
 import com.bridj.Demangler.ClassRef;
 import com.bridj.Demangler.DemanglingException;
 import com.bridj.Demangler.MemberRef;
 import com.bridj.Demangler.NamespaceRef;
 import com.bridj.Demangler.TypeRef;
 import com.bridj.Demangler.SpecialName;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GCC4Demangler extends Demangler {
 	
 	public GCC4Demangler(NativeLibrary library, String symbol) {
 		super(library, symbol);
 	}
-	
+
+    private Map<String, TypeRef> shortcuts = new HashMap<String, TypeRef>();
+    int nextShortcutId = -1;
+    private String nextShortcutId() {
+        int n = nextShortcutId++;
+        return n == -1 ? "_" : Integer.toString(n, 36).toUpperCase() + "_";
+    }
+
+    private TypeRef parseShortcutType() {
+        if (peekChar() == '_') {
+            return shortcuts.get(Character.toString(consumeChar()));
+        }
+        String id = "";
+        while (peekChar() != '_') {
+            id += consumeChar();
+        }
+        id += consumeChar();
+        return shortcuts.get(id);
+    }
+    private TypeRef parsePointerType() throws DemanglingException {
+        TypeRef pointed = parseType();
+        TypeRef res = pointerType(pointed);
+        String id = nextShortcutId();
+        shortcuts.put(id, res);
+        return res;
+    }
+
 	public TypeRef parseType() throws DemanglingException {
 		if (Character.isDigit(peekChar()))
 			return simpleType(parseName());
 		
 		switch (consumeChar()) {
+		case 'S':
+			return parseShortcutType();
 		case 'P':
-			return pointerType(parseType());
+			return parsePointerType();
 		case 'F':
 			// TODO parse function type correctly !!!
 			while (consumeChar() != 'E') {}
