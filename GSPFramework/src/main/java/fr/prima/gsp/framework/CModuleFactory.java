@@ -11,6 +11,7 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.nativeutil.NativeFunctionFinder;
+import fr.prima.gsp.framework.nativeutil.NativeSymbolDemangler;
 import fr.prima.gsp.framework.nativeutil.NativeType;
 import fr.prima.gsp.framework.nativeutil.NativeSymbolInfo;
 import java.util.Arrays;
@@ -174,16 +175,14 @@ public class CModuleFactory {
          */
         private boolean callCFunctionOrCppMethodOptionally(String moduleTypeName, String c, String cpp, Object... thatAndParams) {
             if (!callCFunctionOptionally(moduleTypeName, c, thatAndParams)) {
-                if (!callCppMethodOptionally(moduleTypeName, cpp, thatAndParams)) {
-                    return false;
-                }
+                return callCppMethodOptionally(moduleTypeName, cpp, thatAndParams);
             }
             return true;
         }
 
         private boolean callCFunctionOptionally(String prefix, String functionName, Object... params) {
             try {
-                f(prefix, functionName).invoke(params);
+                f(prefix, functionName).invoke(resolvePointers(params));
                 return true;
             } catch (UnsatisfiedLinkError err) {
                 // swallow exception
@@ -200,7 +199,7 @@ public class CModuleFactory {
                 NativeSymbolInfo info = finder.findAnyMethodForParameters(moduleTypeName, cpp, types);
                 //System.err.println("FOR: " + moduleTypeName + " " + cpp + " " + Arrays.asList(types) + " -> " + info);
                 if (info != null) {
-                    f(info.mangledName).invoke(thatAndParams);
+                    f(info.mangledName).invoke(resolvePointers(thatAndParams));
                     return true;
                 }
             } catch (UnsatisfiedLinkError err2) {
@@ -209,6 +208,16 @@ public class CModuleFactory {
             return false;
         }
 
+        private Object[] resolvePointers(Object[] thatAndParams) {
+            Object[] res = new Object[thatAndParams.length];
+            System.arraycopy(thatAndParams, 0, res, 0, thatAndParams.length);
+            for (int i = 0; i < res.length; i++) {
+                if (res[i] instanceof NativePointer) {
+                    res[i] = ((NativePointer) res[i]).pointer;
+                }
+            }
+            return res;
+        }
 
     }
 
@@ -235,6 +244,8 @@ public class CModuleFactory {
     private NativeType getNativeTypeForObject(Object o) {
         if (o == null) {
             return NativeType.VOID_POINTER;
+        } else if (o instanceof NativePointer) {
+            return ((NativePointer) o).nativeType;
         } else {
             return javaTypeToNativeType.get(o.getClass());
         }
@@ -248,7 +259,6 @@ public class CModuleFactory {
             put(Boolean.TYPE, NativeType.BOOL);
             put(Boolean.class, NativeType.BOOL);
             put(String.class, NativeType.CHAR_POINTER);
-            put(Pointer.class, NativeType.VOID_POINTER);
         }
     };
 
@@ -483,9 +493,14 @@ public class CModuleFactory {
                 });
             }
         };
-        private static Object getValueFromNative(String type, Pointer pointer) {
-            if (type.startsWith("P")) {
-                return pointer.getPointer(0);
+        private Object getValueFromNative(String type, Pointer pointer) {
+            NativeSymbolDemangler dem = NativeSymbolDemangler.create();
+            NativeType t = dem.demangleType(bundleName, type);
+            if (t.isPointer()) {
+                return new NativePointer(pointer.getPointer(0), t);
+            }
+            if (t.isCompound()) {
+                throw new UnsupportedOperationException("Unsupported direct stuct passing (use pointer or references)");
             }
             // could find a way to reuse jna mapping but I didn't managed to :(
             try {

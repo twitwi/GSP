@@ -6,6 +6,7 @@
 package fr.prima.gsp.framework.nativeutil;
 
 import com.bridj.BridJ;
+import com.bridj.Demangler.ClassRef;
 import com.bridj.Demangler.DemanglingException;
 import com.bridj.Demangler.MemberRef;
 import com.bridj.Demangler.PointerTypeRef;
@@ -32,10 +33,14 @@ public abstract class NativeSymbolDemangler {
     // API
     public final NativeSymbolInfo demangle(String libraryName, String symbol) {
         return demangleImpl(libraryName, symbol);
+    }    
+    public NativeType demangleType(String libraryName, String type) {
+        return demangleTypeImpl(libraryName, type);
     }
-    
+
     // SPI
     protected abstract NativeSymbolInfo demangleImpl(String libraryName, String symbol);
+    protected abstract NativeType demangleTypeImpl(String libraryName, String type);
 
     // inner
     static NativeSymbolDemangler createBridjGccBasedDemangler() {
@@ -62,6 +67,20 @@ public abstract class NativeSymbolDemangler {
                 }
                 return null;
             }
+
+            @Override
+            protected NativeType demangleTypeImpl(String libraryName, String type) {
+                try {
+                    GCC4Demangler dem = new GCC4Demangler(null, type); // we can pass null as a library, it is not used
+                    TypeRef parsed = dem.parseType();
+                    return getParameterType(parsed);
+                } catch (DemanglingException ex) {
+                    //Logger.getLogger(NativeSymbolDemangler.class.getName()).log(Level.SEVERE, null, ex);
+                    // TODO could log for demangler improvement
+                }
+                return null;
+            }
+
 
             private String[] fullName(Object memberName) {
                 if (memberName instanceof List) {
@@ -100,16 +119,23 @@ public abstract class NativeSymbolDemangler {
             }};
 
             private NativeType getParameterType(TypeRef typeRef) {
+                if (typeRef == null) {
+                    return NativeType.VOID;
+                }
                 String pType = typeRef.getQualifiedName(new StringBuilder(), true).toString();
-                NativeType res = nativeTypes.get(pType);
-                if (res == null && "com.bridj.Pointer".equals(pType)) {
+                NativeType basicType = nativeTypes.get(pType);
+                if (basicType != null) {
+                    return basicType;
+                }
+                if ("com.bridj.Pointer".equals(pType)) {
                     PointerTypeRef p = (PointerTypeRef) typeRef;
                     return NativeType.pointer(getParameterType(p.pointedType));
                 }
+                return NativeType.struct(pType);
+                /*
                 if (res == null) {
                     throw new UnsupportedOperationException("TODO for type '" + pType + "' (" + pType.getClass() + ")");
-                }
-                return res;
+                }*/
             }
 
         };

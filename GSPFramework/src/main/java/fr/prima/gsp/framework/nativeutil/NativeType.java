@@ -43,17 +43,26 @@ public abstract class NativeType {
         if (t1 == t2) {
             return true;
         }
-        if (t1 == null || !t1.isPointer() || t2 == null || !t2.isPointer()) {
+        if (t1 == null || t2 == null || t1.isPointer() ^ t2.isPointer() || t1.isCompound() ^ t2.isCompound()) {
             return false;
         }
-        return areSame(t1.getToWhat(), t2.getToWhat());
+        if (t1.isPointer()) {
+            return areSame(t1.getToWhat(), t2.getToWhat());
+        } else if (t1.isCompound()) {
+            return t1.equals(t2);
+        } else {
+            return false;
+        }
     }
     // moving specifications...
     static boolean areCloseEnough(NativeType t1, NativeType t2) {
         if (t1 == t2) {
             return true;
         }
-        if (t1 == null || !t1.isPointer() || t2 == null || !t2.isPointer()) {
+        if (t1 == null || t2 == null) {
+            return false;
+        }
+        if (!t1.isPointer() || !t2.isPointer()) {
             return false;
         }
         return true;
@@ -66,10 +75,14 @@ public abstract class NativeType {
     public final NativeType getToWhat() {
         return getToWhatImpl();
     }
+    public final boolean isCompound() {
+        return isCompoundImpl();
+    }
 
     // SPI
     protected abstract boolean isPointerImpl();
     protected abstract NativeType getToWhatImpl();
+    protected abstract boolean isCompoundImpl();
 
     //
     private static NativeType simple(final String desc) {
@@ -89,6 +102,11 @@ public abstract class NativeType {
             protected NativeType getToWhatImpl() {
                 throw new UnsupportedOperationException("Can't call getToWhat on non-pointer types.");
             }
+
+            @Override
+            protected boolean isCompoundImpl() {
+                return false;
+            }
         };
     }
     private static NativeType pointerTo(final NativeType toWhat) {
@@ -107,6 +125,41 @@ public abstract class NativeType {
             @Override
             protected NativeType getToWhatImpl() {
                 return toWhat;
+            }
+
+            @Override
+            protected boolean isCompoundImpl() {
+                return false;
+            }
+        };
+    }
+
+    public static NativeType struct(final String nativeName) {
+        return new NativeType() {
+
+            @Override
+            public String toString() {
+                return "st(" + nativeName + ")";
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj != null && obj.getClass() == this.getClass() && this.toString().equals(obj.toString());
+            }
+
+            @Override
+            protected boolean isPointerImpl() {
+                return false;
+            }
+
+            @Override
+            protected NativeType getToWhatImpl() {
+                throw new UnsupportedOperationException("Can't call getToWhat on non-pointer types.");
+            }
+
+            @Override
+            protected boolean isCompoundImpl() {
+                return true;
             }
         };
     }

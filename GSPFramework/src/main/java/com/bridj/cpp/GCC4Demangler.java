@@ -128,6 +128,8 @@ public class GCC4Demangler extends Demangler {
 		List<String> ns = new ArrayList<String>();
 		if (consumeCharIf('N')) {
 			do {
+                            // TODO better than simple increment
+                            nextShortcutId++;
 				ns.add(parseName());
 			} while (Character.isDigit(peekChar()));
 			mr.setMemberName(ns.remove(ns.size() - 1));

@@ -39,9 +39,12 @@ public class NativeFunctionFinder {
                 continue;
             }
             for (int i = 0; i < types.length; i++) {
-                if (!NativeType.areCloseEnough(types[i], info.parameterTypes[i])) {
+                //System.err.println(symbol+": "+i + ") Close enough? " + types[i] + " " + info.parameterTypes[i]);
+                if (!NativeType.areSame(types[i], info.parameterTypes[i])) {
+                    //System.err.println("NO");
                     continue withNextSymbol;
                 }
+                //System.err.println("YES");
                 //System.err.println(i + ": " + types[i] + " and " + info.parameterTypes[i] + " ARE CLOSE ENOUGH");
             }
             //System.err.println("FOUND " + className + "::" + functionName + " " + Arrays.toString(info.parameterTypes));
