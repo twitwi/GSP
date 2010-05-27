@@ -1,4 +1,37 @@
 
+mkdir build-cpp
+cd build-cpp/
+cmake ../cpp/
+make
+cd ..
 
-Should maintain this "framework.h" in sync with the reference one.
+
+cd java/
+. README-COMPILE 
+cd ..
+
+
+GSP=gsp-framework-1.1-SNAPSHOT.jar
+GO="java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/${GSP}:java fr.prima.gsp.Launcher"
+
+
+../PipelineViewer/view-pipeline.sh pipeline-pure-java-1.xml
+
+$GO pipeline-pure-java-1.xml
+$GO pipeline-pure-java-2.xml 
+$GO pipeline-pure-java-3.xml 
+$GO pipeline-pure-java-4.xml 
+
+
+../PipelineViewer/view-pipeline.sh pipeline-pure-java-6-factory.xml
+
+$GO pipeline-pure-java-5-with-param.xml c1=10 c2=20
+$GO pipeline-pure-java-6-factory.xml 
+
+export LD_LIBRARY_PATH=build-cpp
+$GO pipeline-cpp-1.xml 
+$GO pipeline-cpp-2.xml 
+$GO pipeline-cpp-3-with-param.xml p=33
+$GO pipeline-cpp-4-emit-object.xml 
+
 
