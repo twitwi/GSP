@@ -1,0 +1,4 @@
+
+The zip bundle contains bridj libraries.
+The linux 64 bits version is home made as no official release existed.
+
