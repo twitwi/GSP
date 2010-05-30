@@ -46,6 +46,7 @@ public class Counter extends AbstractModule {
     private void output() {
         emitEvent(count);
         asString();
+        asVoid();
         count++;
         if (count == maxCount) {
             timer.cancel();
@@ -55,6 +56,10 @@ public class Counter extends AbstractModule {
 
     private void asString() {
         emitEvent("" + count);
+    }
+
+    private void asVoid() {
+        emitEvent();
     }
 
 }

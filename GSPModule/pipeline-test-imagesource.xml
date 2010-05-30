@@ -1,0 +1,21 @@
+<pipeline>
+    <!--
+java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:../GSPExample/java/ fr.prima.gsp.Launcher pipeline-test-imagesource.xml
+
+i=0; while test $i -lt 361 ; do convert lena.jpg -rotate $i lena-$(printf %03d $i).jpg ; i=$(expr $i + 1); done
+
+
+java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:../GSPExample/java/ fr.prima.gsp.Launcher pipeline-test-imagesource.xml in.url=images:./lena-%03d.jpg timer.maxCount=361 timer.period=20
+-->
+
+    <namespace ex="fr.prima.gspexample"/>
+    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="36" period="100"/>
+
+    <m id="in" type="c:ImageSource.ImageSource" url="images:./lena-%02d5.jpg"/>
+    <m id="view" type="c:ImageViewer.ImageViewer" name="display of image source"/>
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+
+    <c chain="timer#asVoid - in - view"/>
+
+</pipeline>
+

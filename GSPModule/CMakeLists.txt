@@ -44,6 +44,9 @@ LINK_DIRECTORIES(
 add_library( ImageLoader SHARED ImageLoader )
 target_link_libraries( ImageLoader ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
 
+add_library( ImageSource SHARED ImageSource )
+target_link_libraries( ImageSource ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
+
 add_library( ImageViewer SHARED ImageViewer )
 target_link_libraries( ImageViewer ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY} ${GTK_LIBRARIES} ${GTHREAD_LIBRARIES})
 
