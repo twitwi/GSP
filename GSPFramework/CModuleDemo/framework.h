@@ -84,14 +84,14 @@
 #define PAIRS_OF(...) APPLY(CONCAT(PAIRS_OF_, PP_NARG(__VA_ARGS__)), __VA_ARGS__)
 
 #define TYPES_AND_ADDRS_1(a) typeid(a).name(), &((a))
-#define TYPES_AND_ADDRS_2(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
-#define TYPES_AND_ADDRS_3(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
-#define TYPES_AND_ADDRS_4(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
-#define TYPES_AND_ADDRS_5(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
-#define TYPES_AND_ADDRS_6(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
-#define TYPES_AND_ADDRS_7(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
-#define TYPES_AND_ADDRS_8(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
-#define TYPES_AND_ADDRS_9(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS(__VA_ARGS__)
+#define TYPES_AND_ADDRS_2(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_1(__VA_ARGS__)
+#define TYPES_AND_ADDRS_3(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_2(__VA_ARGS__)
+#define TYPES_AND_ADDRS_4(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_3(__VA_ARGS__)
+#define TYPES_AND_ADDRS_5(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_4(__VA_ARGS__)
+#define TYPES_AND_ADDRS_6(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_5(__VA_ARGS__)
+#define TYPES_AND_ADDRS_7(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_6(__VA_ARGS__)
+#define TYPES_AND_ADDRS_8(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_7(__VA_ARGS__)
+#define TYPES_AND_ADDRS_9(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_8(__VA_ARGS__)
 #define TYPES_AND_ADDRS(...) APPLY(CONCAT(TYPES_AND_ADDRS_, PP_NARG(__VA_ARGS__)), __VA_ARGS__)
 
 #define TYPES_AND_PNUMS_1(a) typeid(a).name(), &((a))
@@ -197,7 +197,10 @@ typedef void (*Framework) (const char* command, ...);
 // Framework Macro          //
 //////////////////////////////
 #include <stdlib.h> // we might use malloc and free
+
+#ifdef __cplusplus
 #include <typeinfo>
+#endif
 
 #define BEGIN_MODULE(m)                                                 \
     typedef struct {                                                    \
@@ -231,7 +234,9 @@ public:                                                                 \
         m(EXTERNAL_REGISTER_PARAMETERS, m)                              \
         return res;                                                     \
     }                                                                   \
-    C_FUNCTION__ void SEP(m,delete)(m* m___m) {}                        \
+    C_FUNCTION__ void SEP(m,delete)(m* m___m) {							\
+        delete m___m;										\
+    }												\
     m(CPP_EXTERNAL_HEADERS, m)
 
 

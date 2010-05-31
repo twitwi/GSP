@@ -197,7 +197,10 @@ typedef void (*Framework) (const char* command, ...);
 // Framework Macro          //
 //////////////////////////////
 #include <stdlib.h> // we might use malloc and free
+
+#ifdef __cplusplus
 #include <typeinfo>
+#endif
 
 #define BEGIN_MODULE(m)                                                 \
     typedef struct {                                                    \
