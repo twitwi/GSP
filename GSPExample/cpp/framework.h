@@ -1,4 +1,6 @@
 
+#ifndef _GSP_FRAMEWORK_PREVENT_DUPLICATE_INCLUDE_
+#define _GSP_FRAMEWORK_PREVENT_DUPLICATE_INCLUDE_
 
 //////////////////////////////
 // WARNING:                 //
@@ -197,10 +199,7 @@ typedef void (*Framework) (const char* command, ...);
 // Framework Macro          //
 //////////////////////////////
 #include <stdlib.h> // we might use malloc and free
-
-#ifdef __cplusplus
 #include <typeinfo>
-#endif
 
 #define BEGIN_MODULE(m)                                                 \
     typedef struct {                                                    \
@@ -258,3 +257,10 @@ public:                                                                 \
         return res;                                                     \
     }
 
+#ifdef PASSIVE_GSP_FRAMEWORK
+#undef emitNamedEvent
+#define emitNamedEvent(name, ...) {}
+#endif
+
+
+#endif

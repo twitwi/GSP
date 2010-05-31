@@ -1,4 +1,6 @@
 
+#ifndef _GSP_FRAMEWORK_PREVENT_DUPLICATE_INCLUDE_
+#define _GSP_FRAMEWORK_PREVENT_DUPLICATE_INCLUDE_
 
 //////////////////////////////
 // WARNING:                 //
@@ -255,3 +257,10 @@ public:                                                                 \
         return res;                                                     \
     }
 
+#ifdef PASSIVE_GSP_FRAMEWORK
+#undef emitNamedEvent
+#define emitNamedEvent(name, ...) {}
+#endif
+
+
+#endif
