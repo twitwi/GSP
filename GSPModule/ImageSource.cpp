@@ -13,7 +13,7 @@ static void freeImage(IplImage* &image) {
         image = NULL;
     }
 }
-static bool startsWith(string &io, const char* prefix) {
+static bool startsWithAndRemove(string &io, const char* prefix) {
     if (strncmp(io.c_str(), prefix, strlen(prefix))) {
         return false;
     } else {
@@ -23,19 +23,32 @@ static bool startsWith(string &io, const char* prefix) {
 }
 
 
-ImageSource::ImageSource() : currentImage(NULL) {}
+ImageSource::ImageSource() : currentImage(NULL), imageIndex(-1) {}
 
+void ImageSource::skip() {
+    switch (mode) {
+    case 0:
+        imageIndex++;
+        break;
+    }
+}
 void ImageSource::input() {
     switch (mode) {
     case 0: {
         freeImage(currentImage);
         char buf[256];
         snprintf(buf, 255, url.c_str(), imageIndex);
-        currentImage = cvLoadImage(buf);
+        if (gray) {
+            currentImage = cvLoadImage(buf, 0);
+        } else {
+            currentImage = cvLoadImage(buf);
+        }
         if (!currentImage) {
             mode = -2;
+            fprintf(stderr, "Could not grab image '%s'\n", buf);
             return;
         }
+        fprintf(stderr, "grabbed image '%s'\n", buf);
         emitNamedEvent("output", currentImage);
         imageIndex++;
     }
@@ -43,6 +56,14 @@ void ImageSource::input() {
     case 1:
         break;
     }
+}
+
+void ImageSource::setStart(int imageIndex) {
+    this->imageIndex = imageIndex;
+}
+
+void ImageSource::setGray(bool gray) {
+    this->gray = gray;
 }
 
 void ImageSource::setUrl(char *url) {
@@ -57,10 +78,10 @@ void ImageSource::initModule() {
         throw "'url' is unset";
     }
     mode = -1;
-    if (startsWith(url, "images:")) {
+    if (startsWithAndRemove(url, "images:")) {
         mode = 0;
-        imageIndex = 0;
-    } else if (startsWith(url, "video:")) {
+        if (imageIndex == -1) imageIndex = 0;
+    } else if (startsWithAndRemove(url, "video:")) {
         mode = 1;
     }
 }
