@@ -18,7 +18,7 @@ PipelineViewer/view-pipeline.sh   -svg output.svg   your-pipeline.xml
 ================================
 
 == Get Maven 2 ==
-aptitude install maven2../PipelineViewer/view-pipeline.sh pipeline-pure-java-6-factory.xml
+aptitude install maven2
 
 
 == Compile and setup for execution ==
