@@ -61,6 +61,9 @@ set( CMAKE_CXX_FLAGS "${Omiscid_CFLAGS}")
 if( SERVICE_VIDEO_LIB AND Omiscid_FOUND )
   add_library( ServiceVideoModule SHARED ServiceVideoModule )
   target_link_libraries( ServiceVideoModule ${SERVICE_VIDEO_LIB} ${Omiscid_LIBRARIES} )
+
+  add_library( OmiscidVideoGrabber SHARED OmiscidVideoGrabber )
+  target_link_libraries( OmiscidVideoGrabber ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${SERVICE_VIDEO_LIB} ${Omiscid_LIBRARIES} )
 endif( SERVICE_VIDEO_LIB AND Omiscid_FOUND )
 
 
