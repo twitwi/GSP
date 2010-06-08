@@ -10,37 +10,38 @@
 class LadybugCubeMap : public CubeMapModule
 {
 private:	
-	GLuint vertexBuffers[6];
-	GLuint texCoordBuffers[6];
-	GLuint textures[6];
+  GLuint vertexBuffers[6];
+  GLuint texCoordBuffers[6];
+  GLuint textures[6];
 	
-	IplImage* alphaMasks[6];
-	IplImage* rgbaFrames[6];
-	IplImage* frame;
+  IplImage* alphaMasks[6];
+  IplImage* rgbaFrames[6];
+  IplImage* frame;
 	
-	int gCols, gRows;
+  int gCols, gRows;
 
-	std::string meshfile;
+  std::string meshfile;
 	
-	void initMesh( void* );
-	void cleanGL( void* );
+  void initMesh( void* );
+  void cleanGL( void* );
 	
 public:
-	LadybugCubeMap();
+  LadybugCubeMap();
 	
-	Framework _framework;
+  Framework _framework;
 
-	void initModule();
-	void stopModule();
+  void initModule();
+  void stopModule();
 	
-	void inputRaw(void *data, int w, int h, int widthStep, int type);
-
-	void setMesh(char * filename);
-	void setAlphaMasks(char *basename);
+  void inputRaw(void *data, int w, int h, int widthStep, int type);
+  void input( IplImage *img );
+  
+  void setMesh(char * filename);
+  void setAlphaMasks(char *basename);
 	
 protected:
-	virtual void pre_render();
-	virtual void render();
+  virtual void pre_render();
+  virtual void render();
 };
 
 CLASS_AS_MODULE(LadybugCubeMap);

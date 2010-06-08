@@ -1,10 +1,9 @@
 <pipeline>
-    <namespace demo="fr.prima.gsp.demo"/>
-
-    <m id="clock" type="demo:Clock" period="20"/>
+    <namespace ex="fr.prima.gspexample"/>
+    <m id="clock" type="ex:Counter" warmupDelay="300" maxCount="-1" period="10"/>
     <m id="testGL" type="c:TestGLModule.TestGLModule"/>
 
-    <c chain="clock - clock#testGL"/>
+    <c chain="clock#asVoid - clock#testGL"/>
 
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
     <!--<c chain="load - info#out"/>-->

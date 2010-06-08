@@ -35,7 +35,9 @@ public:
 
 	void initUV( void* );
 	void drawUV( void* texPtr);
-	
+  
+  void drawImage( void* );
+  
 	Framework _framework;
 	
 };

@@ -166,6 +166,24 @@ void LadybugCubeMap::inputRaw( void *data, int w, int h, int widthStep, int type
 	emitNamedEvent("output", cubeMapTex );
 }
 
+void LadybugCubeMap::input( IplImage *img )
+{
+  IplImage * tmp = frame;
+  frame = img;
+
+//   frame = cvCloneImage(img);
+  
+  GLModule_EXEC(CubeMapModule, execCode, 0);
+
+//   unhideWindow();
+//   GLModule_EXEC(CatadioptricCubeMap, drawImage, 0);
+  
+  emitNamedEvent("output", cubeMapTex );
+
+//  cvReleaseImage(&frame);
+  frame = tmp;
+}
+
 void LadybugCubeMap::pre_render()
 {
 	int from_to[] = { 0, 2, 1, 1, 2, 0, 3, 3 };

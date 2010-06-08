@@ -9,9 +9,9 @@ java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framewo
 -->
 
     <namespace ex="fr.prima.gspexample"/>
-    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="36" period="100"/>
+    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="100"/>
 
-    <m id="in" type="c:ImageSource.ImageSource" url="images:./lena-%02d5.jpg"/>
+    <m id="in" type="c:ImageSource.ImageSource" url="images:/local/logs/AMAURY_0/frame_%05d.jpg"/>
     <m id="view" type="c:ImageViewer.ImageViewer" name="display of image source"/>
     <m id="GTK" type="c:GTKModule.GTKModule"/>
 

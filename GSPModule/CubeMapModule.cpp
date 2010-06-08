@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace std;
 
+const int cube_map_resolution = 512;
+
 void CubeMapModule::initModule()
 {
 	GLModule_EXEC(CubeMapModule, initCode, 0);
@@ -18,14 +20,14 @@ void CubeMapModule::initCode( void* )
 	// intialize cube map texture & fbo
 	glGenTextures( 1, &cubeMapTex );
 	glBindTexture( GL_TEXTURE_CUBE_MAP, cubeMapTex );
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-  	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	for(int i=0; i<6; i++)
 	{
 		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-					  0, GL_RGB8, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+					  0, GL_RGB8, cube_map_resolution, cube_map_resolution, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	}
 	glGenFramebuffersEXT( 1, &fbo );
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
@@ -56,7 +58,7 @@ void CubeMapModule::execCode( void* )
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	glEnable( GL_TEXTURE_2D );
 	
-	glViewport(0, 0, 1024, 1024);
+	glViewport(0, 0, cube_map_resolution, cube_map_resolution);
 	
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fbo );
 	

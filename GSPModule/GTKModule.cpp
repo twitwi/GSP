@@ -19,11 +19,12 @@ void GTKModule::initModule()
 		
 		g_thread_init(NULL);
 		gdk_threads_init();
-		gdk_threads_enter();
-		gtk_init(&argc, &argv);
+        
+// 		gdk_threads_enter();
+// 		gtk_init(&argc, &argv);
 		
-		gtk_thread = thread(&gtk_main);
-		gdk_threads_leave ();
+// 		gtk_thread = thread(&gtk_main);
+// 		gdk_threads_leave ();
 		already_initialized = true;
 	}
 

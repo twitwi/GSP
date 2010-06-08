@@ -1,16 +1,16 @@
 <pipeline>
-    <namespace demo="fr.prima.gsp.demo"/>
-
-    <m id="grabber" type="demo:Grabber"/>
+    <namespace ex="fr.prima.gspexample"/>
+    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="100"/>
+    <m id="grabber" type="c:OmiscidVideoGrabber.OmiscidVideoGrabber" ServiceId="1"/>
     <m id="ladybugCM" type="c:LadybugCubeMap.LadybugCubeMap"
        Mesh="/local/src/LadybugService/trunk/mesh_3m.txt"
        AlphaMasks="/local/src/LadybugService/trunk/alphamask" />
     <m id="uv" type="c:SphericMap.SphericMap" />
-    <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
-    <!--<m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>-->
+    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
+    <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
 
-    <c chain="grabber#outputRaw - inputRaw#ladybugCM"/>
-    <c chain="ladybugCM - uv - service"/>
+    <c chain="grabber - ladybugCM - uv - view"/>
+    <!--<c chain="ladybugCM - uv - service"/>-->
     
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
     <!--<c chain="load - info#out"/>-->

@@ -115,8 +115,14 @@ void SphericMap::setHeight( int height )
 void SphericMap::input( unsigned int tex )
 {
 	GLModule_EXEC( SphericMap, drawUV, &tex );
+
+    unhideWindow();
+    
+    GLModule_EXEC(SphericMap, drawImage, 0);
+    
 	emitNamedEvent("output", uvImage );
 }
+
 void SphericMap::drawUV( void* texPtr)
 {
 	GLuint tex = *(static_cast<GLuint*>(texPtr));
@@ -161,7 +167,38 @@ void SphericMap::drawUV( void* texPtr)
  	glDisable(GL_TEXTURE_CUBE_MAP);
 	
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	
+
 	glBindTexture( GL_TEXTURE_2D, uvTexture);
 	glGetTexImage( GL_TEXTURE_2D, 0, GL_BGR, GL_UNSIGNED_BYTE, uvImage->imageData);
+}
+
+void SphericMap::drawImage( void* )
+{
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture( GL_TEXTURE_2D, uvTexture);
+  
+  glColor4f(1., 1., 1., 1.);
+  
+  glViewport(0, 0, 640, 480);
+  glMatrixMode( GL_PROJECTION );
+  glLoadIdentity();
+  glMatrixMode( GL_MODELVIEW );
+  glLoadIdentity();
+
+  glBegin(GL_QUADS);
+
+  glTexCoord2f(0., 0.);
+  glVertex2f(-1., -1.);
+  glTexCoord2f(1., 0.);
+  glVertex2f(1., -1.);
+  glTexCoord2f(1., 1.);
+  glVertex2f(1., 1.);
+  glTexCoord2f(0., 1.);
+  glVertex2f(-1., 1.);
+  
+  glEnd();
+  
+  glDisable(GL_TEXTURE_2D);
+
+  swap();
 }

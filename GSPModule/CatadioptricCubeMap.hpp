@@ -35,10 +35,13 @@ public:
 	void stopModule();
 	void setParameters(char *filename);
 	void inputRaw(void *data, int w, int h, int widthStep, int type);
-	
+    void input(IplImage *img);
+  
 protected:
 	virtual void pre_render();
 	virtual void render();
+
+  void drawImage( void *);
 };
 CLASS_AS_MODULE(CatadioptricCubeMap);
 

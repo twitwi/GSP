@@ -1,19 +1,16 @@
 <pipeline>
-    <namespace demo="fr.prima.gsp.demo"/>
+    <namespace ex="fr.prima.gspexample"/>
 
-    <m id="grabber" type="demo:Grabber"/>
-    <m id="cataCM" type="c:CatadioptricCubeMap.CatadioptricCubeMap"
-       parameters="/local/src/LadybugService/trunk/config_cata.xml" />
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="100"/>
+    <m id="cataCM" type="c:CatadioptricCubeMap.CatadioptricCubeMap" parameters="../config_STC.xml" />
     <m id="uv" type="c:SphericMap.SphericMap" />
-    <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
+    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
     <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
+    <m id="grabber" type="c:OmiscidVideoGrabber.OmiscidVideoGrabber"/>
 
-    <c chain="grabber#outputRaw - inputRaw#cataCM"/>
-    <c chain="cataCM - uv - service"/>
-    <!--<c chain="uv - service"/>-->
-    
-    <!--<m id="out" type="demo:ConsoleOutput"/>-->
-    <!--<c chain="load - info#out"/>-->
+    <c chain="grabber - cataCM - uv - view"/>
+    <!--<c chain="uv - view"/>-->
 
 </pipeline>
 

@@ -1,11 +1,15 @@
 <pipeline>
     <namespace demo="fr.prima.gsp.demo"/>
+    <namespace ex="fr.prima.gspexample"/>
 
-    <m id="load" type="c:ImageLoader.ImageLoader" filename="/home/prometheus/emonet/projects/MINImage-svn/SimpleJavaLauncher/lena.jpg"/>
+    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="1000"/>
+
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+    
+    <m id="load" type="c:ImageLoader.ImageLoader" filename="../lena.jpg"/>
     <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
     <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
-    <m id="GTK" type="c:GTKModule.GTKModule"/>
-
+ 
     <c chain="load - view"/>
     <c chain="load - service"/>
 

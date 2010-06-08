@@ -1,14 +1,17 @@
 <pipeline>
-    <namespace demo="fr.prima.gsp.demo"/>
+    <!--<namespace demo="fr.prima.gsp.demo"/>-->
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="100"/>
 
     <m id="GTK" type="c:GTKModule.GTKModule"/>
-    <m id="raw2ipl" type="c:RawToIpl.RawToIpl"/>
+    <m id="grabber" type="c:OmiscidVideoGrabber.OmiscidVideoGrabber"/>
+    <!--<m id="raw2ipl" type="c:RawToIpl.RawToIpl"/>-->
     <m id="view" type="c:ImageViewer.ImageViewer" name="view"/>
-    <m id="grabber" type="demo:Grabber"/>
-    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
+    <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
 
-    <c chain="grabber#outputRaw - raw2ipl - view"/>
-    <!--<c chain="load - service"/>-->
+    <c chain="grabber - view"/>
+    <c chain="grabber - service"/>
 
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
     <!--<c chain="load - out@info"/>-->
