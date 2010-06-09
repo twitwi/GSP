@@ -1,6 +1,7 @@
 
 #include "ImageSource.hpp"
 
+#include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -23,13 +24,18 @@ static bool startsWithAndRemove(string &io, const char* prefix) {
 }
 
 
-ImageSource::ImageSource() : currentImage(NULL), imageIndex(-1) {}
+ImageSource::ImageSource() : currentImage(NULL), imageIndex(-1), gray(true) {}
 
 void ImageSource::skip() {
     switch (mode) {
-    case 0:
-        imageIndex++;
-        break;
+        case 0:
+            imageIndex++;
+            break;
+        case 1:
+            fprintf(stderr, "skippy %d\n", imageIndex);
+            imageIndex++;
+            cvGrabFrame(video);
+            break;
     }
 }
 void ImageSource::input() {
@@ -53,8 +59,21 @@ void ImageSource::input() {
         imageIndex++;
     }
         break;
-    case 1:
+    case 1: {
+        currentImage = cvQueryFrame(video); // we never free a cvQueryFrame'd image
+        // TODO handle grabbing non RGB frames
+        if (gray) {
+            IplImage* tmp = currentImage;
+            currentImage = cvCreateImage(cvSize(tmp->width, tmp->height),IPL_DEPTH_8U,1);
+            cvCvtColor(tmp, currentImage, CV_BGR2GRAY);
+        } else {
+            // nothing to do (already in color)
+        }
+        fprintf(stderr, "grabbed video frame %d\n", imageIndex);
+        emitNamedEvent("output", currentImage);
+        imageIndex++;
         break;
+    }
     }
 }
 
@@ -83,6 +102,11 @@ void ImageSource::initModule() {
         if (imageIndex == -1) imageIndex = 0;
     } else if (startsWithAndRemove(url, "video:")) {
         mode = 1;
+        video = cvCaptureFromFile(url.c_str());
+        if (imageIndex == -1) imageIndex = 0;
+        for (int s = 0; s < imageIndex; s++) {
+            cvGrabFrame(video);
+        }
     }
 }
 

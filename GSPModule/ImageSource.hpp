@@ -2,6 +2,7 @@
 #include <framework.h>
 #include <string>
 #include <opencv/cxcore.h>
+#include <opencv/highgui.h>
 
 class ImageSource
 {
@@ -13,7 +14,8 @@ private:
 
     int mode; // 0 files, 1 video
     // mode dependent fields
-    int imageIndex;
+    int imageIndex; // 0, 1
+    CvCapture* video; // 1
 public:
     IplImage *currentImage;
     
