@@ -7,19 +7,19 @@
 class CubeMapModule : public GLModule
 {
 public:
-	void initModule();
-	void stopModule();
-	void execCode( void* );
+  void init();
+  void stop();
+  void execCode( void* );
 
 protected:
-	unsigned int cubeMapTex, fbo;
-	
-	virtual void render();
-	virtual void pre_render();
-	
+  unsigned int cubeMapTex, fbo;
+  
+  virtual void render();
+  virtual void pre_render();
+  
 private:
-	void initCode( void* );	
-	void cleanGL( void* );
+  void initCode( void* );	
+  void cleanGL( void* );
 };
 
 #endif // __CUBE_MAP_MODULE_HPP

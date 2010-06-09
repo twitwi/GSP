@@ -20,8 +20,7 @@ CatadioptricCubeMap::CatadioptricCubeMap()
 
 void CatadioptricCubeMap::initModule()
 {
-  CubeMapModule::initModule();
-  
+  CubeMapModule::init();
   
   xmlDocPtr doc = xmlParseFile(param_file.c_str());
   xmlNodePtr node = doc->children;
@@ -46,19 +45,18 @@ void CatadioptricCubeMap::initModule()
   coeff[4] = atof((const char*) attr_c4);
   
   frame = cvCreateImageHeader(cvSize(width,height), IPL_DEPTH_8U, 3);
-  
+
   GLModule_EXEC(CatadioptricCubeMap, init, 0);
 }
 
 void CatadioptricCubeMap::stopModule()
 {
-  CubeMapModule::stopModule();
+  CubeMapModule::stop();
   GLModule_EXEC(CatadioptricCubeMap, cleanGL, 0);
 }
 
 void CatadioptricCubeMap::init( void * )
 {
-  
   glGenBuffers(1, &vertexBuffer);
   glGenBuffers(1, &texCoordBuffer);
   
@@ -111,12 +109,13 @@ void CatadioptricCubeMap::init( void * )
       bufT[(i*nbRays+j)*4+3] = (y1+yc)/height;
 			
     }
+    
   }
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, nbCircles * nbRays * 2 * 3 * sizeof(float), (const GLvoid *) bufV, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
   glBufferData(GL_ARRAY_BUFFER, nbCircles * nbRays * 2 * 2 * sizeof(float), (const GLvoid *) bufT, GL_STATIC_DRAW);
-
+  
 }
 
 void CatadioptricCubeMap::cleanGL(void *)
@@ -206,39 +205,6 @@ void CatadioptricCubeMap::render()
   glLoadIdentity();
   
   glColor4f(1., 1., 1., 1.);
-
-//   glBindTexture( GL_TEXTURE_2D, texture);
-  
-//   glBegin(GL_QUADS);
-
-//   glTexCoord2f(0., 0.);
-//   glVertex3f(-1., -1., 1.);
-//   glTexCoord2f(1., 0.);
-//   glVertex3f(1., -1., 1.);
-//   glTexCoord2f(1., 1.);
-//   glVertex3f(1., 1., 1.);
-//   glTexCoord2f(0., 1.);
-//   glVertex3f(-1., 1., 1.);
-  
-//   glTexCoord2f(0., 0.);
-//   glVertex3f(-1., -1., -1.);
-//   glTexCoord2f(1., 0.);
-//   glVertex3f(1., -1., -1.);
-//   glTexCoord2f(1., 1.);
-//   glVertex3f(1., 1., -1.);
-//   glTexCoord2f(0., 1.);
-//   glVertex3f(-1., 1., -1.);
-
-//   glTexCoord2f(0., 0.);
-//   glVertex3f(1, -1., -1.);
-//   glTexCoord2f(1., 0.);
-//   glVertex3f(1., 1., -1.);
-//   glTexCoord2f(1., 1.);
-//   glVertex3f(1., 1., 1.);
-//   glTexCoord2f(0., 1.);
-//   glVertex3f(1., -1., 1.);
-
-//   glEnd();
   
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);

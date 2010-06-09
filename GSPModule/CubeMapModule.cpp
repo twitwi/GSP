@@ -5,12 +5,12 @@ using namespace std;
 
 const int cube_map_resolution = 512;
 
-void CubeMapModule::initModule()
+void CubeMapModule::init()
 {
 	GLModule_EXEC(CubeMapModule, initCode, 0);
 }
 
-void CubeMapModule::stopModule()
+void CubeMapModule::stop()
 {
 	GLModule_EXEC(CubeMapModule, cleanGL, 0);
 }
