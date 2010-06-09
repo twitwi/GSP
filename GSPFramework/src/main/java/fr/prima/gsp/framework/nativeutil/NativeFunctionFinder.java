@@ -5,6 +5,7 @@
 
 package fr.prima.gsp.framework.nativeutil;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,7 +36,14 @@ public class NativeFunctionFinder {
         for (String symbol : symbols) {
             NativeSymbolInfo info = null;
             info = demangler.demangle(libraryName, symbol);
-            if (info == null || !functionName.equals(info.name) || info.parameterTypes.length != types.length) {
+            if (info == null) {
+                continue;
+            }
+            if (!functionName.equals(info.name) || info.parameterTypes.length != types.length) {
+                continue;
+            }
+            //System.err.println(symbol + ": " + Arrays.toString(info.fullName));
+            if (info.fullName.length < 2 || !className.equals(info.fullName[info.fullName.length - 2])) {
                 continue;
             }
             for (int i = 0; i < types.length; i++) {

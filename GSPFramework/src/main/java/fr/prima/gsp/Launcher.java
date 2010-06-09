@@ -6,6 +6,7 @@
 package fr.prima.gsp;
 
 import fr.prima.gsp.framework.Assembly;
+import fr.prima.gsp.framework.CModuleFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,6 +52,8 @@ public class Launcher {
         consoleHandler.setLevel(Level.ALL);
         Logger.getLogger(Assembly.class.getName()).addHandler(consoleHandler);
         Logger.getLogger(Assembly.class.getName()).setLevel(Level.FINE);
+        Logger.getLogger(CModuleFactory.class.getName()).addHandler(consoleHandler);
+        Logger.getLogger(CModuleFactory.class.getName()).setLevel(Level.FINE);
 
 
         Launcher cli = new Launcher();

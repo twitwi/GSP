@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -30,6 +32,13 @@ import org.w3c.dom.Node;
  * @author emonet
  */
 public class CModuleFactory {
+
+    private void debug(String message) {
+        Logger.getLogger(CModuleFactory.class.getName()).log(Level.FINEST, message);
+    }
+    private void log(String message) {
+        Logger.getLogger(CModuleFactory.class.getName()).log(Level.FINE, message);
+    }
 
     {
         // code to avoid freeze in library loading (don't know why)
@@ -163,7 +172,9 @@ public class CModuleFactory {
          */
         private boolean callCFunctionOrElseCppMethodOptionallyIsCppCalled(String moduleTypeName, String c, String cpp, Object that) {
             // try c function
+            debug("Trying to call C function '" + c + "'");
             if (!callCFunctionOptionally(moduleTypeName, c, that)) {
+                debug("Falling back on C++ method '" + cpp + "'");
                 // try c++ method
                 return callCppMethodOptionally(moduleTypeName, cpp, that);
             }
@@ -174,7 +185,9 @@ public class CModuleFactory {
          * @return whether something has been called
          */
         private boolean callCFunctionOrCppMethodOptionally(String moduleTypeName, String c, String cpp, Object... thatAndParams) {
+            debug("Trying to call C function '" + c + "'");
             if (!callCFunctionOptionally(moduleTypeName, c, thatAndParams)) {
+                debug("Falling back on C++ method '" + cpp + "'");
                 return callCppMethodOptionally(moduleTypeName, cpp, thatAndParams);
             }
             return true;
@@ -185,6 +198,7 @@ public class CModuleFactory {
                 f(prefix, functionName).invoke(resolvePointers(params));
                 return true;
             } catch (UnsatisfiedLinkError err) {
+                debug("Failed calling C function '" + functionName + "'");
                 // swallow exception
                 return false;
             }
@@ -198,11 +212,13 @@ public class CModuleFactory {
                 }
                 NativeSymbolInfo info = finder.findAnyMethodForParameters(moduleTypeName, cpp, types);
                 //System.err.println("FOR: " + moduleTypeName + " " + cpp + " " + Arrays.asList(types) + " -> " + info);
+                debug("Mangled cpp method '" + moduleTypeName + "::" + cpp + "' as '" + (info == null ? "MISSING" : info.mangledName) + "'");
                 if (info != null) {
                     f(info.mangledName).invoke(resolvePointers(thatAndParams));
                     return true;
                 }
             } catch (UnsatisfiedLinkError err2) {
+                debug("Faled calling on C++ method '" + moduleTypeName + "::" + cpp + "'");
                 // swallow exception
             }
             return false;
