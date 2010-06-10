@@ -15,7 +15,7 @@ LadybugCubeMap::LadybugCubeMap()
 
 void LadybugCubeMap::initModule()
 {
-	CubeMapModule::initModule();
+	CubeMapModule::init();
 
 	for(int i=0; i<6; i++)
 	{
@@ -28,7 +28,7 @@ void LadybugCubeMap::initModule()
 
 void LadybugCubeMap::stopModule()
 {
-	CubeMapModule::stopModule();
+	CubeMapModule::stop();
 	
 	cvReleaseImage( &frame );
 	for(int i=0; i<6; i++)

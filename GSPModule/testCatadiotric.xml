@@ -1,15 +1,15 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="GTK" type="c:GTKModule.GTKModule"/>
+    <!--<m id="GTK" type="c:GTKModule.GTKModule"/>-->
     <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="100"/>
     <m id="cataCM" type="c:CatadioptricCubeMap.CatadioptricCubeMap" parameters="../config_STC.xml" />
     <m id="uv" type="c:SphericMap.SphericMap" />
-    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
-    <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
+    <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
+    <!--<m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>-->
     <m id="grabber" type="c:OmiscidVideoGrabber.OmiscidVideoGrabber"/>
 
-    <c chain="grabber - cataCM - uv - view"/>
+    <c chain="grabber - cataCM - uv - service"/>
     <!--<c chain="uv - view"/>-->
 
 </pipeline>

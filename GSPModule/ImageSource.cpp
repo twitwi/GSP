@@ -107,6 +107,8 @@ void ImageSource::initModule() {
         for (int s = 0; s < imageIndex; s++) {
             cvGrabFrame(video);
         }
+    } else {
+        throw "'url' cannot be interpreted (does it start with images: or video: ?";
     }
 }
 

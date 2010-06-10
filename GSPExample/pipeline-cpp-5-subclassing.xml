@@ -1,0 +1,11 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="tick" type="ex:Counter" maxCount="2"/>
+    <m id="p" type="c:AdvancedDemo.Parent"/>
+    <m id="c" type="c:AdvancedDemo.Child"/>
+    <m id="cc" type="c:AdvancedDemo.GrandChild"/>
+
+</pipeline>
+

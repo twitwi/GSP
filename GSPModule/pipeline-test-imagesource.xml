@@ -4,6 +4,7 @@ java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framewo
 
 i=0; while test $i -lt 361 ; do convert lena.jpg -rotate $i lena-$(printf %03d $i).jpg ; i=$(expr $i + 1); done
 
+for i in lena-*.jpg; do convert $i -resize 200 re-$i; done
 
 java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:../GSPExample/java/ fr.prima.gsp.Launcher pipeline-test-imagesource.xml in.url=images:./lena-%03d.jpg timer.maxCount=361 timer.period=20
 -->

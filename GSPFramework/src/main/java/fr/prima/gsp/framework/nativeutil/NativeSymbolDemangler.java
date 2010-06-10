@@ -5,20 +5,16 @@
 
 package fr.prima.gsp.framework.nativeutil;
 
-import com.bridj.BridJ;
-import com.bridj.Demangler.ClassRef;
 import com.bridj.Demangler.DemanglingException;
 import com.bridj.Demangler.MemberRef;
 import com.bridj.Demangler.PointerTypeRef;
 import com.bridj.Demangler.SpecialName;
 import com.bridj.Demangler.TypeRef;
 import com.bridj.cpp.GCC4Demangler;
-import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -57,7 +53,7 @@ public abstract class NativeSymbolDemangler {
                         // not a c++ thing?
                         return null;
                     }
-                    res.fullName = fullName(parsed.getMemberName());
+                    res.fullName = fullName(parsed);
                     res.name = res.fullName[res.fullName.length-1];
                     res.parameterTypes = getParameterTypes(parsed.paramTypes);
                     return res;
@@ -82,21 +78,27 @@ public abstract class NativeSymbolDemangler {
             }
 
 
-            private String[] fullName(Object memberName) {
+            private String[] fullName(MemberRef mr) {
+                //System.err.println(mr.getEnclosingType() + " --- " + mr.getClass());
+                List<String> res = new ArrayList<String>();
+                if (mr.getEnclosingType() != null) {
+                    // TODO some recursive or while things (for namespaces etc)
+                    res.add(mr.getEnclosingType().getQualifiedName(new StringBuilder(), false).toString());
+                }
+                Object memberName = mr.getMemberName();
                 if (memberName instanceof List) {
                     List<?> l = (List<?>) memberName;
-                    String[] res = new String[l.size()];
-                    for (int i = 0; i < res.length; i++) {
-                        res[i] = (String) l.get(i);
+                    for (Object o : l) {
+                        res.add((String) o);
                     }
-                    return res;
                 } else if (memberName instanceof String) {
-                    return new String[]{(String) memberName};
+                    res.add((String) memberName);
                 } else if (memberName instanceof SpecialName) {
-                    return new String[]{"Special: " + ((SpecialName) memberName).name()};
+                    res.add("Special: " + ((SpecialName) memberName).name());
                 } else {
                     throw new IllegalArgumentException("Wrong type " + memberName.getClass());
                 }
+                return res.toArray(new String[res.size()]);
             }
 
 

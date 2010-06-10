@@ -3,3 +3,6 @@ src/main/velocity/
 libAdvancedDemo.so
 libNativeCppDemo.so
 cpp-mangling/build
+libbridj.dylib
+bridj.so
+bridj.dll
