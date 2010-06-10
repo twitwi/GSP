@@ -32,6 +32,8 @@ public class Launcher {
     public static void main(String[] args) throws IOException {
         // TODO catch anything and display correct message (and localized)
         if (args.length == 0) {
+            main(new String[]{"../GSPExample/pipeline-cpp-2.xml"});
+            if (true) return;
             main(new String[]{"pipeline-simple-with-parameter.xml", "p=100", "s=10", "fps.samples=2"});
             main(new String[]{"--help"});
             return;
