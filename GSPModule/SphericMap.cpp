@@ -116,9 +116,9 @@ void SphericMap::input( unsigned int tex )
 {
 	GLModule_EXEC( SphericMap, drawUV, &tex );
 
-    unhideWindow();
+//     unhideWindow();
     
-    GLModule_EXEC(SphericMap, drawImage, 0);
+//     GLModule_EXEC(SphericMap, drawImage, 0);
     
 	emitNamedEvent("output", uvImage );
 }

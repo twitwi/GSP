@@ -1,19 +1,11 @@
 
-* allow factory-syntax in pipelines (e.g. c2s of type CharPointerToString get instantiated each time it appear in the pipeline)
-
-* VIEWER: implement factories
 
 * CPP: namespaces
 
 * unallocated module when stopping pipeline
 
-* use <f .../> for factories instead of special="..."
-
 * idea: replace a#b#c by something asymetric (e.g. a(b)c or a[b]c or a]b[c or a)b(c (no <> as in xml)) ...
 
-* handle const in mangling (calling with a -const should work if the
-   interface has const)
-* => update the examples (Cpp::Log) accordingly
 
 
 * could pass a more opaque structure as Pointer (when invoking a java

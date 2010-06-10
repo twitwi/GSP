@@ -29,11 +29,11 @@ public:
     Framework _framework; // the module must have this exact public field
 
     // setter
-    void setHello(char *value);
+    void setHello(const char *value);
 
     // ports
-    void input(char *message);
-    void highlight(char *message);
+    void input(const char *message);
+    void highlight(const char *message);
 
     Log();
     ~Log();

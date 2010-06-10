@@ -117,7 +117,7 @@ public class GCC4Demangler extends Demangler {
 			mr.setMemberName(str);
 			return mr;
 		}
-		// REVIEW-IT: ignore __ instead of counting it as _
+		// REVIEW-IT: ignore _ _ instead of counting it as _
 		if (peekChar() == '_')
 			return null; // can be a type info, a virtual table or strange things like that
 		expectChars('Z');
