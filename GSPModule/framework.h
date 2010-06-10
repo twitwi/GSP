@@ -260,6 +260,9 @@ public:                                                                 \
         return res;                                                     \
     }
 
+static void GSPPassiveFramework(const char* command, ...) {}
+#define GSP_PASSIVE_MODULE(m) SEP(m,create)(&GSPPassiveFramework)
+
 #ifdef PASSIVE_GSP_FRAMEWORK
 #undef emitNamedEvent
 #define emitNamedEvent(name, ...) {}
