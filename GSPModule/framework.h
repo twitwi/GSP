@@ -263,9 +263,20 @@ public:                                                                 \
 static void GSPPassiveFramework(const char* command, ...) {}
 #define GSP_PASSIVE_MODULE(m) SEP(m,create)(&GSPPassiveFramework)
 
+#ifdef __cplusplus
+#define FIELD_WITH_SETTER(type,name,setName) \
+    type name;                               \
+    void setName(type name) {                \
+        this->name = name;                   \
+    }
+#endif
+
+
 #ifdef PASSIVE_GSP_FRAMEWORK
 #undef emitNamedEvent
 #define emitNamedEvent(name, ...) {}
+#define GSP_CREATE(m) (SEP(m,create)(NULL))
+#define GSP_DELETE(m) (SEP(m,delete)(NULL))
 #endif
 
 
