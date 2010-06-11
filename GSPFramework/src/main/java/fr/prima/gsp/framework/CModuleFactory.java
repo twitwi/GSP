@@ -516,7 +516,7 @@ public class CModuleFactory {
                 return new NativePointer(pointer.getPointer(0), t);
             }
             if (t.isCompound()) {
-                throw new UnsupportedOperationException("Unsupported direct stuct passing (use pointer or references)");
+                throw new UnsupportedOperationException("Unsupported direct stuct passing (use pointer or references): " + t.toString());
             }
             // could find a way to reuse jna mapping but I didn't managed to :(
             try {

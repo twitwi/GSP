@@ -1,22 +1,22 @@
 <pipeline>
     <!--
-java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:../GSPExample/java/ fr.prima.gsp.Launcher pipeline-test-imagesource.xml
+java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/*:../GSPBaseutils/target/* fr.prima.gsp.Launcher pipeline-test-imagesource.xml
 
 i=0; while test $i -lt 361 ; do convert lena.jpg -rotate $i lena-$(printf %03d $i).jpg ; i=$(expr $i + 1); done
 
 for i in lena-*.jpg; do convert $i -resize 200 re-$i; done
 
-java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:../GSPExample/java/ fr.prima.gsp.Launcher pipeline-test-imagesource.xml in.url=images:./lena-%03d.jpg timer.maxCount=361 timer.period=20
+java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/*:../GSPBaseutils/target/* fr.prima.gsp.Launcher pipeline-test-imagesource.xml in.url=images:./lena-%03d.jpg timer.maxCount=361 timer.period=20
 -->
 
-    <namespace ex="fr.prima.gspexample"/>
-    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="100"/>
+    <namespace base="fr.prima.gspbaseutils"/>
+    <m id="timer" type="base:Clock" warmupDelay="300" maxCount="-1" period="100"/>
 
-    <m id="in" type="c:ImageSource.ImageSource" url="images:/local/logs/AMAURY_0/frame_%05d.jpg"/>
+    <m id="in" type="c:ImageSource.ImageSource" url="images:./re-lena-%03d.jpg"/>
     <m id="view" type="c:ImageViewer.ImageViewer" name="display of image source"/>
     <m id="GTK" type="c:GTKModule.GTKModule"/>
 
-    <c chain="timer#asVoid - in - view"/>
+    <c chain="timer - in - view"/>
 
 </pipeline>
 

@@ -3,7 +3,7 @@
     <namespace ex="fr.prima.gspexample"/>
 
     <m id="tick" type="ex:Counter" maxCount="4"/>
-    <m id="log" type="c:NativeCppDemo.Log"/>
+    <m id="log" type="c:NativeCppDemo.Log" hello="world"/>
 
     <c chain="tick#asString - log"/>
 

@@ -1,19 +1,18 @@
 <pipeline>
-    <namespace demo="fr.prima.gsp.demo"/>
-    <namespace ex="fr.prima.gspexample"/>
+    <namespace base="fr.prima.gspbaseutils"/>
 
-    <m id="timer" type="ex:Counter" warmupDelay="300" maxCount="-1" period="1000"/>
+    <m id="timer" type="base:Clock" warmupDelay="300" maxCount="-1" period="1000"/>
 
     <m id="GTK" type="c:GTKModule.GTKModule"/>
     
-    <m id="load" type="c:ImageLoader.ImageLoader" filename="../lena.jpg"/>
+    <m id="load" type="c:ImageLoader.ImageLoader" filename="lena.jpg"/>
     <m id="view" type="c:ImageViewer.ImageViewer" name="test view"/>
     <m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>
  
     <c chain="load - view"/>
     <c chain="load - service"/>
 
-    <!--<m id="out" type="demo:ConsoleOutput"/>-->
+    <!--<m id="out" type="base:ConsoleOutput"/>-->
     <!--<c chain="load - info#out"/>-->
 
 </pipeline>

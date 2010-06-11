@@ -27,7 +27,9 @@ yes | unzip bridj-binaries.zip
 mvn dependency:copy-dependencies install jar:jar
 rm -f target/lib && ln -s dependency target/lib
 cd ..
-
+cd GSPBaseutils
+mvn install jar:jar
+cd ..
 
 
 ===========================

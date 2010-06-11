@@ -1,6 +1,16 @@
 
+* base utils
+** timer/clock/thread (all the same thing)
+** thread fork/join
+** merger/extractor (parameter list ...) (option: emit at each change or emit when all changed at least once or emit when all changed once (block others before that))
+
+* omiscid utils?
+
+* handle cpp class inheritance if we can get the info somewhere
 
 * CPP: namespaces
+
+* CPP: easy setters (orthogonal to gsp)
 
 * unallocated module when stopping pipeline
 

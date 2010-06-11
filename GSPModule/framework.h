@@ -266,7 +266,9 @@ static void GSPPassiveFramework(const char* command, ...) {}
 #ifdef __cplusplus
 #define FIELD_WITH_SETTER(type,name,setName) \
     type name;                               \
-    void setName(type name) {                \
+    void setName(type name);
+#define SETTER(cl,type,name,setName) \
+    void cl::setName(type name) {            \
         this->name = name;                   \
     }
 #endif
