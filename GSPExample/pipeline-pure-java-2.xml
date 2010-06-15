@@ -2,8 +2,10 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="tick" type="ex:Counter" maxCount="50" period="100" warmupDelay="1100"/>
-    <m id="cons" type="ex:Console" />
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline is a variation of the previous one.%nIt counts faster and up to 49 (after a delay)"/>
+
+    <m id="tick" type="ex:Counter" maxCount="50" period="50" warmupDelay="2500"/>
+    <m id="cons" type="ex:Console"/>
 
     <c chain="tick - cons"/>
 

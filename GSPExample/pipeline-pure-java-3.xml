@@ -2,7 +2,9 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="tick" type="ex:Counter" maxCount="10" period="300"/>
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrates the use of different (input) ports, here to display count as both error and warning.%nIt should count up to 6 and show each number twice (at the same time)."/>
+
+    <m id="tick" type="ex:Counter" maxCount="7" period="600"/>
     <m id="cons" type="ex:Console" />
 
     <c chain="tick - error#cons"/>

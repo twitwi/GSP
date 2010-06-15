@@ -2,8 +2,10 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="tick1" type="ex:Counter" maxCount="10" period="300" warmupDelay="1050"/>
-    <m id="tick2" type="ex:Counter" maxCount="17" period="300"/>
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrates the use of multiple modules emiting events at different times.%nIt should count up to 11 as 'warning' and in the middle should count from 0 to 5 on 'info'."/>
+
+    <m id="tick1" type="ex:Counter" maxCount="6" period="300" warmupDelay="1050"/>
+    <m id="tick2" type="ex:Counter" maxCount="12" period="300"/>
     <m id="cons" type="ex:Console"/>
 
     <c chain="tick1 - cons"/>

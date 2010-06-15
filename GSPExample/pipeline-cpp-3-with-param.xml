@@ -2,7 +2,15 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="tick" type="ex:Counter" maxCount="61" period="${p}"/>
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrates that parameters work with C++ modules as well, e.g.:
+%n     $GO pipeline-cpp-3-with-param.xml    p=1
+%nIt should count up to 10 by increments of 1/6 (but faster than in the previous example, you can play with the period 'p').
+%n
+%nBy the way you can also use the other syntax, e.g.:
+%n     $GO pipeline-cpp-3-with-param.xml    p=1 tick.warmupDelay=1500
+"/>
+
+    <m id="tick" type="ex:Counter" maxCount="61" period="${p}" warmupDelay="4500"/>
     <m id="d1" type="c:NativeCppDemo.Div" divisor="1.41421356"/>
     <m id="d2" type="c:NativeCppDemo.Div" divisor="1.41421356"/>
     <m id="d3" type="c:NativeCppDemo.Div" divisor="3"/>

@@ -2,6 +2,8 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline can be ignored!!!"/>
+
     <m id="tick" type="ex:Counter" maxCount="2"/>
     <m id="p" type="c:AdvancedDemo.Parent"/>
     <m id="c" type="c:AdvancedDemo.Child"/>

@@ -2,6 +2,8 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrates further features with C++ modules (factories, passing non primitive types).%nIt should count up to 1.5 by increments of 1/4, each time printing both the count and 'equals'.%nYou might need to look at the code for a better understanding."/>
+
     <m id="tick" type="ex:Counter" maxCount="7" period="100"/>
     <f id="half" type="c:NativeCppDemo.Div" divisor="2"/>
 

@@ -2,8 +2,18 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="tick1" type="ex:Counter" maxCount="${c1}" period="300" warmupDelay="1050"/>
-    <m id="tick2" type="ex:Counter" maxCount="${c2}" period="300"/>
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrates the use of parameters from the command line.
+%nYou should affect both c1 and c2 parameters when calling it, e.g.:
+%n     $GO pipeline-pure-java-5-with-param.xml    c1=4 c2=9
+%nIn this case, a first counter (that starts with a delay) will count on 'info' up to 4 (exclusive) and a second on 'warning' up to 9.
+%n
+%nImportant: there is another more generic syntax to affect any module parameter, e.g.:
+%n     $GO pipeline-pure-java-5-with-param.xml    c1=4 c2=9 tick1.period=25
+%n     $GO pipeline-pure-java-5-with-param.xml    c1=4 c2=9 tick1.period=25 tick2.period=25
+"/>
+
+    <m id="tick1" type="ex:Counter" maxCount="${c1}" period="400" warmupDelay="1250"/>
+    <m id="tick2" type="ex:Counter" maxCount="${c2}" period="400"/>
     <m id="cons" type="ex:Console"/>
 
     <c chain="tick1 - cons"/>

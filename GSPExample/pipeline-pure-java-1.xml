@@ -2,6 +2,8 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline should count from 0 to 3 then exit"/>
+
     <m id="tick" type="ex:Counter" maxCount="4"/>
     <m id="cons" type="ex:Console"/>
 

@@ -6,6 +6,8 @@
 
 * omiscid utils?
 
+* example pure-java-5 should not start if parameters are missing!
+
 * handle cpp class inheritance if we can get the info somewhere
 
 * CPP: namespaces

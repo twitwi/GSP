@@ -25,13 +25,15 @@ $GO pipeline-pure-java-4.xml
 
 ../PipelineViewer/view-pipeline.sh pipeline-pure-java-6-factory.xml
 
-$GO pipeline-pure-java-5-with-param.xml c1=10 c2=20
+$GO pipeline-pure-java-5-with-param.xml c1=6 c2=12
+$GO pipeline-pure-java-5-with-param.xml c1=6 c2=12 tick1.period=25
 $GO pipeline-pure-java-6-factory.xml 
 
 export LD_LIBRARY_PATH=build-cpp
 $GO pipeline-cpp-1.xml 
 $GO pipeline-cpp-2.xml 
-$GO pipeline-cpp-3-with-param.xml p=33
+$GO pipeline-cpp-3-with-param.xml p=1
+$GO pipeline-cpp-3-with-param.xml p=1 tick.warmupDelay=1500
 $GO pipeline-cpp-4-emit-object.xml 
 
 

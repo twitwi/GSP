@@ -2,7 +2,11 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="tick" type="ex:Counter" maxCount="65" period="10"/>
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrates the use of the factory-syntax to simplify pipeline writing.
+%nIt should count up to 64 and display both the counter and the square root of its square root.
+%nNote that if in the pipeline 'sqrt' was not a factory, we would create an infinite loop by liking the 'sqrt' module to itself."/>
+
+    <m id="tick" type="ex:Counter" maxCount="65" period="10" warmupDelay="3500"/>
     <m id="cons" type="ex:Console"/>
     <f id="sqrt" type="ex:Square" power="0.70710678118654"/>
 
