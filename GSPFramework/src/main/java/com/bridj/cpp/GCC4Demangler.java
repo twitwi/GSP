@@ -37,7 +37,8 @@ public class GCC4Demangler extends Demangler {
             id += consumeChar();
         }
         id += consumeChar();
-        return shortcuts.get(id);
+        TypeRef res = shortcuts.get(id);
+        return res;
     }
     private TypeRef parsePointerType() throws DemanglingException {
         TypeRef pointed = parseType();
@@ -48,8 +49,13 @@ public class GCC4Demangler extends Demangler {
     }
 
 	public TypeRef parseType() throws DemanglingException {
-		if (Character.isDigit(peekChar()))
-			return simpleType(parseName());
+		if (Character.isDigit(peekChar())) {
+                    String name = parseName();
+                    String id = nextShortcutId();
+                    TypeRef res = simpleType(name);
+                    shortcuts.put(id, res);
+                    return res;
+                }
 		
 		switch (consumeChar()) {
 		case 'S':
@@ -132,6 +138,7 @@ public class GCC4Demangler extends Demangler {
                             nextShortcutId++;
 				ns.add(parseName());
 			} while (Character.isDigit(peekChar()));
+			nextShortcutId--; // correct the fact that we parsed one too much
 			mr.setMemberName(ns.remove(ns.size() - 1));
 			if (!ns.isEmpty()) {
 				ClassRef parent = new ClassRef();

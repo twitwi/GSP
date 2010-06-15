@@ -151,6 +151,7 @@ public class CModuleFactory {
         }
 
         private void receiveEvent(String moduleTypeName, Pointer that, String portName, Event e) {
+            e = e.getCView();
             Object[] information = e.getInformation();
             Object[] thatAndParams = new Object[information.length + 1];
             System.arraycopy(information, 0, thatAndParams, 1, information.length);
@@ -407,20 +408,25 @@ public class CModuleFactory {
             put("bool", "b");
         }};
         private String patchReportedType(String type) {
-            boolean isPointer = true;
-            if (type.startsWith("A")) {
-                type = type.replaceFirst("A\\d+_", "P");
-            } else if (type.startsWith("P")) {
-                type = type.substring(1);
-            } else if (type.endsWith("*")) {
-                type = type.substring(0, type.length() - 1);
-            } else {
-                isPointer = false;
+            String prefix = "";
+            while (true) {
+                if (type.startsWith("A")) {
+                    prefix += "P";
+                    type = type.replaceFirst("A\\d+_", "");
+                } else if (type.startsWith("P")) {
+                    prefix += "P";
+                    type = type.substring(1);
+                } else if (type.endsWith("*")) {
+                    prefix += "P";
+                    type = type.substring(0, type.length() - 1);
+                } else {
+                    break;
+                }
             }
             type = type.trim();
             String res = cTypeToTypeid.get(type);
             if (res != null) type = res;
-            return isPointer ? "P" + type : type;
+            return prefix + type;
         }
 
         private static Map<String, NativeType> cStringTypeToNativeType = new HashMap<String, NativeType>() {
