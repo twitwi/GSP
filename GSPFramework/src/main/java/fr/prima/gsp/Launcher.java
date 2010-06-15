@@ -14,8 +14,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -70,7 +72,7 @@ public class Launcher {
         final Map<String, String> settings = readParameters(parameters);
         final List<String> unreplaced = new ArrayList<String>();
 
-        final List<String> modulesNotFound = new ArrayList<String>();
+        final Set<String> modulesNotFound = new LinkedHashSet<String>();
         for (String p : settings.keySet()) {
             if (p.contains(".")) {
                 modulesNotFound.add(p.split("[.]")[0]);
