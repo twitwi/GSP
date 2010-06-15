@@ -17,6 +17,23 @@
 * unallocated module when stopping pipeline
 
 * idea: replace a#b#c by something asymetric (e.g. a(b)c or a[b]c or a]b[c or a)b(c (no <> as in xml)) ...
+    <c chain="tick - intInput#half# - half - #th#string - str#dup#str - log"/>        current
+
+    <c chain="tick - intInput(half - half - th)string - str(dup)str - log"/>
+
+    <c chain="tick - intInput)half - half - th(string - str)dup(str - log"/>
+
+    <c chain="tick - intInput[half - half - th]string - str[dup]str - log"/>
+
+    <c chain="tick - intInput]half - half - th[string - str]dup[str - log"/>
+
+    <c chain="tick - intInput(half) - half - (th)string - str(dup)str - log"/>
+
+    <c chain="tick - intInput)half( - half - )th(string - str)dup(str - log"/>
+
+    <c chain="tick - intInput[half] - half - [th]string - str[dup]str - log"/>
+
+    <c chain="tick - intInput]half[ - half - ]th[string - str]dup[str - log"/>
 
 
 

@@ -7,6 +7,8 @@ package fr.prima.gspbaseutils;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import fr.prima.gsp.framework.NativePointer;
+import fr.prima.gsp.framework.nativeutil.NativeType;
 import fr.prima.gsp.framework.spi.AbstractModule;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -32,7 +34,7 @@ public class StringToCharPointer extends AbstractModule {
     }
 
     public void output(Pointer charPointer) {
-        emitEvent(charPointer);
+        emitEvent(new NativePointer(charPointer, NativeType.CHAR_POINTER));
     }
 
 

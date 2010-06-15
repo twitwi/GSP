@@ -1,0 +1,21 @@
+
+<pipeline>
+    <namespace base="fr.prima.gspbaseutils"/>
+
+    <m id="cons" type="base:Console" init="This pipeline shows Java(String)&lt;->C++(char*) conversion modules.
+%nIt should count from 0 to 6 and print out: the count, the third of the count in Java, the third of the count in C++"/>
+
+    <m id="timer" type="base:Clock" maxCount="7" period="500" warmupDelay="2000"/>
+    <m id="div" type="c:NativeCppDemo.Div" divisor="3"/>
+
+    <f id="cp2s" type="base:CharPointerToString"/>
+    <m id="s2cp" type="base:StringToCharPointer"/>
+
+    <c chain="timer#s - warning#cons"/>
+    <c chain="timer#i - intInput#div#string - cp2s - s2cp - cp2s- cons"/>
+
+    <m id="logInC" type="c:NativeCppDemo.Log"/>
+    <c chain="s2cp - logInC"/>
+
+</pipeline>
+

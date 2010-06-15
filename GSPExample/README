@@ -11,8 +11,7 @@ cd java/
 cd ..
 
 
-GSP=gsp-framework-1.1-SNAPSHOT.jar
-GO="java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/${GSP}:java fr.prima.gsp.Launcher"
+GO="java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/*:java fr.prima.gsp.Launcher"
 
 
 ../PipelineViewer/view-pipeline.sh pipeline-pure-java-1.xml
@@ -36,4 +35,8 @@ $GO pipeline-cpp-3-with-param.xml p=1
 $GO pipeline-cpp-3-with-param.xml p=1 tick.warmupDelay=1500
 $GO pipeline-cpp-4-emit-object.xml 
 
+
+From here we use the provide base utils (written in Java), they replace the custom demonstration classes from the java/ folder and provide more functionalities
+
+GO="java -cp  ../GSPBaseutils/target/*:../GSPFramework/target/dependency/*:../GSPFramework/target/*:java fr.prima.gsp.Launcher"
 
