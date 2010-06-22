@@ -106,7 +106,7 @@ public class Event {
     }
 
     public Event getCView() {
-        System.err.println(information.length + ": " + Arrays.toString(information) + " of types " + Arrays.toString(additionalTypeInformation));
+        //System.err.println(information.length + ": " + Arrays.toString(information) + " of types " + Arrays.toString(additionalTypeInformation));
         Object[] i = new Object[information.length];
         System.arraycopy(information, 0, i, 0, i.length);
         String[] a = new String[additionalTypeInformation.length];
@@ -116,11 +116,11 @@ public class Event {
                 Buffer buf = (Buffer) information[c];
                 i[c] = new NativePointer(Native.getDirectBufferPointer((Buffer) buf), getType(buf.getClass()));
                 a[c] = getTypeName(buf.getClass());
-                System.err.println("Translate buffer to: " + i[c]);
+                //System.err.println("Translate buffer to: " + i[c]);
             } else {
                 i[c] = information[c];
                 a[c] = additionalTypeInformation[c] == null ? getTypeName(information[c].getClass()) : additionalTypeInformation[c];
-                System.err.println("Copied: " + i[c] + " of type " + a[c]);
+                //System.err.println("Copied: " + i[c] + " of type " + a[c]);
             }
         }
         return new Event(i, a);
