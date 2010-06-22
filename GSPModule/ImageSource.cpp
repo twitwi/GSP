@@ -24,7 +24,8 @@ static bool startsWithAndRemove(string &io, const char* prefix) {
 }
 
 
-ImageSource::ImageSource() : currentImage(NULL), imageIndex(-1), gray(true) {}
+ImageSource::ImageSource() : currentImage(NULL), imageIndex(-1), gray(true), pixelStep(1) {
+}
 
 void ImageSource::skip() {
     switch (mode) {
@@ -39,6 +40,7 @@ void ImageSource::skip() {
     }
 }
 void ImageSource::input() {
+    IplImage *grabbed = NULL;
     switch (mode) {
     case 0: {
         freeImage(currentImage);
@@ -60,8 +62,9 @@ void ImageSource::input() {
     }
         break;
     case 1: {
-        currentImage = cvQueryFrame(video); // we never free a cvQueryFrame'd image
-        // TODO handle grabbing non RGB frames
+        grabbed = cvQueryFrame(video); // we never free a cvQueryFrame'd image
+        currentImage = grabbed;
+        // TODO handle grabbing non RGB frames
         if (gray) {
             IplImage* tmp = currentImage;
             currentImage = cvCreateImage(cvSize(tmp->width, tmp->height),IPL_DEPTH_8U,1);
@@ -74,6 +77,12 @@ void ImageSource::input() {
         imageIndex++;
         break;
     }
+    }
+    if (pixelStep > 1) {
+        IplImage* tmp = currentImage;
+        currentImage = cvCreateImage(cvSize(tmp->width / pixelStep, tmp->height / pixelStep), tmp->depth, tmp->nChannels);
+        cvResize(tmp, currentImage, 0); // NN interpolation
+        if (tmp != grabbed) freeImage(tmp);
     }
 }
 
@@ -90,6 +99,9 @@ void ImageSource::setUrl(char *url) {
         throw "'url' already set";
     }
     this->url = url;
+}
+void ImageSource::setPixelStep(int pixelStep) {
+    this->pixelStep = pixelStep;
 }
 
 void ImageSource::initModule() {
