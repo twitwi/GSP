@@ -86,7 +86,7 @@ void ImageSource::input() {
 }
 
 void ImageSource::setStart(int imageIndex) {
-    this->imageIndex = imageIndex - 1;
+    this->imageIndex = imageIndex;
 }
 
 void ImageSource::setGray(bool gray) {
@@ -110,7 +110,7 @@ void ImageSource::initModule() {
     mode = -1;
     if (startsWithAndRemove(url, "images:")) {
         mode = 0;
-        if (imageIndex == -1) imageIndex = 0;
+        if (imageIndex == -1) imageIndex = 0; // defaults to 0
     } else if (startsWithAndRemove(url, "video:")) {
         mode = 1;
         video = cvCaptureFromFile(url.c_str());
