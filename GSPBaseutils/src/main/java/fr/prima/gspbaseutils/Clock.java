@@ -73,6 +73,11 @@ public class Clock extends AbstractModuleEnablable {
         timer.cancel();
     }
 
+    public void interrupt() {
+        timer.cancel();
+        assembly.stop();
+    }
+
     private void output() {
         emitEvent();
         s();
