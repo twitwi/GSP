@@ -5,6 +5,9 @@
 
 * better feedback on setter (c++) not found
 
+* same better feedback for invocationtargetexception when binding
+   wrongly connectors (java included)
+
 * find a way to start clock only when all module have been inited (maybe implement a thing like Assembly#addAfterAllInitCode(Runnable) ) e.g. to remove the recurrent need for a synchronization between module's initModule and input
 
 
