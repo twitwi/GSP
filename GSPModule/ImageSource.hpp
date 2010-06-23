@@ -15,8 +15,8 @@ private:
 
     int mode; // 0 files, 1 video
     // mode dependent fields
-    int imageIndex; // 0, 1
-    CvCapture* video; // 1
+public:    int imageIndex; // 0, 1
+private:   CvCapture* video; // 1
 public:
     IplImage *currentImage;
     

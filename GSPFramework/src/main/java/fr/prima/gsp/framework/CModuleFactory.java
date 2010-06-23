@@ -219,7 +219,7 @@ public class CModuleFactory {
                     return true;
                 }
             } catch (UnsatisfiedLinkError err2) {
-                debug("Faled calling on C++ method '" + moduleTypeName + "::" + cpp + "'");
+                debug("Failed calling on C++ method '" + moduleTypeName + "::" + cpp + "'");
                 // swallow exception
             }
             return false;

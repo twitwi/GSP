@@ -33,7 +33,6 @@ void ImageSource::skip() {
             imageIndex++;
             break;
         case 1:
-            fprintf(stderr, "skippy %d\n", imageIndex);
             imageIndex++;
             cvGrabFrame(video);
             break;
@@ -87,7 +86,7 @@ void ImageSource::input() {
 }
 
 void ImageSource::setStart(int imageIndex) {
-    this->imageIndex = imageIndex;
+    this->imageIndex = imageIndex - 1;
 }
 
 void ImageSource::setGray(bool gray) {
