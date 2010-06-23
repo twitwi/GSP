@@ -1,4 +1,13 @@
 
+
+* handle the fact that string get garbage collected (C++ should do a copy on receive or at least we can try to prevent gc for parameters (not that simple) until the pipeline is gc'ed)
+
+
+* better feedback on setter (c++) not found
+
+* find a way to start clock only when all module have been inited (maybe implement a thing like Assembly#addAfterAllInitCode(Runnable) ) e.g. to remove the recurrent need for a synchronization between module's initModule and input
+
+
 * base utils
 ** timer/clock/thread (all the same thing)
 ** thread fork/join
