@@ -70,3 +70,10 @@ void HistoDetector::inputSelection( int x0, int y0, int x1, int y1, IplImage* im
   emitNamedEvent("output", tmp);
   cvReleaseImage(&tmp);
 }
+
+void HistoDetector::inputPoints( std::vector<CvPoint>* points)
+{
+  mut.lock();
+  
+  mut.unlock();
+}

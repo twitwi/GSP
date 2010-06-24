@@ -5,6 +5,8 @@
 #include "Detector.hpp"
 #include <framework.h>
 #include <boost/thread/mutex.hpp>
+#include <vector>
+#include <opencv/cxcore.h>
 
 class HistoDetector : public Detector
 {
@@ -26,6 +28,8 @@ public:
   void input( IplImage* img );
   
   void inputROI(void* rois);
+
+  void inputPoints( std::vector<CvPoint>* points);
   
   void inputSelection( int x0, int y0, int x1, int y1, IplImage* img);
   

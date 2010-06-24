@@ -71,6 +71,35 @@ public:
    * Fonction retournant la coordonnée en ordonnée du centre de la ROI
    */
   int getCenterY();
+
+  /**
+   * For omiscid serialization
+   */
+  template <class C>
+  void Save( C & msg )
+    {
+      msg.Put("x1", roi_[0][0]);
+      msg.Put("y1", roi_[0][1]);
+      msg.Put("x2", roi_[1][0]);
+      msg.Put("y2", roi_[1][1]);
+      msg.Put("x3", roi_[2][0]);
+      msg.Put("y3", roi_[2][1]);
+      msg.Put("x4", roi_[3][0]);
+      msg.Put("y4", roi_[3][1]);
+    }
+
+  template <class C>
+  void Load( C & msg )
+    {
+      msg.Get("x1", roi_[0][0]);
+      msg.Get("y1", roi_[0][1]);
+      msg.Get("x2", roi_[1][0]);
+      msg.Get("y2", roi_[1][1]);
+      msg.Get("x3", roi_[2][0]);
+      msg.Get("y3", roi_[2][1]);
+      msg.Get("x4", roi_[3][0]);
+      msg.Get("y4", roi_[3][1]);
+    }
 };
 
 #endif // ROIEXTEND_HPP
