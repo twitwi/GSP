@@ -20,6 +20,7 @@ public:
 
   void calcHist( CvArr * src );
   void calcBackProject( IplImage *src, IplImage *dst );
+  float getValue(int r, int g, int b);
 };
 
 #endif //__HISTO_HPP_

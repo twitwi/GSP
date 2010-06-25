@@ -6,5 +6,5 @@ target_link_libraries( Histo ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${
 
 
 add_library( DetectorService SHARED DetectorService)
-target_link_libraries( DetectorService Detector ${OpenCV_CXCORE_LIBRARY} ${Omiscid_LIBRARIES})
+target_link_libraries( DetectorService Detector ${OpenCV_CXCORE_LIBRARY} ${OMISCID_LIBRARIES})
 

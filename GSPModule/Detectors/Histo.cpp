@@ -1,6 +1,8 @@
 #include "Histo.hpp"
 
 #include <fstream>
+#include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -65,6 +67,11 @@ void Histogram2D::load( const char* filename )
       f >> val;
       cvSet2D(hist->bins, x, y, cvRealScalar(val));
     }
+  
+  float min_val, max_val;
+  cvGetMinMaxHistValue(hist, &min_val, &max_val);
+  cvScale(hist->bins, hist->bins, 255./max_val);
+  //cvNormalizeHist(hist, 255.);
 }
 
 void Histogram2D::save( const char* filename )
@@ -126,4 +133,34 @@ void Histogram2D::calcBackProject( IplImage *src, IplImage *dst )
   cvReleaseImage( &s_plane );
   cvReleaseImage( &v_plane );
   cvReleaseImage( &hsv );
+}
+
+float Histogram2D::getValue(int r, int g, int b)
+{
+  float nr = r / 255.;
+  float ng = g / 255.;
+  float nb = b / 255.;
+  float V = max(max(nr, ng), nb);
+  float S = (V==0.)?0.:(V-min(min(nr,ng),nb))/(float)V;
+  float H;
+  
+  if(S == 0.)
+    H = 0.;
+  else if(V == nr)
+    H = 60.*(ng-nb) / S;
+  else if(V == ng)
+    H = 120.+60.*(nb-nr) / S;
+  else
+    H = 240.+60.*(nr-ng) / S;
+  if(H<0.) H+=360.;
+  
+  int h = H / 2;
+  int s = 255 * S;
+  //cout << H << " " << S << " " << V << " " << h << " " << s << endl;
+  
+  int h_bins = cvGetDimSize(hist->bins, 0);
+  int s_bins = cvGetDimSize(hist->bins, 1);
+//  cout << ((h_bins-1)*h)/180 << " " << ((s_bins-1)*s)/255 << endl;
+//   cout << h_bins << " " << s_bins << endl;
+  return cvQueryHistValue_2D(hist, ((h_bins-1)*h)/180, ((s_bins-1)*s)/255);
 }

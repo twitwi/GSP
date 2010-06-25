@@ -14,6 +14,7 @@
     <c chain="grabber - histo - viewHisto"/>
     <c chain="service - inputROI#histo"/>
     <c chain="view#selection - inputSelection#histo"/>
+    <c chain="view#click - inputClick#histo"/>
 
     <!--<m id="out" type="demo:ConsoleOutput"/>-->
     <!--<c chain="load - out@info"/>-->

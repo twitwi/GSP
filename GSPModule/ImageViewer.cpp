@@ -160,13 +160,14 @@ void ImageViewer::mouseCallback(int event, int x, int y, int flags)
       mut.lock();
       emitNamedEvent("click", selection.x0, selection.y0, img_);
       mut.unlock();
-    }else{
+    }else if(selection.x0 != selection.x1 && selection.y0!=selection.y1){
       int xmin = min(selection.x0, selection.x1);
       int xmax = max(selection.x0, selection.x1);
       int ymin = min(selection.y0, selection.y1);
       int ymax = max(selection.y0, selection.y1);
-      
+      mut.lock();
       emitNamedEvent("selection", xmin,  ymin,  xmax,  ymax, img_);
+      mut.unlock();
     }
     selection.state = Selection::STATE_FINISHED;
   }else if(event == CV_EVENT_RBUTTONDOWN)

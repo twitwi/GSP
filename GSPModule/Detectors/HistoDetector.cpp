@@ -19,8 +19,8 @@ IplImage* HistoDetector::computeDetectionImage( ROIExtend & roi)
   int y2 = roi.getBottom();
   int x1 = roi.getLeft();
   int x2 = roi.getRight();
-  int w = (roi.getRight()-roi.getLeft());
-  int h = (roi.getBottom()-roi.getTop());
+  int w = x2-x1;
+  int h = y2-y1;
   
   IplImage *detectionImage = cvCreateImage(cvSize(w,h),IPL_DEPTH_8U,1);
   
@@ -45,15 +45,16 @@ void HistoDetector::input( IplImage* img )
   mut.unlock();
 }
 
-void HistoDetector::inputROI(void* rois)
+void HistoDetector::inputROI(std::list<ROIExtend>* rois)
 {
   mut.lock();
-  std::list<ROIExtend> * p_rois = static_cast<std::list<ROIExtend>*>(rois);
-  computeDetectionImages( *p_rois );
+  computeDetectionImages( *rois );
   mut.unlock();
   
-  if( !p_rois->empty())
+  if( !rois->empty())
     emitNamedEvent("output", getDetectionImages().front());
+  
+  emitNamedEvent("detectionImages", detectionImages_);
 }
 
 void HistoDetector::inputSelection( int x0, int y0, int x1, int y1, IplImage* img)
@@ -74,6 +75,23 @@ void HistoDetector::inputSelection( int x0, int y0, int x1, int y1, IplImage* im
 void HistoDetector::inputPoints( std::vector<CvPoint>* points)
 {
   mut.lock();
+  std::vector<float> values(points->size());
+
+  for(int i=0; i<points->size(); i++)
+  {
+    unsigned char * ptr = cvPtr2D( currentImage_, (*points)[i].y, (*points)[i].x);
+    values[i] = histo.getValue(ptr[0], ptr[1], ptr[2]);
+  }
+  emitNamedEvent("detectionPoints", values);
   
   mut.unlock();
+}
+
+void HistoDetector::inputClick( int x, int y, IplImage* img)
+{
+  unsigned char * ptr = (unsigned char*) &(img->imageData)[img->widthStep*y+3*x];
+
+  float val = histo.getValue(ptr[2], ptr[1], ptr[0]);
+
+  cout << val << endl;
 }

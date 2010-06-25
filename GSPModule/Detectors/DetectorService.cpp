@@ -50,7 +50,9 @@ void DetectorService::MessageReceived(Omiscid::Service& TheService,
   {
     std::list<ROIExtend> rois;
     smsg.Get("ROIs", rois);      
-    void * p_rois = (void*) &rois;
+//     void * p_rois = (void*) &rois;
+//     emitNamedEvent("output", p_rois);
+    std::list<ROIExtend>* p_rois = &rois;
     emitNamedEvent("output", p_rois);
   }
 
@@ -58,7 +60,8 @@ void DetectorService::MessageReceived(Omiscid::Service& TheService,
   {
     std::vector<CvPoint> points;
     smsg.Get("Points", points);
-    emitNamedEvent("points", points);
+    std::vector<CvPoint>* p_points = &points;
+    emitNamedEvent("points", p_points);
   }
   locker.LeaveMutex();
 }

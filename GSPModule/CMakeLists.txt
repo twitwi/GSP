@@ -26,7 +26,7 @@ INCLUDE_DIRECTORIES(${BOOST_INCLUDEDIR}
   ${GTK_INCLUDE_DIRS}
   ${GTHREAD_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIR}
-  ${Omiscid_INCLUDE_DIR}
+  ${OMISCID_INCLUDE_DIR}
   /usr/include/servicevideo
   ${PROJECT_SOURCE_DIR}
   ${OPENGL_INCLUDE_DIR}
@@ -56,15 +56,15 @@ target_link_libraries( RawToIpl ${OpenCV_CXCORE_LIBRARY} )
 add_library( GTKModule SHARED GTKModule )
 target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK_LIBRARIES} )
 
-set( CMAKE_CXX_FLAGS "${Omiscid_CFLAGS}")
+#set( CMAKE_CXX_FLAGS "${Omiscid_CFLAGS}")
 
-if( SERVICE_VIDEO_LIB AND Omiscid_FOUND )
+if( SERVICE_VIDEO_LIB AND OMISCID_FOUND )
   add_library( ServiceVideoModule SHARED ServiceVideoModule )
-  target_link_libraries( ServiceVideoModule ${SERVICE_VIDEO_LIB} ${Omiscid_LIBRARIES} )
+  target_link_libraries( ServiceVideoModule ${SERVICE_VIDEO_LIB} ${OMISCID_LIBRARIES} )
 
   add_library( OmiscidVideoGrabber SHARED OmiscidVideoGrabber )
-  target_link_libraries( OmiscidVideoGrabber ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${SERVICE_VIDEO_LIB} ${Omiscid_LIBRARIES} )
-endif( SERVICE_VIDEO_LIB AND Omiscid_FOUND )
+  target_link_libraries( OmiscidVideoGrabber ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${SERVICE_VIDEO_LIB} ${OMISCID_LIBRARIES} )
+endif( SERVICE_VIDEO_LIB AND OMISCID_FOUND )
 
 
 if( OPENGL_FOUND AND GLEW_LIB )
