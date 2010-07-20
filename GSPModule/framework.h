@@ -85,15 +85,16 @@
 #define PAIRS_OF_8(a, b, ...) a b, PAIRS_OF(__VA_ARGS__)
 #define PAIRS_OF(...) APPLY(CONCAT(PAIRS_OF_, PP_NARG(__VA_ARGS__)), __VA_ARGS__)
 
-#define TYPES_AND_ADDRS_1(a) typeid(a).name(), &((a))
-#define TYPES_AND_ADDRS_2(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_1(__VA_ARGS__)
-#define TYPES_AND_ADDRS_3(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_2(__VA_ARGS__)
-#define TYPES_AND_ADDRS_4(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_3(__VA_ARGS__)
-#define TYPES_AND_ADDRS_5(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_4(__VA_ARGS__)
-#define TYPES_AND_ADDRS_6(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_5(__VA_ARGS__)
-#define TYPES_AND_ADDRS_7(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_6(__VA_ARGS__)
-#define TYPES_AND_ADDRS_8(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_7(__VA_ARGS__)
-#define TYPES_AND_ADDRS_9(a, ...) TYPES_AND_ADDRS_1(a), TYPES_AND_ADDRS_8(__VA_ARGS__)
+#define TYPES_AND_ADDRS_0()
+#define TYPES_AND_ADDRS_1(a) typeid(a).name(), &((a)),
+#define TYPES_AND_ADDRS_2(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_1(__VA_ARGS__)
+#define TYPES_AND_ADDRS_3(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_2(__VA_ARGS__)
+#define TYPES_AND_ADDRS_4(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_3(__VA_ARGS__)
+#define TYPES_AND_ADDRS_5(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_4(__VA_ARGS__)
+#define TYPES_AND_ADDRS_6(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_5(__VA_ARGS__)
+#define TYPES_AND_ADDRS_7(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_6(__VA_ARGS__)
+#define TYPES_AND_ADDRS_8(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_7(__VA_ARGS__)
+#define TYPES_AND_ADDRS_9(a, ...) TYPES_AND_ADDRS_1(a) TYPES_AND_ADDRS_8(__VA_ARGS__)
 #define TYPES_AND_ADDRS(...) APPLY(CONCAT(TYPES_AND_ADDRS_, PP_NARG(__VA_ARGS__)), __VA_ARGS__)
 
 #define TYPES_AND_PNUMS_1(a) typeid(a).name(), &((a))
@@ -249,8 +250,12 @@ public:                                                                 \
 // Framework Macro (implicit version)      //
 /////////////////////////////////////////////
 
+#define emitNamedEvent0(name) {                                     \
+        const void *what[] = {name, NULL};                              \
+        this->_framework("emit", what);                                 \
+    }
 #define emitNamedEvent(name, ...) {                                     \
-        const void *what[] = {name, TYPES_AND_ADDRS(__VA_ARGS__), NULL}; \
+        const void *what[] = {name, TYPES_AND_ADDRS(__VA_ARGS__) NULL}; \
         this->_framework("emit", what);                                 \
     }
 #define CLASS_AS_MODULE(m)                                              \
@@ -264,15 +269,13 @@ static void GSPPassiveFramework(const char* command, ...) {}
 #define GSP_PASSIVE_MODULE(m) SEP(m,create)(&GSPPassiveFramework)
 
 #ifdef __cplusplus
-#define FIELD_WITH_SETTER(type,name,setName) \
-    type name;                               \
-    void setName(type name);
-#define SETTER(cl,type,name,setName) \
-    void cl::setName(type name) {            \
-        this->name = name;                   \
-    }
+#define FIELD_WITH_SETTER(type,name,setName)                            \
+    type name;                                                          \
+    virtual void setName(type name) {this->name = name;}
+#define STRING_FIELD_WITH_SETTER(name,setName)                          \
+    std::string name;                                                   \
+    virtual void setName(char* name) {this->name = name;}
 #endif
-
 
 #ifdef PASSIVE_GSP_FRAMEWORK
 #undef emitNamedEvent
