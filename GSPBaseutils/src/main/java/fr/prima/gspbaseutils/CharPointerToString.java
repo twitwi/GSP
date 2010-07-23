@@ -16,12 +16,14 @@ import fr.prima.gsp.framework.spi.AbstractModule;
 public class CharPointerToString extends AbstractModule {
 
     public void input(NativePointer charPointer) {
-        //output(charPointer.getString(0));
-        output(((Pointer) charPointer.pointer).getString(0));
+        output(convert(charPointer));
     }
 
     public void output(String s) {
         emitEvent(s);
     }
 
+    public static String convert(NativePointer intPointer) {
+        return ((Pointer) intPointer.pointer).getString(0);
+    }
 }

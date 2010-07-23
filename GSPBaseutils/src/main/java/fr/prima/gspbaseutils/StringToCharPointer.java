@@ -37,5 +37,4 @@ public class StringToCharPointer extends AbstractModule {
         emitEvent(new NativePointer(charPointer, NativeType.CHAR_POINTER));
     }
 
-
 }

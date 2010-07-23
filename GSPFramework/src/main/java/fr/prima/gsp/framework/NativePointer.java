@@ -6,6 +6,8 @@
 package fr.prima.gsp.framework;
 
 import fr.prima.gsp.framework.nativeutil.NativeType;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  *
@@ -25,5 +27,12 @@ public class NativePointer {
     public String toString() {
         return "NP<" + nativeType.toString() + ">(" + pointer + ")";
     }
-    
+
+    public IntBuffer toIntBuffer(int length) {
+        return NativePointerUtils.intBuffer(length, this);
+    }
+    public FloatBuffer toFloatBuffer(int length) {
+        return NativePointerUtils.floatBuffer(length, this);
+    }
+
 }
