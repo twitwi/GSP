@@ -30,8 +30,11 @@ public class Clock extends AbstractModuleEnablable {
     public boolean stopAtEnd = true;
 
     // this will be automatically injected by the framework
-    @ModuleParameter(initOnly=true)
+    @ModuleParameter(initOnly = true)
     public Assembly assembly;
+
+    @ModuleParameter(initOnly = true)
+    public int init = 0;
 
     private int count = 0;
 
@@ -53,6 +56,7 @@ public class Clock extends AbstractModuleEnablable {
     
     @Override
     protected synchronized void initModule() {
+        count = init;
         startTimer();
     }
     private synchronized void startTimer() {
