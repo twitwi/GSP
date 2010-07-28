@@ -56,6 +56,10 @@ target_link_libraries( RawToIpl ${OpenCV_CXCORE_LIBRARY} )
 add_library( GTKModule SHARED GTKModule )
 target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK_LIBRARIES} )
 
+add_library( ColorConvertor SHARED ColorConvertor )
+target_link_libraries( ColorConvertor ${OpenCV_CXCORE_LIBRARY} ${OpenCV_CV_LIBRARY})
+
+
 #set( CMAKE_CXX_FLAGS "${Omiscid_CFLAGS}")
 
 if( SERVICE_VIDEO_LIB AND OMISCID_FOUND )

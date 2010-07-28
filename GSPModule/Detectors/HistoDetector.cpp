@@ -45,16 +45,16 @@ void HistoDetector::input( IplImage* img )
   mut.unlock();
 }
 
-void HistoDetector::inputROI(std::list<ROIExtend>* rois)
+void HistoDetector::inputROI(std::list<ROIExtend>* rois, int peerId)
 {
   mut.lock();
   computeDetectionImages( *rois );
   mut.unlock();
   
+  emitNamedEvent("outputROI", detectionImages_, peerId);
+  
   if( !rois->empty())
     emitNamedEvent("output", getDetectionImages().front());
-  
-  emitNamedEvent("detectionImages", detectionImages_);
 }
 
 void HistoDetector::inputSelection( int x0, int y0, int x1, int y1, IplImage* img)
@@ -72,7 +72,7 @@ void HistoDetector::inputSelection( int x0, int y0, int x1, int y1, IplImage* im
   cvReleaseImage(&tmp);
 }
 
-void HistoDetector::inputPoints( std::vector<CvPoint>* points)
+void HistoDetector::inputPoints( std::vector<CvPoint>* points, int peerId)
 {
   mut.lock();
   std::vector<float> values(points->size());
@@ -82,7 +82,9 @@ void HistoDetector::inputPoints( std::vector<CvPoint>* points)
     unsigned char * ptr = cvPtr2D( currentImage_, (*points)[i].y, (*points)[i].x);
     values[i] = histo.getValue(ptr[0], ptr[1], ptr[2]);
   }
-  emitNamedEvent("detectionPoints", values);
+
+  std::vector<float> *p_values;
+  emitNamedEvent("outputPoints", p_values, peerId);
   
   mut.unlock();
 }

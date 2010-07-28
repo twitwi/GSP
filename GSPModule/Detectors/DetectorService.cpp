@@ -65,3 +65,22 @@ void DetectorService::MessageReceived(Omiscid::Service& TheService,
   }
   locker.LeaveMutex();
 }
+
+void DetectorService::inputROI(std::list<IplImage*>* rois, int peerId)
+{
+  if(peerId!=0)
+  {
+    
+  }
+}
+
+void DetectorService::inputPoints(std::vector<float>* values, int peerId)
+{
+  if(peerId!=0)
+  {
+    StructuredMessage smsg;
+    smsg.Put("Points", *values);
+    
+    service->SendToOneClient("info2D", smsg.Encode(), peerId);
+  }
+}
