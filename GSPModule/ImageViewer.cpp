@@ -42,6 +42,8 @@ void ImageViewer::stopModule()
   }
   if(img_)
     cvReleaseImage(&img_);
+  if(imgdraw_)
+    cvReleaseImage(&imgdraw_);
 }
 
 void ImageViewer::setName(char *name)
@@ -71,7 +73,10 @@ void ImageViewer::input(IplImage* img)
   mut.lock();
   
   if(!img_)
+  {
     img_ = cvCloneImage(img);
+    imgdraw_ = cvCloneImage(img);
+  }
   else{
     if(img->width != img_->width
        || img->height != img_->height
@@ -80,6 +85,8 @@ void ImageViewer::input(IplImage* img)
     {
       cvReleaseImage(&img_);
       img_ = cvCloneImage(img);
+      cvReleaseImage(&imgdraw_);
+      imgdraw_ = cvCloneImage(imgdraw_);
     }else{
       cvCopy(img, img_);
     }
@@ -95,6 +102,7 @@ void ImageViewer::mainThread()
   while(!stop_pending)
   {
     if(img_){
+      cvCopy(img_, imgdraw_);
 
 //       gdk_threads_enter();
 
@@ -104,19 +112,19 @@ void ImageViewer::mainThread()
 
       if(selection.state == Selection::STATE_SELECTING)
       {
-        cvRectangle(img_,
+        cvRectangle(imgdraw_,
                     cvPoint(selection.x0, selection.y0),
                     cvPoint(selection.x1, selection.y1),
                     CV_RGB(0,255,0) );
       }else if(selection.state == Selection::STATE_FINISHED)
       {
-        cvRectangle(img_,
+        cvRectangle(imgdraw_,
                     cvPoint(selection.x0, selection.y0),
                     cvPoint(selection.x1, selection.y1),
                     CV_RGB(255,0,0));
       }
       
-      cvShowImage(name_, img_);
+      cvShowImage(name_, imgdraw_);
       mut.unlock();
       //       gdk_threads_leave();      
       
