@@ -57,7 +57,7 @@ add_library( GTKModule SHARED GTKModule )
 target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK_LIBRARIES} )
 
 
-add_library( ColorModules SHARED ColorConvertor ColorFilter ColorAnalyser)
+add_library( ColorModules SHARED ColorConvertor ColorFilter ColorAnalyser ColorSeqDetector)
 target_link_libraries( ColorModules ${OpenCV_CXCORE_LIBRARY} ${OpenCV_CV_LIBRARY})
 
 add_library( ImageModules SHARED GaussianFilter)

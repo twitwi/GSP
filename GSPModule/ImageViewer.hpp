@@ -11,6 +11,7 @@
  * Output :
  *   - selection (int, int, int, int, IplImage*)
  *   - click (int, int, IplImage*)
+ *   - point (int, int, IplImage*)
  */
 class ImageViewer
 {

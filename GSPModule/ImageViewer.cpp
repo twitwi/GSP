@@ -123,6 +123,7 @@ void ImageViewer::mainThread()
                     cvPoint(selection.x1, selection.y1),
                     CV_RGB(255,0,0));
       }
+      emitNamedEvent("point", selection.x1, selection.y1, img_);
       
       cvShowImage(name_, imgdraw_);
       mut.unlock();

@@ -1,0 +1,31 @@
+<pipeline>
+    <namespace base="fr.prima.gspbaseutils"/>
+
+    <m id="timer" type="base:Clock" warmupDelay="300" maxCount="-1" period="100"/>
+
+    <m id="GTK" type="c:GTKModule.GTKModule"/>
+    <m id="grabber" type="c:OmiscidVideoGrabber.OmiscidVideoGrabber"/>
+    <!--<m id="raw2ipl" type="c:RawToIpl.RawToIpl"/>-->
+    <m id="view" type="c:ImageViewer.ImageViewer" name="view"/>
+    <!--<m id="service" type="c:ServiceVideoModule.ServiceVideoModule" ServiceId="1000"/>-->
+    <m id="gaussian" type="c:ImageModules.GaussianFilter" sigma="1.4"/>
+    <m id="convertor" type="c:ColorModules.ColorConvertor" format="BGR2HSV"/>
+    <m id="detector" type="c:ColorModules.ColorSeqDetector" period="5"/>
+    <m id="analyser" type="c:ColorModules.ColorAnalyser"/>
+    <m id="viewHSV" type="c:ImageViewer.ImageViewer" name="HSV"/>
+    <m id="viewRes" type="c:ImageViewer.ImageViewer" name="Res"/>
+    
+    <c chain="grabber - gaussian - convertor - detector - viewRes"/>
+    <c chain="grabber - view"/>
+    <c chain="convertor - viewHSV"/>
+    <c chain="view#click - analyser"/>
+    <c chain="viewHSV#click - analyser"/>
+    <c chain="viewRes#click - analyser"/>
+    <c chain="viewHSV#point - analyser"/>
+    <!--<c chain="grabber - service"/>-->
+
+    <!--<m id="out" type="demo:ConsoleOutput"/>-->
+    <!--<c chain="load - out@info"/>-->
+
+</pipeline>
+
