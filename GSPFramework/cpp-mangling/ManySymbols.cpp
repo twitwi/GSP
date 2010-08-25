@@ -1,4 +1,6 @@
 
+#define SOMETHING int i = 0; i = (i+1)/i;
+
 extern "C" {
     void cvoidfunction(char* whatever) {}
     int cfunction(char* what, int ever) {return ever;}
@@ -52,3 +54,16 @@ void func200(std::string da, std::string daa){} // Ss
 void func201(std::vector<CCC*> da, std::vector<CCC*> daa){} // !!!
 void func202(std::map<std::string, CCC*> da){} // !!!
 
+// helper to write Bridj tests
+void test_no_params(){}
+long test_add9_long(long l1,long l2,long l3,long l4,long l5,long l6,long l7,long l8,long l9){}
+class Ctest {
+public:
+    Ctest();
+    int test_add(int a, int b);
+};
+Ctest::Ctest() {SOMETHING}
+int Ctest::test_add(int a, int b) {return a+b;}
+double sinInt(int a) {return a;}
+int forwardCall(void*a, int b, int c) {return 0;}
+void pointerAliases(void** a, void* b, void*** c, int** d) {}
