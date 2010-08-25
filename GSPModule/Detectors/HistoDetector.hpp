@@ -27,9 +27,9 @@ public:
    */
   void input( IplImage* img );
   
-  void inputROI(std::list<ROIExtend>* rois);
+  void inputROI(std::list<ROIExtend>* rois, int peerId);
   
-  void inputPoints( std::vector<CvPoint>* points);
+  void inputPoints( std::vector<CvPoint>* points, int peerId);
   
   void inputSelection( int x0, int y0, int x1, int y1, IplImage* img);
   void inputClick( int x, int y, IplImage* img);
