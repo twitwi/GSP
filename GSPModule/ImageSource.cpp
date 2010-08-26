@@ -56,24 +56,21 @@ void ImageSource::input() {
             return;
         }
         fprintf(stderr, "grabbed image '%s'\n", buf);
-        emitNamedEvent("output", currentImage);
-        imageIndex++;
     }
         break;
     case 1: {
+        if (pixelStep>1 || gray) freeImage(currentImage); // we had a temporary image (non grabber), we free it
         grabbed = cvQueryFrame(video); // we never free a cvQueryFrame'd image
         currentImage = grabbed;
         // TODO handle grabbing non RGB frames
         if (gray) {
             IplImage* tmp = currentImage;
-            currentImage = cvCreateImage(cvSize(tmp->width, tmp->height),IPL_DEPTH_8U,1);
+            currentImage = cvCreateImage(cvSize(tmp->width, tmp->height),IPL_DEPTH_8U, 1);
             cvCvtColor(tmp, currentImage, CV_BGR2GRAY);
         } else {
             // nothing to do (already in color)
         }
         fprintf(stderr, "grabbed video frame %d\n", imageIndex);
-        emitNamedEvent("output", currentImage);
-        imageIndex++;
         break;
     }
     }
@@ -83,6 +80,8 @@ void ImageSource::input() {
         cvResize(tmp, currentImage, 0); // NN interpolation
         if (tmp != grabbed) freeImage(tmp);
     }
+    emitNamedEvent("output", currentImage);
+    imageIndex++;
 }
 
 void ImageSource::setStart(int imageIndex) {

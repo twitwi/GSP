@@ -11,6 +11,7 @@
  * Output :
  *   - selection (int, int, int, int, IplImage*)
  *   - click (int, int, IplImage*)
+ *   - point (int, int, IplImage*)
  */
 class ImageViewer
 {
@@ -27,7 +28,7 @@ private:
   } selection;
   
   char *name_;
-  IplImage *img_;
+  IplImage *img_, *imgdraw_;
 
   boost::thread my_thread;
   bool stop_pending;

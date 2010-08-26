@@ -10,6 +10,8 @@ import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModuleEnablable;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,6 +27,9 @@ public class Clock extends AbstractModuleEnablable {
 
     @ModuleParameter(initOnly=true)
     public int maxCount = -1;
+
+    @ModuleParameter(initOnly = true)
+    public int step = 1;
 
     @ModuleParameter
     public boolean stopAtEnd = true;
@@ -86,8 +91,8 @@ public class Clock extends AbstractModuleEnablable {
         emitEvent();
         s();
         i();
-        count++;
-        if (count == maxCount) {
+        count += step;
+        if (maxCount != -1 && count >= maxCount) {
             timer.cancel();
             if (stopAtEnd) {
                 assembly.stop();

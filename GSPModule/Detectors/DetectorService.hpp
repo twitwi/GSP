@@ -4,6 +4,9 @@
 #include <ServiceControl/UserFriendlyAPI.h>
 #include <framework.h>
 #include <string>
+#include <list>
+#include <vector>
+#include <opencv/cxcore.h>
 
 class DetectorService : public Omiscid::ConnectorListener
 {
@@ -24,6 +27,10 @@ public:
   void stopModule();
   
   void setName(char *name);
+
+  void inputROI(std::list<IplImage*>* rois, int peerId);
+  void inputPoints(std::vector<float>* values, int peerId);
+  
   Framework _framework;
 };
 
