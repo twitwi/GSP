@@ -10,6 +10,7 @@ import fr.prima.gsp.Option;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,14 @@ public class Assembly {
     }
 
 
-
+    public static List<Field> getClassAndSuperClassFields(Class cl) {
+        ArrayList<Field> res = new ArrayList<Field>();
+        do {
+            res.addAll(Arrays.asList(cl.getDeclaredFields()));
+            cl = cl.getSuperclass();
+        } while (cl != Object.class);
+        return res;
+    }
 
     private Module createJavaModule(String className) {
         try {
@@ -121,7 +129,7 @@ public class Assembly {
                 Class<?> classType = Assembly.class;
                 String fieldName = classType.getSimpleName();
                 fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-                for (Field f : cl.getDeclaredFields()) {
+                for (Field f : getClassAndSuperClassFields(cl)) {
                     debug("Looking for field " + fieldName + " for injection, have field " + f.getName() + " of type " + f.getType());
                     if (fieldName.equals(f.getName()) && classType.equals(f.getType())) {
                         // TODO could check for public, final etc
@@ -344,10 +352,10 @@ public class Assembly {
             }
         };
     }
-    public void addPrefix(String prefix, StringRewriter r) {
+    final public void addPrefix(String prefix, StringRewriter r) {
         prefixes.put(prefix, r);
     }
-    public void addPrefix(String prefix, final String newPrefix) {
+    final public void addPrefix(String prefix, final String newPrefix) {
         prefixes.put(prefix, new StringRewriter() {
             public String rewrite(String s) {
                 return newPrefix + s;
