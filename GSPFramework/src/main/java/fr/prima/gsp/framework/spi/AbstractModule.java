@@ -112,7 +112,7 @@ public class AbstractModule extends BaseAbstractModule {
         return res;
     }
     private void configureMe(Element conf) {
-        for (Field field : this.getClass().getDeclaredFields()) {
+        for (Field field : Assembly.getClassAndSuperClassFields(this.getClass())) {
             try {
                 ModuleParameter annotation = field.getAnnotation(ModuleParameter.class);
                 if (annotation == null) continue;
