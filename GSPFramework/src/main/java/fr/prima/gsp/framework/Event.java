@@ -114,6 +114,9 @@ public class Event {
                 i[c] = new NativePointer(Native.getDirectBufferPointer((Buffer) buf), getType(buf.getClass()));
                 a[c] = getTypeName(buf.getClass());
                 //System.err.println("Translate buffer to: " + i[c]);
+            } else if (information[c] instanceof NativePointer) { // we don't need to do anything to NativePointers
+                i[c] = information[c];
+                // isn't a[c] deprecated? => Check that and remove all of them if deprecated
             } else {
                 i[c] = information[c];
                 a[c] = additionalTypeInformation[c] == null ? getTypeName(information[c].getClass()) : additionalTypeInformation[c];
