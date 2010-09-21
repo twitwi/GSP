@@ -5,7 +5,6 @@
 
 package fr.prima.gsp.framework.nativeutil;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
