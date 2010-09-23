@@ -183,6 +183,22 @@ public class Assembly {
         return b ? 1 : 0;
     }
 
+    /**
+     * This method can be called in initModule (or in a parameter setter listener)
+     * to add an action to be executed after all modules are initialized.
+     * @param runnable
+     */
+    public void addPostInitHook(Runnable runnable) {
+        postInitHooks.add(runnable);
+    }
+    private void callPostInitHooks() {
+        for (Runnable runnable : postInitHooks) {
+            runnable.run();
+        }
+        postInitHooks.clear();
+    }
+    private final List<Runnable> postInitHooks = new ArrayList<Runnable>();
+
     public static abstract class ReadFromXMLHandler {
         public void namespace(Element e) {}
         public void module(Element e) {}
@@ -282,6 +298,7 @@ public class Assembly {
             for (Map.Entry<String, Module> e : modules.entrySet()) {
                 e.getValue().init();
             }
+            callPostInitHooks();
         } catch (Exception ex) {
             Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -40,7 +40,7 @@ public class For extends AbstractModuleEnablable {
     @ModuleParameter
     public boolean stopAtEnd = true;
 
-    // this will be automatically injected by the framework
+    // this will be automatically injected by the framework after setup and before init
     @ModuleParameter(initOnly = true)
     public Assembly assembly;
 
@@ -65,7 +65,12 @@ public class For extends AbstractModuleEnablable {
     @Override
     protected synchronized void initModule() {
         count = from;
-        startTimer();
+        assembly.addPostInitHook(new Runnable() {
+            @Override
+            public void run() {
+                startTimer();
+            }
+        });
     }
     private synchronized void startTimer() {
         if (timer != null) {
