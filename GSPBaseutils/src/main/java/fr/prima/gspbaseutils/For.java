@@ -22,7 +22,7 @@ public class For extends AbstractModuleEnablable {
     @ModuleParameter(initOnly = true)
     public long warmup = 0;
 
-    @ModuleParameter(initOnly = true)
+    @ModuleParameter(change = "periodChanged")
     public long period = 0;
 
     @ModuleParameter(initOnly = true)
@@ -49,7 +49,7 @@ public class For extends AbstractModuleEnablable {
     Timer timer = null;
 
     @Override
-    protected void setEnabled(boolean enabled) {
+    protected synchronized void setEnabled(boolean enabled) {
         boolean old = this.enabled;
         super.setEnabled(enabled);
         if (old == this.enabled) {
@@ -61,7 +61,14 @@ public class For extends AbstractModuleEnablable {
             timer.cancel();
         }
     }
-    
+
+    public synchronized void periodChanged() {
+        if (timer != null) {
+            warmup = 10;
+            startTimer();
+        }
+    }
+
     @Override
     protected synchronized void initModule() {
         count = from;
@@ -90,7 +97,7 @@ public class For extends AbstractModuleEnablable {
         timer.cancel();
     }
 
-    public void interrupt() {
+    public synchronized void interrupt() {
         try {
             timer.cancel();
             Thread.sleep(1000);
@@ -100,7 +107,7 @@ public class For extends AbstractModuleEnablable {
         }
     }
 
-    private void output() {
+    private synchronized void output() {
         emitEvent();
         s();
         i();
