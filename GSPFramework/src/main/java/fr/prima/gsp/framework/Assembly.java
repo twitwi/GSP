@@ -240,7 +240,7 @@ public class Assembly {
             for (Element e : list(root.getElementsByTagName("c"), root.getElementsByTagName("connector"))) {
                 h.connector(e);
                 if (e.hasAttribute("chain")) {
-                    String[] parts = e.getAttribute("chain").split(chainSeparator);
+                    String[] parts = e.getAttribute("chain").trim().split(chainSeparator);
                     //int imax = parts.length - 2;
                     for (int i = 0; i < parts.length - 1; i++) {
                         String e1 = parts[i];
