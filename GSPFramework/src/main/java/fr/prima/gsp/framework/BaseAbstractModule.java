@@ -9,6 +9,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Base helper class for modules.
@@ -27,6 +34,19 @@ public abstract class BaseAbstractModule implements Module {
     public final void stop() {
         listeners.clear();
         stopModule();
+    }
+    // generates a pseudo element to delegate
+    public final void configure(String attributeName, String value) {
+        try {
+            DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+            Element e = doc.createElement("m");
+            e.setAttribute(attributeName, value);
+            configure(e);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(BaseAbstractModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     ///////////////////////////////////////////////////

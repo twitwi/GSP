@@ -15,6 +15,7 @@ public interface Module {
     public EventReceiver getEventReceiver(String portName);
     public void addConnector(String portName, EventReceiver eventReceiver);
     public void configure(Element conf);
+    public void configure(String attributeName, String value);
     public void init();
     public void stop();
 }

@@ -86,6 +86,15 @@ public class Assembly {
         return moduleId;
     }
 
+    public void setModuleParameter(String fullName, String value) {
+        String[] e = fullName.split("[.]");
+        String moduleName = e[0];
+        String attributeName = e[1];
+        Module mod = modules.get(moduleName);
+        if (mod != null) {
+            mod.configure(attributeName, value);
+        }
+    }
 
     private Map<String, Callable<String>> factories = new HashMap<String, Callable<String>>();
     private void addModuleFactory(String factoryId, final String type, final Element e) {
