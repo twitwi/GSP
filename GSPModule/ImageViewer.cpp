@@ -68,6 +68,14 @@ void ImageViewer::setName(char *name)
 }
 
 
+void ImageViewer::inputRGB(char* dataRGB, int w, int h)
+{
+    IplImage* img = cvCreateImageHeader(cvSize(w,h), IPL_DEPTH_8U, 3);;
+    img->imageData = dataRGB;
+    input(img);
+    cvReleaseImageHeader(&img);
+}
+
 void ImageViewer::input(IplImage* img)
 {
   mut.lock();
@@ -84,11 +92,12 @@ void ImageViewer::input(IplImage* img)
        || img->depth != img_->depth)
     {
       cvReleaseImage(&img_);
-      img_ = cvCloneImage(img);
       cvReleaseImage(&imgdraw_);
-      imgdraw_ = cvCloneImage(imgdraw_);
+      img_ = cvCloneImage(img);
+      imgdraw_ = cvCloneImage(img);
     }else{
       cvCopy(img, img_);
+      cvCopy(img, imgdraw_);
     }
   }
 

@@ -44,6 +44,7 @@ public:
   void initModule();
   void stopModule();
   void input(IplImage* img);
+  void inputRGB(char* img, int w, int h);
   void setName(char *name);
   Framework _framework;
 };
