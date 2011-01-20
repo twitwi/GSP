@@ -24,7 +24,7 @@ static bool startsWithAndRemove(string &io, const char* prefix) {
 }
 
 
-ImageSource::ImageSource() : currentImage(NULL), imageIndex(-1), gray(true), pixelStep(1) {
+ImageSource::ImageSource() : currentImage(NULL), imageIndex(-1), gray(true), pixelStep(1), autoSkip(0) {
 }
 
 void ImageSource::skip() {
@@ -39,6 +39,7 @@ void ImageSource::skip() {
     }
 }
 void ImageSource::input() {
+    for (int ii = 0; ii < autoSkip; ii++) skip();
     IplImage *grabbed = NULL;
     switch (mode) {
     case 0: {
@@ -86,6 +87,10 @@ void ImageSource::input() {
 
 void ImageSource::setStart(int imageIndex) {
     this->imageIndex = imageIndex;
+}
+
+void ImageSource::setAutoSkip(int autoSkip) {
+    this->autoSkip = autoSkip;
 }
 
 void ImageSource::setGray(bool gray) {

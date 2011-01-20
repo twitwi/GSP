@@ -12,6 +12,7 @@ private:
     bool gray;
     std::string url;
     int pixelStep;
+    int autoSkip;
 
     int mode; // 0 files, 1 video
     // mode dependent fields
@@ -29,6 +30,7 @@ public:
     void setGray(bool gray);
     void setStart(int imageIndex);
     void setPixelStep(int pixelStep);
+    void setAutoSkip(int autoSkip);
     void input();
     void skip();
 };
