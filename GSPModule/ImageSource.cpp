@@ -34,7 +34,8 @@ void ImageSource::skip() {
             break;
         case 1:
             imageIndex++;
-            cvGrabFrame(video);
+            if (!cvGrabFrame(video)) mode = -3;
+            emitNamedEvent("end", currentImage);
             break;
     }
 }
@@ -54,6 +55,7 @@ void ImageSource::input() {
         if (!currentImage) {
             mode = -2;
             fprintf(stderr, "Could not grab image '%s'\n", buf);
+            emitNamedEvent("end", currentImage);
             return;
         }
         fprintf(stderr, "grabbed image '%s'\n", buf);
@@ -62,6 +64,11 @@ void ImageSource::input() {
     case 1: {
         if (pixelStep>1 || gray) freeImage(currentImage); // we had a temporary image (non grabber), we free it
         grabbed = cvQueryFrame(video); // we never free a cvQueryFrame'd image
+        if (!grabbed) {
+            mode = -2;
+            emitNamedEvent("end", currentImage);
+            return;
+        }
         currentImage = grabbed;
         // TODO handle grabbing non RGB frames
         if (gray) {

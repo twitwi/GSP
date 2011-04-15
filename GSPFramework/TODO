@@ -1,4 +1,9 @@
 
+* a "-?" "--help" option that explores the pipeline and reports the
+   variables, etc
+
+* 
+
 * fix in GSPBaseUtils the For module with 0 as a period
 
 * handle the fact that string get garbage collected (C++ should do a copy on receive or at least we can try to prevent gc for parameters (not that simple) until the pipeline is gc'ed)
