@@ -2,95 +2,45 @@ project ( GSPModule )
 
 cmake_minimum_required(VERSION 2.6)
 
-find_package( PkgConfig )
-
-PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
-PKG_CHECK_MODULES(GTHREAD REQUIRED gthread-2.0)
-
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake)
-
-FIND_PACKAGE( OpenCV COMPONENTS CV CXCORE HIGHGUI )
-
-find_package(Omiscid REQUIRED)
-
 set(Boost_USE_MULTITHREADED ON)
+
 find_package( Boost COMPONENTS thread date_time)
+find_package( GTK2 COMPONENTS gtk )
+find_package( GObject REQUIRED ) # for gthreads
+find_package( OpenCV REQUIRED )
 
 find_package( OpenGL )
+find_package( GLEW )
 find_package( LibXml2 )
+find_package( Omiscid )
 
 find_library( SERVICE_VIDEO_LIB servicevideo )
-find_library( GLEW_LIB GLEW )
 
-INCLUDE_DIRECTORIES(${BOOST_INCLUDEDIR}
-  ${GTK_INCLUDE_DIRS}
-  ${GTHREAD_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIR}
+include_directories(
+  ${BOOST_INCLUDEDIR}
+  ${GLEW_INCLUDE_DIR}
+  ${GOBJECT_INCLUDE_DIR}
+  ${GTK2_INCLUDE_DIRS}
   ${OMISCID_INCLUDE_DIR}
-  /usr/include/servicevideo
-  ${PROJECT_SOURCE_DIR}
+  ${OpenCV_INCLUDE_DIRS}
   ${OPENGL_INCLUDE_DIR}
   ${LIBXML2_INCLUDE_DIR}
+  /usr/include/servicevideo # Yuuuuurk
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-LINK_DIRECTORIES(
+link_directories(
   ${BOOST_LIBRARYDIR}
-  ${GTK_LIBRARY_DIRS}
+  ${GLEW_LIBRARY_DIR}
   ${GTHREAD_LIBRARY_DIRS}
-  ${OPENCV_LIBRARY_DIR}
   ${Omiscid_LIBRARY_DIRS}
+  ${OpenCV_LIB_DIR}
   )
 
-add_library( ImageLoader SHARED ImageLoader )
-target_link_libraries( ImageLoader ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
+add_definitions( ${GOBJECT_DEFINITIONS} )
 
-add_library( ImageSource SHARED ImageSource )
-target_link_libraries( ImageSource ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
+set( LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_library( ImageViewer SHARED ImageViewer )
-target_link_libraries( ImageViewer ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY} ${GTK_LIBRARIES} ${GTHREAD_LIBRARIES})
-
-add_library( RawToIpl SHARED RawToIpl )
-target_link_libraries( RawToIpl ${OpenCV_CXCORE_LIBRARY} )
-
-add_library( GTKModule SHARED GTKModule )
-target_link_libraries( GTKModule ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK_LIBRARIES} )
-
-
-add_library( ColorModules SHARED ColorConvertor ColorFilter ColorAnalyser ColorSeqDetector)
-target_link_libraries( ColorModules ${OpenCV_CXCORE_LIBRARY} ${OpenCV_CV_LIBRARY})
-
-add_library( ImageModules SHARED GaussianFilter)
-target_link_libraries( ImageModules ${OpenCV_CXCORE_LIBRARY} ${OpenCV_CV_LIBRARY})
-
-#set( CMAKE_CXX_FLAGS "${Omiscid_CFLAGS}")
-
-if( SERVICE_VIDEO_LIB AND OMISCID_FOUND )
-  add_library( ServiceVideoModule SHARED ServiceVideoModule )
-  target_link_libraries( ServiceVideoModule ${SERVICE_VIDEO_LIB} ${OMISCID_LIBRARIES} )
-
-  add_library( OmiscidVideoGrabber SHARED OmiscidVideoGrabber )
-  target_link_libraries( OmiscidVideoGrabber ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${SERVICE_VIDEO_LIB} ${OMISCID_LIBRARIES} )
-endif( SERVICE_VIDEO_LIB AND OMISCID_FOUND )
-
-
-if( OPENGL_FOUND AND GLEW_LIB )
-  add_library( GLModule SHARED GLModule )
-  target_link_libraries( GLModule  ${OpenGL_LIBRARIES} ${GLEW_LIB})
-  
-  add_library( TestGLModule SHARED TestGLModule )
-  target_link_libraries( TestGLModule GLModule ${Boost_THREAD_LIBRARY})
-  
-  add_library( LadybugCubeMap SHARED CubeMapModule LadybugCubeMap )
-  target_link_libraries( LadybugCubeMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY})
-
-  add_library( CatadioptricCubeMap SHARED CubeMapModule CatadioptricCubeMap )
-  target_link_libraries( CatadioptricCubeMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} ${OpenCV_HIGHGUI_LIBRARY} ${LIBXML2_LIBRARIES} )
-  
-  add_library( SphericMap SHARED SphericMap )
-  target_link_libraries( SphericMap GLModule ${Boost_THREAD_LIBRARY} ${OpenCV_CXCORE_LIBRARY} )
-  
-endif( OPENGL_FOUND AND GLEW_LIB )
-
-
-add_subdirectory(Detectors)
+add_subdirectory( Base )
+add_subdirectory( Detectors )
