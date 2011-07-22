@@ -6,7 +6,6 @@
 package fr.prima.gsp.framework.nativeutil;
 
 import org.bridj.demangling.Demangler.DemanglingException;
-import org.bridj.demangling.Demangler.Ident;
 import org.bridj.demangling.Demangler.MemberRef;
 import org.bridj.demangling.Demangler.PointerTypeRef;
 import org.bridj.demangling.Demangler.SpecialName;
@@ -16,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bridj.demangling.Demangler.Ident;
+import org.bridj.demangling.Demangler.IdentLike;
 
 /**
  *
@@ -48,7 +49,6 @@ public abstract class NativeSymbolDemangler {
                 try {
                     NativeSymbolInfo res = new NativeSymbolInfo();
                     res.mangledName = symbol;
-                    System.out.println(symbol);
                     GCC4Demangler dem = new GCC4Demangler(null, symbol); // we can pass null as a library, it is not used
                     MemberRef parsed = dem.parseSymbol();
                     if (parsed == null) {
@@ -87,7 +87,19 @@ public abstract class NativeSymbolDemangler {
                     // TODO some recursive or while things (for namespaces etc)
                     res.add(mr.getEnclosingType().getQualifiedName(new StringBuilder(), false).toString());
                 }
-                Object memberName = mr.getMemberName();
+                IdentLike memberIdentLike = mr.getMemberName();
+                if (memberIdentLike instanceof SpecialName) {
+                    switch ((SpecialName)memberIdentLike) {
+                        // TODO?
+                    }
+                    res.add("Special: " + ((SpecialName)memberIdentLike).name());
+                } else if (memberIdentLike instanceof Ident) {
+                    Ident memberIdent = (Ident)memberIdentLike;
+                    res.add((String) memberIdent.toString()); // not much more choice that this toString to access the "simpleName"
+                } else {
+                    throw new IllegalArgumentException("Wrong type " + memberIdentLike.getClass());
+                }
+                /*
                 if (memberName instanceof List) {
                     List<?> l = (List<?>) memberName;
                     for (Object o : l) {
@@ -96,10 +108,10 @@ public abstract class NativeSymbolDemangler {
                 } else if (memberName instanceof String) {
                     res.add((String) memberName);
                 } else if (memberName instanceof SpecialName) {
-                    res.add("Special: " + ((SpecialName) memberName).name());
                 } else {
                     throw new IllegalArgumentException("Wrong type " + memberName.getClass());
                 }
+                 */
                 return res.toArray(new String[res.size()]);
             }
 
@@ -131,7 +143,7 @@ public abstract class NativeSymbolDemangler {
                 if (basicType != null) {
                     return basicType;
                 }
-                if ("com.bridj.Pointer".equals(pType)) {
+                if ("org.bridj.Pointer".equals(pType)) {
                     PointerTypeRef p = (PointerTypeRef) typeRef;
                     return NativeType.pointer(getParameterType(p.pointedType));
                 }

@@ -7,7 +7,6 @@ package fr.prima.gsp.framework.nativeutil;
 
 import org.bridj.demangling.Demangler.Symbol;
 import org.bridj.BridJ;
-import org.bridj.JNI;
 import org.bridj.Platform;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

@@ -23,7 +23,6 @@ aptitude install maven2
 
 == Compile and setup for execution ==
 cd GSPFramework
-yes | unzip bridj-binaries.zip
 mvn dependency:copy-dependencies install jar:jar
 rm -f target/lib && ln -s dependency target/lib
 cd ..
@@ -38,7 +37,7 @@ Then see GSPExample folder.
 
 
 
-
+!!!!!!!!!!!!!!!!!!!
 DEPRECATED COMMENTS
 ======================
 
@@ -62,5 +61,6 @@ java -jar where/is/GSPFramework/target/gsp-framework-1.0-SNAPSHOT.jar 'and(nameI
 
 # once the connection is done to the service video, the interface should show you the list of .xml files, click on any to instantiate the corresponding pipeline
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!
 END OF DEPRECATED COMMENTS
 =============================

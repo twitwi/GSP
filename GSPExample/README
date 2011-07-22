@@ -34,7 +34,7 @@ $GO pipeline-cpp-2.xml
 $GO pipeline-cpp-3-with-param.xml p=1
 $GO pipeline-cpp-3-with-param.xml p=1 tick.warmupDelay=1500
 $GO pipeline-cpp-4-emit-object.xml 
-
+../PipelineViewer/view-pipeline.sh pipeline-cpp-4-emit-object.xml
 
 From here we use the provide base utils (written in Java), they replace the custom demonstration classes from the java/ folder and provide more functionalities
 
