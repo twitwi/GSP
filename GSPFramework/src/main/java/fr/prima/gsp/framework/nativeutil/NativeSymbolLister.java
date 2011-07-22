@@ -5,9 +5,10 @@
 
 package fr.prima.gsp.framework.nativeutil;
 
-import com.bridj.BridJ;
-import com.bridj.Demangler.Symbol;
-import com.bridj.JNI;
+import org.bridj.demangling.Demangler.Symbol;
+import org.bridj.BridJ;
+import org.bridj.JNI;
+import org.bridj.Platform;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public abstract class NativeSymbolLister {
     public static NativeSymbolLister create() {
         boolean disableFilter = true;
         // ^ WARNING the filter might be mangling dependant
-        if (!disableFilter && !JNI.isLinux()) throw new IllegalStateException("check the filter is ok for your (non-linux) os");
+        if (!disableFilter && !Platform.isLinux()) throw new IllegalStateException("check the filter is ok for your (non-linux) os");
         return createBridjNativeSymbolsLister(disableFilter);
     }
 

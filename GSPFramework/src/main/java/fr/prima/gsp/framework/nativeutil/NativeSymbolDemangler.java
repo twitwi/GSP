@@ -5,12 +5,13 @@
 
 package fr.prima.gsp.framework.nativeutil;
 
-import com.bridj.Demangler.DemanglingException;
-import com.bridj.Demangler.MemberRef;
-import com.bridj.Demangler.PointerTypeRef;
-import com.bridj.Demangler.SpecialName;
-import com.bridj.Demangler.TypeRef;
-import com.bridj.cpp.GCC4Demangler;
+import org.bridj.demangling.Demangler.DemanglingException;
+import org.bridj.demangling.Demangler.Ident;
+import org.bridj.demangling.Demangler.MemberRef;
+import org.bridj.demangling.Demangler.PointerTypeRef;
+import org.bridj.demangling.Demangler.SpecialName;
+import org.bridj.demangling.Demangler.TypeRef;
+import org.bridj.demangling.GCC4Demangler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,7 @@ public abstract class NativeSymbolDemangler {
                 try {
                     NativeSymbolInfo res = new NativeSymbolInfo();
                     res.mangledName = symbol;
+                    System.out.println(symbol);
                     GCC4Demangler dem = new GCC4Demangler(null, symbol); // we can pass null as a library, it is not used
                     MemberRef parsed = dem.parseSymbol();
                     if (parsed == null) {
