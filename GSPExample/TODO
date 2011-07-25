@@ -1,12 +1,1 @@
-
-C/CPP:
-check framework.h synchronicity
-
-CPP:
-check in Div::input that the local vars are still needed.
-namespace the example
-
-java:
-check README instructions (how to compile, framework jar path)
-
-
+see ../TODO
