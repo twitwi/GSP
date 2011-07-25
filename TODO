@@ -23,6 +23,8 @@ add examples with passive modules (reusing modules in a plain program)
 === TODO from GSPFramework ===
 ==============================
 
+* Investigate (and fix) where the output message in first cpp example comes from
+
 * a "-?" "--help" option that explores the pipeline and reports the
    variables, etc
 
