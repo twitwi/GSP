@@ -36,7 +36,19 @@ $GO pipeline-cpp-3-with-param.xml p=1 tick.warmupDelay=1500
 $GO pipeline-cpp-4-emit-object.xml 
 ../PipelineViewer/view-pipeline.sh pipeline-cpp-4-emit-object.xml
 
-From here we use the provide base utils (written in Java), they replace the custom demonstration classes from the java/ folder and provide more functionalities
+
+
+All modules were written for this demo so that you can see their source code.
+If you need a module from this demo, before copying it into your project,
+have a look at GSPBaseutils and the modules it provides. For example you have:
+  fr.prima.gspbaseutils.Console
+  --> the Console
+  fr.prima.gspbaseutils.For
+  --> a module like the Counter in the examples
+  fr.prima.gspbaseutils.CharPointerToString:
+  --> conversion from c string (utf-8) to java string
+  fr.prima.gspbaseutils.StringToCharPointer:
+  --> conversion from java string to c string (utf-8)
 
 GO="java -cp  ../GSPBaseutils/target/*:../GSPFramework/target/dependency/*:../GSPFramework/target/*:java fr.prima.gsp.Launcher"
 
