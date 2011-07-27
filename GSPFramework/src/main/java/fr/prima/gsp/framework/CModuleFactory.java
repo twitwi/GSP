@@ -345,7 +345,7 @@ public class CModuleFactory {
         private void cCallback(String commandName, Pointer[] parameters) {
             if ("param".equals(commandName)) {
                 // this is of pure C (non C++)
-                parameterTypes.put(parameters[1].getString(0), parameters[0].getString(0));
+                parameterTypes.put(parameters[1].getString(0), parameters[2].getString(0));
             } else if ("emit".equals(commandName)) {
                 Object[] eventParameters = new Object[parameters.length / 2];
                 String[] eventParametersTypes = new String[parameters.length / 2];
@@ -378,7 +378,7 @@ public class CModuleFactory {
             String registeredType = parameterTypes.get(parameterName);
             Object value;
             if (registeredType != null) { // registered from plain C
-                value = getNativeValueFromString(cStringTypeToNativeType.get(parameterName), text);
+                value = getNativeValueFromString(cStringTypeToNativeType.get(registeredType), text);
             } else {
                 NativeType type = findBestParameterType(parameterName, text);
                 value = getNativeValueFromString(type, text);
