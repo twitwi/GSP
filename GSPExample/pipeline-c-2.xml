@@ -1,0 +1,14 @@
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrates further exchange between C modules.%nIt should count up to 10 by increments of 1/6."/>
+
+    <m id="tick" type="ex:Counter" maxCount="61" period="25" warmupDelay="3000"/>
+    <m id="d1" type="c:NativeCDemo.Div" divisor="1.41421356"/>
+    <m id="d2" type="c:NativeCDemo.Div" divisor="1.41421356"/>
+    <m id="d3" type="c:NativeCDemo.Div" divisor="3"/>
+    <m id="log" type="c:NativeCDemo.Log"/>
+
+    <c chain="tick - intInput#d1# - d2 - #d3#string - log"/>
+</pipeline>
+

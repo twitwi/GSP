@@ -1,0 +1,11 @@
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrate simple mixe of Java and C modules.%nIt should count up to 3 then exit."/>
+
+    <m id="tick" type="ex:Counter" maxCount="4"/>
+    <m id="log" type="c:NativeCDemo.Log" hello="world"/>
+
+    <c chain="tick#asString - log"/>
+</pipeline>
+
