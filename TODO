@@ -1,3 +1,29 @@
+=============================
+=== TODO from GSPExamples ===
+=============================
+C/CPP:
+check framework.h synchronicity
+
+CPP:
+check in Div::input that the local vars are still needed.
+namespace the example
+
+java:
+check README instructions (how to compile, framework jar path)
+
+CPP:
+add examples using FIELD_WITH_SETTER and STRING_FIELD_WITH_SETTER
+
+more:
+add examples with passive modules (reusing modules in a plain program)
+
+
+
+==============================
+=== TODO from GSPFramework ===
+==============================
+
+* Investigate (and fix) where the output message in first cpp example comes from
 
 * a "-?" "--help" option that explores the pipeline and reports the
    variables, etc
@@ -8,7 +34,7 @@
 
 * handle the fact that string get garbage collected (C++ should do a copy on receive or at least we can try to prevent gc for parameters (not that simple) until the pipeline is gc'ed)
 
-
+v
 * better feedback on setter (c++) not found
 
 * same better feedback for invocationtargetexception when binding
@@ -18,7 +44,7 @@
    receivers) with the same name
 
 * base utils
-** timer/clock/thread (all the same thing)
+** timer/clock/thread (all the same thing) : done?
 ** thread fork/join
 ** merger/extractor (parameter list ...) (option: emit at each change or emit when all changed at least once or emit when all changed once (block others before that))
 
@@ -30,7 +56,7 @@
 
 * CPP: namespaces
 
-* CPP: easy setters (orthogonal to gsp)
+* CPP: easy setters (orthogonal to gsp) : done
 
 * unallocated module when stopping pipeline
 
@@ -60,7 +86,7 @@
 => it would also minize the requirements to build some java module (do
    not require jna if the op on pointers are usual)
 => could also put some custom metatype info in it (to pass it back to C)
-
+: done?
 
 * handle possibility for a module to know if it has some "clients" on an output
 * metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
