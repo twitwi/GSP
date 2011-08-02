@@ -192,8 +192,8 @@ function (__java_copy_file src dest comment)
 endfunction (__java_copy_file src dest comment)
 
 # define helper scripts
-set(_JAVA_CLASS_FILELIST_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaClassFilelist.cmake)
-set(_JAVA_SYMLINK_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaSymlinks.cmake)
+set(_JAVA_CLASS_FILELIST_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/UseJavaClassFilelist.cmake)
+set(_JAVA_SYMLINK_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/UseJavaSymlinks.cmake)
 
 function(add_jar _TARGET_NAME)
     set(_JAVA_SOURCE_FILES ${ARGN})

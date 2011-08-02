@@ -1,3 +1,0 @@
-
-javac -cp ../../GSPFramework/target/dependency/*:../../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar fr/prima/gspexample/*.java
-
