@@ -9,7 +9,7 @@ cd ..
 
 = How to run the examples =
 ===========================
-GO="java -cp  \"../GSPFramework/target/dependency/*\":\"../GSPFramework/target/*\":./build/java/GSPExample.jar fr.prima.gsp.Launcher"
+GO='java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/*:./build/java/GSPExampleJava.jar fr.prima.gsp.Launcher'
 
 
 ../PipelineViewer/view-pipeline.sh pipeline-pure-java-1.xml
@@ -48,5 +48,5 @@ have a look at GSPBaseutils and the modules it provides. For example you have:
   fr.prima.gspbaseutils.StringToCharPointer:
   --> conversion from java string to c string (utf-8)
 
-GO="java -cp  ../GSPBaseutils/target/*:../GSPFramework/target/dependency/*:../GSPFramework/target/*:java fr.prima.gsp.Launcher"
+###GO='java -cp  ../GSPBaseutils/target/*:../GSPFramework/target/dependency/*:../GSPFramework/target/*:java fr.prima.gsp.Launcher'
 
