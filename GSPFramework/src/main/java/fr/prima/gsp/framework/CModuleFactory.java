@@ -32,6 +32,8 @@ import org.w3c.dom.Node;
  * @author emonet
  */
 public class CModuleFactory {
+    
+    public static final String gspModulePath = "GSP_MODULES_PATH";
 
     private void debug(String message) {
         Logger.getLogger(CModuleFactory.class.getName()).log(Level.FINEST, message);
@@ -279,7 +281,7 @@ public class CModuleFactory {
         }
     };
 
-    private static class CModule extends BaseAbstractModule implements Module {
+    private static class CModule extends BaseAbstractModule {
 
         Pointer that;
         FrameworkCallback framework;

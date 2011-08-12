@@ -77,6 +77,11 @@
                 <artifactId>bridj</artifactId>
                 <version>0.5</version>
             </dependency>
+                <dependency>
+                        <groupId>com.nativelibs4java</groupId>
+                        <artifactId>python26</artifactId>
+                        <version>0.1-SNAPSHOT</version>
+                </dependency>
         </dependencies>
     </project>
 
