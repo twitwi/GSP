@@ -3,8 +3,6 @@ package org.bridj.demangling;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bridj.demangling.Demangler;
-import org.bridj.JNI;
 import org.bridj.CLong;
 import org.bridj.NativeLibrary;
 import org.bridj.demangling.Demangler.ClassRef;
@@ -16,7 +14,6 @@ import org.bridj.demangling.Demangler.TypeRef;
 import org.bridj.demangling.Demangler.SpecialName;
 import java.util.HashMap;
 import java.util.Map;
-import org.bridj.Platform;
 
 public class GCC4Demangler extends Demangler {
 	
