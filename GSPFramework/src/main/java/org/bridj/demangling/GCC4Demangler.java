@@ -21,7 +21,15 @@ public class GCC4Demangler extends Demangler {
 		super(library, symbol);
 	}
 
-    private Map<String, TypeRef> shortcuts = new HashMap<String, TypeRef>();
+    private Map<String, TypeRef> shortcuts = new HashMap<String, TypeRef>() {{
+        // type shortcut: e.g. Ss is for string
+        put("s", classType(StdString.class));
+        // these are the default type shortcuts (some more will be added)
+    }};
+    private Map<String, TypeRef> prefixShortcuts = new HashMap<String, TypeRef>() {{
+        // prefix shortcut: e.g. St is for std::
+        put("s", classType(StdString.class));
+    }};
     int nextShortcutId = -1;
     private String nextShortcutId() {
         int n = nextShortcutId++;
@@ -29,22 +37,35 @@ public class GCC4Demangler extends Demangler {
     }
 
     private TypeRef parseShortcutType() {
-        if (peekChar() == '_') {
+        char c = peekChar();
+        // GCC builds shortcuts for each encountered type, they appear in the mangling as: S_, S0_, S1_, ..., SA_, SB_, ..., SZ_, S10_
+        if (c == '_') { // we encounter S_
             return shortcuts.get(Character.toString(consumeChar()));
         }
-        String id = "";
-        char c;
-        while ((c = peekChar()) != '_' && c != 'E' && c != 0) {
-            id += consumeChar();
+        if (Character.isDigit(c) || Character.isUpperCase(c)) { // memory shorcut S[0-9A-Z]+_
+            String id = "";
+            while ((c = peekChar()) != '_' && c != 0) {
+                id += consumeChar();
+            }
+            if (peekChar() == 0) {
+                throw new UnsupportedOperationException("Encountered a unexpected end in gcc mangler shortcut '" + id + "'.");
+            }
+            id += consumeChar(); // the '_'
+            TypeRef res = shortcuts.get(id);
+            if (res == null) {
+                throw new UnsupportedOperationException("Encountered a unexpected gcc mangler shortcut '" + id + "'.");
+            }
+            return res;
+        } else if (Character.isLowerCase(c)) { // other, single character built-in shorcuts. We suppose for now that all shortcuts are lower case (e.g. Ss, St, ...)
+            String id = Character.toString(consumeChar());
+            TypeRef res = shortcuts.get(id);
+            if (res == null) {
+                throw new UnsupportedOperationException("Encountered a unexpected gcc mangler built-in shortcut '" + id + "'.");
+            }
+            return res;
+        } else {
+            throw new UnsupportedOperationException("Encountered a unexpected gcc unknown shortcut '" + c + "'.");
         }
-        if (c != 'E')
-            id += consumeChar();
-
-        if (id.equals("s"))
-            return classType(StdString.class);
-
-        TypeRef res = shortcuts.get(id);
-        return res;
     }
     private TypeRef parsePointerType() throws DemanglingException {
         TypeRef pointed = parseType();
