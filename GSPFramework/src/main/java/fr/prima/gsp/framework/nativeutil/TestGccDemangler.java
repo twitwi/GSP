@@ -20,7 +20,6 @@ public class TestGccDemangler {
         NativeSymbolDemangler dem = NativeSymbolDemangler.create();
         
         // More tests are interface the cpp-mangling/ folder (in a javascript file) 
-
         //assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_"); // St6vectorIPN16StreamFacilities13EnrichedFrameESaIS2_EE
         assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_");
         assertDemangle(dem, "_ZN13CompareThings5inputEP5ThingS1_", p(st("Thing")), p(st("Thing")));

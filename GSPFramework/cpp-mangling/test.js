@@ -25,10 +25,10 @@ test.assertDemangle(dem, "_Z7func017PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPcS10_S
 test.assertDemangle(dem, "_Z5inputP5ThingS_", Array( p(st("Thing")), st("Thing") ));
 test.assertDemangle(dem, "_ZN13CompareThings5inputEP5ThingS1_", Array( p(st("Thing")), p(st("Thing")) ));
 
-test.assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_", Array());
 
-var stdstring = st("org.bridj.demangling.GCC4Demangler$StdString");
+var stdstring = NativeType.stdString();
 test.assertDemangle(dem, "_Z7func200SsSs", Array(stdstring,stdstring));
 
-
+var stdvectorofCCCpointer = NativeType.stdVector(p(st("CCC")));
+test.assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_", Array(stdvectorofCCCpointer, stdvectorofCCCpointer));
 

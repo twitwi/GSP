@@ -19,6 +19,18 @@ public abstract class NativeType {
     public static final NativeType VOID = simple("void");
     public static final NativeType[] nonPointersTypes = new NativeType[]{INT, FLOAT, BOOL, CHAR, VOID};
 
+    public static NativeType stdString() {
+        String[] std = new String[]{"std"};
+        NativeType[] charType = new NativeType[]{CHAR};
+        return struct(std, "basic_string", new NativeType[]{
+            CHAR, struct(std, "char_traits", charType), struct(std, "allocator", charType)
+        });
+        // from c++filt => std::basic_string<char, std::char_traits<char>, std::allocator<char> >
+    }
+    public static NativeType stdVector(NativeType content) {
+        String[] std = new String[]{"std"};
+        return struct(std, "vector", new NativeType[]{content, struct(std, "allocator", new NativeType[]{content})});
+    }
     // predefined helpers
     public static final NativeType CHAR_POINTER = pointer(CHAR);
     public static final NativeType VOID_POINTER = pointer(VOID);
@@ -135,11 +147,27 @@ public abstract class NativeType {
     }
 
     public static NativeType struct(final String nativeName) {
+        return struct(new String[0], nativeName, null);
+    }
+    public static NativeType struct(final String[] ns, final String nativeName, final NativeType[] templates) {
         return new NativeType() {
 
             @Override
             public String toString() {
-                return "st(" + nativeName + ")";
+                StringBuilder b = new StringBuilder("st(");
+                for (String n : ns) {
+                    b.append(n).append("::");
+                }
+                b.append(nativeName);
+                if (templates != null) {
+                    b.append("< ");
+                    for (NativeType t : templates) {
+                        b.append(t.toString()).append(" ");
+                    }
+                    b.append(">");
+                }
+                b.append(")");
+                return b.toString();
             }
 
             @Override

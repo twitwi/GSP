@@ -2,7 +2,6 @@ package org.bridj.demangling;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.bridj.CLong;
@@ -31,7 +30,7 @@ public class GCC4Demangler extends Demangler {
         put("t", Arrays.asList((IdentLike) new Ident("std")));
         put("a", Arrays.asList((IdentLike) new Ident("std"), new Ident("allocator")));
         // Ss == std::string == std::basic_string<char, std::char_traits<char>, std::allocator<char> >
-        Ident string = new Ident("string", new TemplateArg[]{
+        Ident string = new Ident("basic_string", new TemplateArg[]{
             classType(Byte.TYPE),
             enclosed(new ClassRef(new Ident("char_traits", new TemplateArg[]{classType(Byte.TYPE)})), "std"),
             enclosed(new ClassRef(new Ident("allocator", new TemplateArg[]{classType(Byte.TYPE)})), "std")
@@ -155,21 +154,24 @@ public class GCC4Demangler extends Demangler {
                             }
                             id += consumeChar(); // the '_'
                             delta++;
-                            System.err.println(typeShortcuts.entrySet() + " , "+prefixShortcuts.entrySet());
                             if (typeShortcuts.containsKey(id)) {
                                 return typeShortcuts.get(id);
                             }
                             position -= delta;
                         }
-                        // WARNING/INFO/NB: we intentionally continue to the N case
                     }
+                    // WARNING/INFO/NB: we intentionally continue to the N case
                     case 'N':
                         position--; // I actually would peek()
                     {
-                        List<IdentLike> ns = parseSimpleOrComplexIdent();
+                        List<IdentLike> ns = new ArrayList<IdentLike>();
+                        String newShortcutId = parseSimpleOrComplexIdentInto(ns, false);
                         ClassRef res = new ClassRef(ensureOfType(ns.remove(ns.size() - 1), Ident.class));
                         if (!ns.isEmpty()) {
                             res.setEnclosingType(new NamespaceRef(ns.toArray(new Ident[ns.size()])));
+                        }
+                        if (newShortcutId != null) {
+                            typeShortcuts.put(newShortcutId, res);
                         }
                         return res;
                     }
@@ -214,8 +216,6 @@ public class GCC4Demangler extends Demangler {
 		}
 	}
 
-    public static class StdString implements IdentLike {}
-
 	String parseName() throws DemanglingException { // parses a plain name, e.g. "4plop" (the 4 is the length)
 		char c;
 		StringBuilder b = new StringBuilder();
@@ -234,8 +234,8 @@ public class GCC4Demangler extends Demangler {
 			b.append(consumeChar());
 		return b.toString();
 	}
-    private List<IdentLike> parseSimpleOrComplexIdent() throws DemanglingException {
-        List<IdentLike> res = new ArrayList<IdentLike>();
+    private String parseSimpleOrComplexIdentInto(List<IdentLike> res, boolean isParsingNonShortcutableElement) throws DemanglingException {
+        String newlyAddedShortcutForThisType = null;
         boolean shouldContinue = false;
         boolean expectEInTheEnd = false;
         if (consumeCharIf('N')) { // complex (NB: they don't nest (they actually can within a template parameter but not elsewhere))
@@ -254,19 +254,22 @@ public class GCC4Demangler extends Demangler {
         if (shouldContinue) {
             do {
                 String id = nextShortcutId(); // we get the id before parsing the part (might be template parameters and we need to get the ids in the right order)
+                newlyAddedShortcutForThisType = id;
                 IdentLike part = parseNonCompoundIdent();
                 res.add(part);
-                prefixShortcuts.put(id, new ArrayList<IdentLike>(res)); // the current compound name is save by gcc as a shortcut (we do the same)
+                prefixShortcuts.put(id, new ArrayList<IdentLike>(res)); // the current compound name is saved by gcc as a shortcut (we do the same)
             } while (Character.isDigit(peekChar()));
-            //prefixShortcuts.remove(previousShortcutId()); // correct the fact that we parsed one too much
-            nextShortcutId--;
+            if (isParsingNonShortcutableElement) {
+                //prefixShortcuts.remove(previousShortcutId()); // correct the fact that we parsed one too much
+                nextShortcutId--;
+            }
         }
         if (consumeCharIf('I')) {
-            String id = nextShortcutId(); // we get the id before parsing the part (might be template parameters and we need to get the ids in the right order)
             List<TemplateArg> args = new ArrayList<TemplateArg>();
             while (!consumeCharIf('E')) {
                 args.add(parseTemplateArg());
             }
+            String id = nextShortcutId(); // we get the id after parsing the template parameters
             Ident templatedIdent = new Ident(ensureOfType(res.remove(res.size() - 1), Ident.class).toString(), args.toArray(new TemplateArg[args.size()]));
             res.add(templatedIdent);
             prefixShortcuts.put(id, new ArrayList<IdentLike>(res));
@@ -282,14 +285,13 @@ public class GCC4Demangler extends Demangler {
         if (expectEInTheEnd) {
             expectAnyChar('E');
         }
-        return res;
+        return newlyAddedShortcutForThisType;
     }
 
     /**
      * @return whether we should expect more parsing after this shortcut (e.g. std::vector<...> is actually not NSt6vectorI...EE but St6vectorI...E (without trailing N)
      */
     private boolean parseShortcutInto(List<IdentLike> res) throws DemanglingException{
-        System.err.println(str.substring(position));
         char c = peekChar();
         // GCC builds shortcuts for each encountered type, they appear in the mangling as: S_, S0_, S1_, ..., SA_, SB_, ..., SZ_, S10_
         if (c == '_') { // we encounter S_
@@ -404,7 +406,8 @@ public class GCC4Demangler extends Demangler {
 		}
                 
             {
-                List<IdentLike> ns = parseSimpleOrComplexIdent();
+                List<IdentLike> ns = new ArrayList<IdentLike>();
+                parseSimpleOrComplexIdentInto(ns, true);
                 mr.setMemberName(ns.remove(ns.size() - 1));
                 if (!ns.isEmpty()) {
                     ClassRef parent = new ClassRef(ensureOfType(ns.remove(ns.size() - 1), Ident.class));
