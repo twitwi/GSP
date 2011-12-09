@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package fr.prima.gsp.framework.nativeutil;
 
 import static fr.prima.gsp.framework.nativeutil.NativeType.*;
@@ -13,8 +12,18 @@ import static fr.prima.gsp.framework.nativeutil.NativeType.*;
  */
 public class TestGccDemangler {
 
+    public static NativeType st(String s) {
+        return NativeType.struct(s);
+    }
+
     public static void main(String[] args) {
         NativeSymbolDemangler dem = NativeSymbolDemangler.create();
+        
+        // More tests are interface the cpp-mangling/ folder (in a javascript file) 
+
+        //assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_"); // St6vectorIPN16StreamFacilities13EnrichedFrameESaIS2_EE
+        assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_");
+        assertDemangle(dem, "_ZN13CompareThings5inputEP5ThingS1_", p(st("Thing")), p(st("Thing")));
         assertDemangle(dem, "_Z7func013Pcc", CHAR_POINTER, CHAR);
         assertDemangle(dem, "_Z7func013PPPPcS1_S0_S_c", p(p(p(CHAR_POINTER))), p(p(CHAR_POINTER)), p(CHAR_POINTER), CHAR_POINTER, CHAR);
     }

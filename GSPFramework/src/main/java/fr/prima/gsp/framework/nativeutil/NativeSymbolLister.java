@@ -8,7 +8,7 @@ package fr.prima.gsp.framework.nativeutil;
 import org.bridj.demangling.Demangler.Symbol;
 import org.bridj.BridJ;
 import org.bridj.Platform;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,7 +55,7 @@ public abstract class NativeSymbolLister {
                         }
                     }
                     return res;
-                } catch (FileNotFoundException ex) {
+                } catch (IOException ex) {
                     Logger.getLogger(NativeSymbolLister.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return null;
@@ -63,4 +63,12 @@ public abstract class NativeSymbolLister {
         };
     }
 
+    public static void main(String[] args) {
+        List<String> l = create().getSymbols(args[0]);
+        System.out.println("Listing symbols for " + args[0]);
+        for (String s : l) {
+            System.out.println("  " + s);
+        }
+
+    }
 }

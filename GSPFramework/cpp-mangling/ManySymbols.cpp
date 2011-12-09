@@ -8,6 +8,7 @@ extern "C" {
 
 class CCC{};
 class BCA{};
+namespace NNN{class DDD{};}
 
 void func000(char* whatever) {}
 int func001(char* what, int ever) {return ever;}
@@ -28,14 +29,18 @@ void func015(char****************** a, char****************** b) {}
 void func016(char************************************* a, char************************************* b) {}
 void func017(char************************************** a, char************************************** b) {}
 void func018(int*i, int ii, int* iii, float* f, float ff) {}
+void func019(char************************************** a, char**************** b) {}
+void func020(NNN::DDD**a){}
 
 namespace NA{ // S_
     namespace NB { // S0_
         namespace NC { // S1_
+            class YYY {};
             class ZZZ {};
             void func100(int*i, int ii){}
             void func101(ZZZ*i, ZZZ**ii){} // ZZZ S2_  ; ZZZ* S3_
             void func102(char* s, ZZZ*i, ZZZ**ii, char *s2){} // char* S2_ ; ZZZ S3_ ;  ZZZ S4_ 
+            void func103(ZZZ*i, YYY*ii){}
         }
         void func110(NC::ZZZ*i, NC::ZZZ**ii){} // ZZZ S2_  ; ZZZ* S3_
         void func112(char* s, NC::ZZZ*i, NC::ZZZ**ii, char *s2){} // char* S1_ ; NC S2_ ; ZZZ S3_ ;  ZZZ* S4_ 
@@ -45,6 +50,19 @@ namespace NA{ // S_
         }
     }
 }
+namespace std {
+    void func130(int i){}
+    namespace plop {
+        void func131(int i){}
+        namespace std {
+            void func132(int i){}
+        }
+    }
+}
+void funcSt140(int i){}
+
+// this might be of some help:
+// https://llvm.org/svn/llvm-project/cfe/tags/Apple/objc_translate-34/src/tools/clang/lib/CodeGen/Mangle.cpp
 
 #include <vector>
 #include <string>
@@ -61,9 +79,12 @@ class Ctest {
 public:
     Ctest();
     int test_add(int a, int b);
+    static int test_add_static(int a, int b);
 };
 Ctest::Ctest() {SOMETHING}
 int Ctest::test_add(int a, int b) {return a+b;}
+int Ctest::test_add_static(int a, int b) {return a+b;}
 double sinInt(int a) {return a;}
 int forwardCall(void*a, int b, int c) {return 0;}
 void pointerAliases(void** a, void* b, void*** c, int** d) {}
+

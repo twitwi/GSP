@@ -72,11 +72,11 @@
                 <artifactId>jna</artifactId>
                 <version>3.2.5</version>
             </dependency>
-            <dependency>
-                <groupId>com.nativelibs4java</groupId>
-                <artifactId>bridj</artifactId>
-                <version>0.5</version>
-            </dependency>
+                <dependency>
+                        <groupId>com.nativelibs4java</groupId>
+                        <artifactId>bridj</artifactId>
+                        <version>0.7-SNAPSHOT</version>
+                </dependency>
         </dependencies>
     </project>
 

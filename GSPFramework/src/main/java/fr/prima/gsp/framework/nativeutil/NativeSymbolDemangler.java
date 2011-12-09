@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bridj.demangling.Demangler.Ident;
 import org.bridj.demangling.Demangler.IdentLike;
 
@@ -60,7 +62,7 @@ public abstract class NativeSymbolDemangler {
                     res.parameterTypes = getParameterTypes(parsed.paramTypes);
                     return res;
                 } catch (DemanglingException ex) {
-                    //Logger.getLogger(NativeSymbolDemangler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(NativeSymbolDemangler.class.getName()).log(Level.SEVERE, null, ex);
                     // TODO could log for demangler improvement
                 }
                 return null;
