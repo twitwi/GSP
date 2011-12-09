@@ -32,3 +32,4 @@ test.assertDemangle(dem, "_Z7func200SsSs", Array(stdstring,stdstring));
 var stdvectorofCCCpointer = NativeType.stdVector(p(st("CCC")));
 test.assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_", Array(stdvectorofCCCpointer, stdvectorofCCCpointer));
 
+test.assertDemangle(dem, "_Z7streamsSd", Array(p(st("NOPE"))) );

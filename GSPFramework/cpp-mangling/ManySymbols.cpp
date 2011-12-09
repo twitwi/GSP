@@ -88,3 +88,9 @@ double sinInt(int a) {return a;}
 int forwardCall(void*a, int b, int c) {return 0;}
 void pointerAliases(void** a, void* b, void*** c, int** d) {}
 
+#include <iostream>
+void streams(std::istream i, std::ostream o, std::iostream io){}
+void streamsI(std::basic_istream< char, std::char_traits<char> > i){}
+void streamsO(std::basic_ostream< char, std::char_traits<char> > o){}
+void streamsIO(std::basic_iostream< char, std::char_traits<char> > io){}
+

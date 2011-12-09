@@ -26,20 +26,25 @@ public class GCC4Demangler extends Demangler {
 
         
     private Map<String, List<IdentLike>> prefixShortcuts = new HashMap<String, List<IdentLike>>() {{
+        
         // prefix shortcut: e.g. St is for std::
         put("t", Arrays.asList((IdentLike) new Ident("std")));
         put("a", Arrays.asList((IdentLike) new Ident("std"), new Ident("allocator")));
-        // Ss == std::string == std::basic_string<char, std::char_traits<char>, std::allocator<char> >
-        Ident string = new Ident("basic_string", new TemplateArg[]{
-            classType(Byte.TYPE),
-            enclosed(new ClassRef(new Ident("char_traits", new TemplateArg[]{classType(Byte.TYPE)})), "std"),
-            enclosed(new ClassRef(new Ident("allocator", new TemplateArg[]{classType(Byte.TYPE)})), "std")
-        });
-        put("s", Arrays.asList((IdentLike) new Ident("std"), string));
+        put("b", Arrays.asList((IdentLike) new Ident("std"), new Ident("basic_string")));
+        TypeRef chartype = classType(Byte.TYPE);
+        ClassRef charTraitsOfChar = enclosed("std", new ClassRef(new Ident("char_traits", new TemplateArg[]{chartype})));
+        ClassRef allocatorOfChar = enclosed("std", new ClassRef(new Ident("allocator", new TemplateArg[]{chartype})));
+        put("d", Arrays.asList((IdentLike) new Ident("std"), new Ident("basic_iostream", new TemplateArg[]{chartype, charTraitsOfChar})));
+        put("i", Arrays.asList((IdentLike) new Ident("std"), new Ident("basic_istream", new TemplateArg[]{chartype, charTraitsOfChar})));
+        put("o", Arrays.asList((IdentLike) new Ident("std"), new Ident("basic_ostream", new TemplateArg[]{chartype, charTraitsOfChar})));
+        // Ss == std::string == std::basic_string<char, std::char_traits<char>, std::allocator<char> >        
+        put("s", Arrays.asList((IdentLike) new Ident("std"), new Ident("basic_string", new TemplateArg[]{classType(Byte.TYPE), charTraitsOfChar, allocatorOfChar})));
+        
+        // used, as an helper: for i in a b c d e f g h i j k l m o p q r s t u v w x y z; do c++filt _Z1_S$i; done
     }
 
-        private TemplateArg enclosed(ClassRef classRef, String string) {
-            classRef.setEnclosingType(new NamespaceRef(new Object[]{string}));
+        private ClassRef enclosed(String ns, ClassRef classRef) {
+            classRef.setEnclosingType(new NamespaceRef(new Object[]{ns}));
             return classRef;
         }
     };
