@@ -67,7 +67,7 @@ public abstract class NativeSymbolDemangler {
                     res.parameterTypes = getParameterTypes(parsed.paramTypes);
                     return res;
                 } catch (DemanglingException ex) {
-                    Logger.getLogger(NativeSymbolDemangler.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(NativeSymbolDemangler.class.getName()).log(Level.SEVERE, null, ex);
                     // TODO could log for demangler improvement
                 }
                 return null;
