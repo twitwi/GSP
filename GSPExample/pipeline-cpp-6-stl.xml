@@ -1,0 +1,15 @@
+
+<pipeline>
+    <namespace base="fr.prima.gspbaseutils"/>
+    <f id="c2s" type="base:CharPointerToString"/>
+
+    <m id="tick" type="base:For" to="7" period="100"/>
+    <!--m id="cons" type="base:Console" init="This pipeline illustrates further features with C++ modules (factories, passing non primitive types).%nIt should count up to 1.5 by increments of 1/4, each time printing both the count and 'equals'.%nYou might need to look at the code for a better understanding."/-->
+    <m id="cons" type="base:Console" init="TODO comment + should it be using the non-baseutils stuffs?"/>
+
+    <m id="prod" type="c:AdvancedDemo.ProduceStl"/>
+    <m id="cns" type="c:AdvancedDemo.ConsumeStl"/>
+    
+    <c chain="tick#i - prod - cns -c2s- cons"/>
+
+</pipeline>

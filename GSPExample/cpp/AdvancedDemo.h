@@ -32,4 +32,23 @@ namespace Heeere {
         void input(Thing *t1, Thing *t2);
     };
     CLASS_AS_MODULE(CompareThings);
+
 }
+
+
+#include <string>
+#include <vector>
+
+class ProduceStl {
+public:
+    Framework _framework;
+    void input(int value);
+};
+CLASS_AS_MODULE(ProduceStl);
+class ConsumeStl {
+public:
+    Framework _framework;
+    void input(std::string *str, std::vector<int> *vec);
+};
+CLASS_AS_MODULE(ConsumeStl);
+

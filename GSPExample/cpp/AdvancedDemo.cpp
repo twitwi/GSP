@@ -33,3 +33,21 @@ namespace Heeere {
        emitNamedEvent("string", s);
    }
 }
+
+
+void ProduceStl::input(int value) {
+    std::string *s = new std::string("Haha");
+    std::vector<int> *v = new std::vector<int>;
+    v->push_back(value);
+    emitNamedEvent("output", s, v);
+    delete s;
+    delete v;
+}
+
+void ConsumeStl::input(std::string *str, std::vector<int> *vec) {
+    char *buf = new char[1024];
+    sprintf(buf, "Hi: %s, %d\n", str->c_str(), (*vec)[0]);
+    emitNamedEvent("output", buf);
+    delete[]buf;
+}
+
