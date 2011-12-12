@@ -535,6 +535,9 @@ public class CModuleFactory {
         private Object getValueFromNative(String type, Pointer pointer) {
             NativeSymbolDemangler dem = NativeSymbolDemangler.create();
             NativeType t = dem.demangleType(bundleName, type);
+            if (t == null) {
+                throw new RuntimeException("Null native type for " + bundleName + " type " + type);
+            }
             if (t.isPointer()) {
                 return new NativePointer(pointer.getPointer(0), t);
             }
