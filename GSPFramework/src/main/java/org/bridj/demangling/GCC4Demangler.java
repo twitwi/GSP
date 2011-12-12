@@ -160,7 +160,17 @@ public class GCC4Demangler extends Demangler {
                             id += consumeChar(); // the '_'
                             delta++;
                             if (typeShortcuts.containsKey(id)) {
-                                return typeShortcuts.get(id);
+                                if (peekChar() != 'I') {
+                                    // just a shortcut
+                                    return typeShortcuts.get(id);
+                                } else {
+                                    // shortcut but templated
+                                    List<IdentLike> nsPath = new ArrayList<IdentLike>(prefixShortcuts.get(id));
+                                    String templatedId = parsePossibleTemplateArguments(nsPath);
+                                    if (templatedId != null) {
+                                        return typeShortcuts.get(templatedId);
+                                    }
+                                }
                             }
                             position -= delta;
                         }
@@ -243,7 +253,7 @@ public class GCC4Demangler extends Demangler {
         String newlyAddedShortcutForThisType = null;
         boolean shouldContinue = false;
         boolean expectEInTheEnd = false;
-        if (consumeCharIf('N')) { // complex (NB: they don't nest (they actually can within a template parameter but not elsewhere))
+        if (consumeCharIf('N')) { // complex (NB: they don't recursively nest (they actually can within a template parameter but not elsewhere))
             if (consumeCharIf('S')) { // it uses some shortcut prefix or type
                 parseShortcutInto(res);
             }
@@ -263,18 +273,32 @@ public class GCC4Demangler extends Demangler {
                 IdentLike part = parseNonCompoundIdent();
                 res.add(part);
                 prefixShortcuts.put(id, new ArrayList<IdentLike>(res)); // the current compound name is saved by gcc as a shortcut (we do the same)
-            } while (Character.isDigit(peekChar()));
+            } while (Character.isDigit(peekChar()) || peekChar() == 'C' || peekChar() == 'D');
             if (isParsingNonShortcutableElement) {
                 //prefixShortcuts.remove(previousShortcutId()); // correct the fact that we parsed one too much
                 nextShortcutId--;
             }
         }
+        parsePossibleTemplateArguments(res);
+        if (expectEInTheEnd) {
+            expectAnyChar('E');
+        }
+        return newlyAddedShortcutForThisType;
+    }
+
+    /**
+     * 
+     * @param res a list of identlikes with the namespace elements and finished with an Ident which will be replaced by a new one enriched with template info
+     * @return null if res was untouched, or the new id created because of the presence of template arguments
+     */
+    private String parsePossibleTemplateArguments(List<IdentLike> res) throws DemanglingException {
         if (consumeCharIf('I')) {
             List<TemplateArg> args = new ArrayList<TemplateArg>();
             while (!consumeCharIf('E')) {
                 args.add(parseTemplateArg());
             }
             String id = nextShortcutId(); // we get the id after parsing the template parameters
+            // It is very important that we create a new Ident as the other one has most probably been added as a shortcut and should be immutable from then
             Ident templatedIdent = new Ident(ensureOfType(res.remove(res.size() - 1), Ident.class).toString(), args.toArray(new TemplateArg[args.size()]));
             res.add(templatedIdent);
             prefixShortcuts.put(id, new ArrayList<IdentLike>(res));
@@ -286,11 +310,9 @@ public class GCC4Demangler extends Demangler {
                 }
                 typeShortcuts.put(id, clss);
             }
+            return id;
         }
-        if (expectEInTheEnd) {
-            expectAnyChar('E');
-        }
-        return newlyAddedShortcutForThisType;
+        return null;
     }
 
     /**

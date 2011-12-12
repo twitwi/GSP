@@ -168,7 +168,7 @@ public class CModuleFactory {
             System.arraycopy(information, 0, thatAndParams, 1, information.length);
             thatAndParams[0] = that;
             if (!callCFunctionOrCppMethodOptionally(moduleTypeName, "event" + sep + portName, portName, thatAndParams)) {
-                throw new RuntimeException("cannot receive this event " + portName + "#" + moduleTypeName + Arrays.asList(e.getInformation()) + " " + Arrays.asList(e.getAdditionalTypeInformation()));
+                throw new RuntimeException("cannot receive this event " + moduleTypeName + "." + portName + Arrays.asList(e.getInformation()) + " " + Arrays.asList(e.getAdditionalTypeInformation()));
             }
         }
 
