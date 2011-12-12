@@ -15,8 +15,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bridj.demangling.BridjDemanglerExportTools;
 import org.bridj.demangling.Demangler.ClassRef;
 import org.bridj.demangling.Demangler.Ident;
@@ -90,8 +88,7 @@ public abstract class NativeSymbolDemangler {
                 //System.err.println(mr.getEnclosingType() + " --- " + mr.getClass());
                 List<String> res = new ArrayList<String>();
                 if (mr.getEnclosingType() != null) {
-                    // TODO some recursive or while things (for namespaces etc)
-                    res.add(mr.getEnclosingType().getQualifiedName(new StringBuilder(), false).toString());
+                    res.addAll(Arrays.asList(mr.getEnclosingType().getQualifiedName(new StringBuilder(), false).toString().split("[.]")));
                 }
                 IdentLike memberIdentLike = mr.getMemberName();
                 if (memberIdentLike instanceof SpecialName) {

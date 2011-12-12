@@ -2,7 +2,7 @@
 #include "AdvancedDemo.h"
 #include <stdio.h>
 
-//namespace Heeere {
+namespace Heeere {
     void ToThing::setForceInt(bool b) {
         forceInt = b;
     }
@@ -32,4 +32,4 @@
        emitNamedEvent("output", o);
        emitNamedEvent("string", s);
    }
-//}
+}

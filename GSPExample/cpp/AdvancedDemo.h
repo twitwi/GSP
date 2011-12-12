@@ -1,7 +1,7 @@
 
 #include "framework.h"
 
-//namespace Heeere {
+namespace Heeere {
 
     class Thing {
     public:
@@ -32,5 +32,4 @@
         void input(Thing *t1, Thing *t2);
     };
     CLASS_AS_MODULE(CompareThings);
-    //}
-
+}
