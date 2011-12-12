@@ -81,6 +81,17 @@ public class CModuleFactory {
                 }
             }
 
+            module_path = System.getProperty("gsp.module.path");
+            if (module_path != null && !module_path.isEmpty()) {
+                String delims = ":";
+                String[] tokens = module_path.split(delims);
+                for (int i = 0; i < tokens.length; i++) {
+                    if(!tokens[i].isEmpty())
+                        System.err.println("ADDED "+tokens[i]);
+                        NativeLibrary.addSearchPath(bundleName, tokens[i]);
+                }
+            }
+
             try {
                 bundle = new Bundle(NativeLibrary.getInstance(bundleName), NativeFunctionFinder.create(bundleName));
                 bundles.put(bundleName, bundle);
@@ -371,6 +382,9 @@ public class CModuleFactory {
             } catch (NullPointerException ex) {
                 System.err.println("problem with type '" + type + "' to interpret '" + text + "'");
                 throw ex;
+            } catch (RuntimeException ex) {
+                System.err.println("problem with type '" + type + "' to interpret '" + text + "'");
+                throw ex;
             }
         }
 
@@ -381,6 +395,9 @@ public class CModuleFactory {
                 value = getNativeValueFromString(cStringTypeToNativeType.get(registeredType), text);
             } else {
                 NativeType type = findBestParameterType(parameterName, text);
+                if (type == null) {
+                    throw new RuntimeException("Could not find any native type (setter) for '" + parameterName + "' (with value '" + text + "')");
+                }
                 value = getNativeValueFromString(type, text);
             }
             bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
