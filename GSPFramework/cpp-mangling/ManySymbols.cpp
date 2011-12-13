@@ -72,6 +72,15 @@ void func200(std::string da, std::string daa){} // Ss
 void func201(std::vector<CCC*> da, std::vector<CCC*> daa){} // !!!
 void func202(std::map<std::string, CCC*> da){} // !!!
 
+
+namespace NNN {
+    template<typename A, typename B> class Template {
+    public:
+        Template<A,B>* func300() {return NULL;}
+    };
+}
+static NNN::Template<int,int>* force300 = (new NNN::Template<int,int>)->func300();
+
 // helper to write Bridj tests
 void test_no_params(){}
 long test_add9_long(long l1,long l2,long l3,long l4,long l5,long l6,long l7,long l8,long l9){}
@@ -93,4 +102,9 @@ void streams(std::istream i, std::ostream o, std::iostream io){}
 void streamsI(std::basic_istream< char, std::char_traits<char> > i){}
 void streamsO(std::basic_ostream< char, std::char_traits<char> > o){}
 void streamsIO(std::basic_iostream< char, std::char_traits<char> > io){}
+void strings(std::basic_string<char, std::char_traits<char>, std::allocator<char> > str) {}
 
+// Some things for bridj integration tests
+void shortcutsSimple(char**** base, char w, char* ww, char** www, char*** wwww, char**** wwwww, char***** wwwwww) {}
+void shortcutsBuiltinString(std::string s) {}
+void shortcutsBuiltinStdPrefix(std::exception v) {}

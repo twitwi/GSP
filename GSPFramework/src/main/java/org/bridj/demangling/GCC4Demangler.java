@@ -273,6 +273,7 @@ public class GCC4Demangler extends Demangler {
                 IdentLike part = parseNonCompoundIdent();
                 res.add(part);
                 prefixShortcuts.put(id, new ArrayList<IdentLike>(res)); // the current compound name is saved by gcc as a shortcut (we do the same)
+                parsePossibleTemplateArguments(res);
             } while (Character.isDigit(peekChar()) || peekChar() == 'C' || peekChar() == 'D');
             if (isParsingNonShortcutableElement) {
                 //prefixShortcuts.remove(previousShortcutId()); // correct the fact that we parsed one too much

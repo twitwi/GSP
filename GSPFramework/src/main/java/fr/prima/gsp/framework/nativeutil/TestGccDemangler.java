@@ -21,6 +21,8 @@ public class TestGccDemangler {
         
         // More tests are interface the cpp-mangling/ folder (in a javascript file) 
         //assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_"); // St6vectorIPN16StreamFacilities13EnrichedFrameESaIS2_EE
+        assertDemangle(dem, "_ZN3NNN8TemplateIiiE7func300Ev");
+        assertDemangle(dem, "__ZN5Temp1IdE4tempEd");
         assertDemangle(dem, "_ZN9AVASToIpl5inputEPSt6vectorISsSaISsEEPS0_IPN16StreamFacilities13EnrichedFrameESaIS6_EE");
         assertDemangle(dem, "_Z7func201St6vectorIP3CCCSaIS1_EES3_");
         assertDemangle(dem, "_ZN13CompareThings5inputEP5ThingS1_", p(st("Thing")), p(st("Thing")));
