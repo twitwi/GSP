@@ -20,6 +20,11 @@ add examples using FIELD_WITH_SETTER and STRING_FIELD_WITH_SETTER
 more:
 add examples with passive modules (reusing modules in a plain program)
 
+================================
+=== TODO from PipelineViewer ===
+================================
+FIX: all inputs are named input in the generated graph
+IMPR: might use a left-input right-output convention
 
 
 ==============================
@@ -32,7 +37,7 @@ add examples with passive modules (reusing modules in a plain program)
    variables, etc
 
 * 
-
+v
 * fix in GSPBaseUtils the For module with 0 as a period
 
 * handle the fact that string get garbage collected (C++ should do a copy on receive or at least we can try to prevent gc for parameters (not that simple) until the pipeline is gc'ed)
