@@ -8,7 +8,8 @@ import fr.prima.gsp.framework.spi.AbstractModuleEnablable;
 
 /**
  *
- * @author remonet
+ * Usually, put the connections of this module first in the pipeline file.
+ * This way, the module gets called first by the framework and you measure what you want to measure.
  */
 public class StopWatch extends AbstractModuleEnablable {
 
