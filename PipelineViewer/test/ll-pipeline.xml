@@ -1,0 +1,61 @@
+<pipeline>
+
+    <namespace base="fr.prima.gspbaseutils"/>
+    <namespace   ch="ch.idiap.javamodules"/>
+    
+    <f id="ipl2bi" type="ch:ImageIplImport"/>
+    <f id="viewfact" type="ch:Display" width="704" height="288" scale="1"/>
+    <f id="c2s" type="base:CharPointerToString"/>
+
+    <!-- TIMING: must be first to have events sent to it first -->
+    <m id="timing" type="base:StopWatch"/>
+    <!--c chain="timing - error#cons"/>
+    <c chain="ipl - tocktick2#timing"/-->
+
+    <!-- LIVE TUNING TESTS -->
+    <!--m type="base:DebugGUI" what="plsa.iter : int(10)"/-->
+
+    <!-- ACQUISITION AND AVAS -->
+    <m id="for" type="base:For" period="1"/>
+    <m id="cons" type="base:Console"/>
+
+    <m id="avas" type="c:avasgsp.AvasModule"/>
+    <m id="avasout" type="c:avasgsp.AvasModule"/> THE SECOND AvasModule is a slave (just for output)
+    <c chain="for - #avas#end - interrupt#for"/>
+    <m id="ipl" type="c:avasgsp.AvasToIpl" />
+    <m id="sk" type="c:left_luggage.ImageTransform" transform="timemod 5" />
+    <m id="tr" type="c:left_luggage.ImageTransform" transform="scale .5 1" />
+    <m id="ll" type="c:left_luggage.LeftLuggageModule" backgroundModel="UNSET" />makeOutput="true" showOutputAs="plop"
+
+    <m id="ll2met" type="c:left_luggage.LeftLuggageToMetadata"/>
+    <c chain="ipl#timestamp - ll2met"/>
+    <c chain="ipl#streamName - inputStreamName#ll2met"/> TODO maybe remove this at some point (avas evolution on the SvgOverlay)
+    <c chain="ll2met - event#avasout"/>
+    <c chain="ll2met#metadata - metadata#avasout"/>
+    <c chain="ll2met#overlay - overlay#avasout"/>
+    <c chain="avasout#info -c2s- info#cons"/>
+
+    <c chain= "ll#objectWarned - objectWarned#ll2met"/>
+    <c chain="ll#objectAlarmed - objectAlarmed#ll2met"/>
+    <c chain="ll#objectRemoved - objectRemoved#ll2met"/>
+    <c chain= "ll#objectStillWarned - objectStillHere#ll2met"/>
+    <c chain="ll#objectStillAlarmed - objectStillHere#ll2met"/>
+
+    <m id="svg" type="ch:DisplaySVG" />
+    <m id="show" type="ch:Display" width="704" height="288" />
+    <c chain="avasout#svg - c2s - svg - image#show" />
+
+    <c chain="avas - #ipl#image - sk - tr - ll"/>
+    <!--c chain="ll#debug -c2s- info#cons"/-->
+
+    <!--c chain="sk#debug - cons"/-->
+    <c chain="tr#debug - cons"/>
+
+    <!--m id="save" type="ch:ImageSave" />
+    <c chain="ll#visual - fromipl - save"/-->
+
+    <!--m id="show" type="ch:Display" width="704" height="576" scale="1" />
+    <c chain="ll#visual - fromipl - image#show"/-->
+
+</pipeline>
+

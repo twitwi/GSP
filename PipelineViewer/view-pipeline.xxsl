@@ -14,7 +14,9 @@
 "/" {
         .text "digraph Pipeline {\n";
          .text "rankdir=LR;\n";
-         .text "node [color = black, shape = egg];\n";
+         .text "nodesep=0.05;\n";
+         .text "ranksep=0.05;\n";
+         .text "node [color = black, shape = box];\n";
 
          xsl:message {.text "=== Doing preprocessing ==="};
          .var preProcessed = {.apply "//m | //module | //c | //connector"}
@@ -24,15 +26,16 @@
          .for "$preProcessed/m"
               {
                   .text "subgraph \"cluster_" .eval "@id" .text "\" {\n";
-                  .text "\"node_" .eval "@id".text "\" [label=\"" .eval "(@m___label,@id)[1]".text " [" .eval "@type" .text "]\", style = filled, fillcolor = palegreen, shape = component] ;\n";
+                  .text "pad=0.0001\n";
+                  .text "\"node_" .eval "@id".text "\" [label=\"" .eval "(@m___label,@id)[1]".text "\\n[".eval "@type".text "]\", style = \"filled,bold\", fillcolor = palegreen, shape = component, height=0] ;\n";
                   .var m = ".";
                   .for "$preProcessed/c"
                        {
                            .if "$m/@id = @fromModule" {
-                                   .text "\"" .eval "@fromModule" .text "#" .eval "@fromPort" .text "\" [label=\"" .eval "@fromPort" .text "\", style = filled, fillcolor = slategray2];\n";
+                                   .text "\"" .eval "@fromModule" .text "#" .eval "@fromPort" .text "\" [label=\"" .eval "@fromPort" .text "\", style = filled, fillcolor = slategray2, height=0];\n";
                                }
                            .if "$m/@id = @toModule" {
-                                   .text "\"" .eval "@toModule" .text "#" .eval "@toPort" .text "\" [label=\"" .eval "@toPort" .text "\", style = filled, fillcolor = plum];\n";
+                                   .text "\"" .eval "@toModule" .text "#" .eval "@toPort" .text "\" [label=\"" .eval "@toPort" .text "\", style = filled, fillcolor = plum, height=0];\n";
                                }
                        }
                   .text "}\n";
@@ -91,7 +94,7 @@
                  .var fromModule = "if (count($from)=2) then $from[1] else $e1";
                  .var toModule = "if (count($to)=2) then $to[1] else $e2";
                  .var fromPort = "if (count($from)=2 and not($from[2]='')) then $from[2] else 'output'";
-                 .var toPort = "if (count($to[2])=2 and not($to[2]='')) then $to[2] else 'input'";
+                 .var toPort = "if (count($to)=2 and not($to[2]='')) then $to[2] else 'input'";
                  c fromModule="{$fromModule}" fromPort="{$fromPort}" toModule="{$toModule}" toPort="{$toPort}" {}
              }
     }
