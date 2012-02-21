@@ -13,7 +13,7 @@ import fr.prima.gsp.framework.ModuleParameter;
  */
 public class AbstractModuleEnablable extends AbstractModule {
 
-    @ModuleParameter(change="enableChanged")
+    @ModuleParameter(change="enabledChanged")
     public boolean enabled = true;
 
     public void enabledChanged() {
