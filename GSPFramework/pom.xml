@@ -8,6 +8,19 @@
     <version>1.1-SNAPSHOT</version>
     <name>GSPFramework</name>
 
+    <distributionManagement>
+        <repository>
+            <id>gh-repo</id>
+            <!--url>http://twitwi.github.com/maven-repo/releases</url-->
+            <url>file:../../maven-repo/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>gh-snap-repo</id>
+            <!--url>http://twitwi.github.com/maven-repo/snapshots</url-->
+            <url>file:../../maven-repo/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>maven2-repository.dev.java.net</id>
