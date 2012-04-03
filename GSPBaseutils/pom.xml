@@ -8,6 +8,19 @@
     <version>1.0-SNAPSHOT</version>
     <name>GSPBaseutils</name>
     <url>http://maven.apache.org</url>
+    
+    <distributionManagement>
+        <repository>
+            <id>gh-repo</id>
+            <url>file:../../maven-repo/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>gh-snap-repo</id>
+            <url>file:../../maven-repo/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+    
     <build>
         <plugins>
             <plugin>

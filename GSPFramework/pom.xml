@@ -18,6 +18,7 @@
             <id>gh-snap-repo</id>
             <!--url>http://twitwi.github.com/maven-repo/snapshots</url-->
             <url>file:../../maven-repo/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
 
