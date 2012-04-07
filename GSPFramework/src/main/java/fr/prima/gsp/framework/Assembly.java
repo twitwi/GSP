@@ -51,8 +51,12 @@ public class Assembly {
         this.addPrefix("java", identityStringRewriter());
     }
     public void stop() {
-        // TODO could call the registered hook (registered by modules, e.g. the grabber)
+        // TODO could also call the registered hook (registered by modules, e.g. the grabber)
         // not sure it is really usefull
+        for (Map.Entry<String, Module> e : modules.entrySet()) {
+            log("stopping module " + e.getKey() + ", instance of class " + e.getValue().getClass().getCanonicalName());
+            e.getValue().stop();
+        }
     }
     public String addModule(String moduleId, final String typeAttribute, Element conf) {
         String typeDescriptor;
