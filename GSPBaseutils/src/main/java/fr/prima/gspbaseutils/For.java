@@ -10,8 +10,7 @@ import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModuleEnablable;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -40,11 +39,16 @@ public class For extends AbstractModuleEnablable {
     @ModuleParameter
     public boolean stopAtEnd = true;
 
+    @ModuleParameter
+    public boolean forceQuitAtEnd = false;
+
     // this will be automatically injected by the framework after setup and before init
     @ModuleParameter(initOnly = true)
     public Assembly assembly;
 
+    //
     private int count = 0;
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
 
     Timer timer = null;
 
@@ -98,13 +102,7 @@ public class For extends AbstractModuleEnablable {
     }
 
     public synchronized void interrupt() {
-        try {
-            timer.cancel();
-            Thread.sleep(1000);
-            assembly.stop();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(For.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        interrupted.set(true);
     }
 
     private synchronized void output() {
@@ -113,10 +111,13 @@ public class For extends AbstractModuleEnablable {
         i();
         f();
         count += step;
-        if (to != -1 && count >= to) {
+        if (interrupted.get() || (to != -1 && count >= to)) {
             timer.cancel();
             if (stopAtEnd) {
                 assembly.stop();
+            }
+            if (forceQuitAtEnd) {
+                System.exit(0);
             }
         }
     }
