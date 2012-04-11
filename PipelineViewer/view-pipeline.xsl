@@ -17,16 +17,16 @@
       <xsl:text>node [color = black, shape = box];
 </xsl:text>
       <message xmlns="http://www.w3.org/1999/XSL/Transform">
-         <xsl:text>=== Doing preprocessing ===</xsl:text>
+         <xsl:text xmlns="">=== Doing preprocessing ===</xsl:text>
       </message>
       <xsl:variable name="preProcessed">
          <xsl:apply-templates select="//m | //module | //c | //connector"/>
       </xsl:variable>
       <message xmlns="http://www.w3.org/1999/XSL/Transform">
-         <xsl:text>=== Doing generation ===</xsl:text>
+         <xsl:text xmlns="">=== Doing generation ===</xsl:text>
       </message>
       <message xmlns="http://www.w3.org/1999/XSL/Transform">
-         <xsl:value-of select="$preProcessed"/>
+         <xsl:value-of xmlns="" select="$preProcessed"/>
       </message>
       <xsl:for-each select="$preProcessed/m">
          <xsl:text>subgraph "cluster_</xsl:text>
@@ -91,7 +91,7 @@
    </xsl:template>
    <xsl:template name="preprocess-chain">
       <xsl:param name="chain" select="@chain"/>
-      <xsl:variable name="elements" select="tokenize(@chain, '\s*-\s*')"/>
+      <xsl:variable name="elements" select="tokenize(normalize-space(@chain), '\s*-\s*')"/>
       <xsl:variable name="doc" select="/"/>
       <xsl:variable name="newchainid" select="generate-id(.)"/>
       <xsl:for-each select="$elements">
@@ -119,7 +119,7 @@
                <attribute xmlns="http://www.w3.org/1999/XSL/Transform" name="id" select="$id"/>
             </m>
             <message xmlns="http://www.w3.org/1999/XSL/Transform">
-               <xsl:value-of select="concat(parts[1], '#', $id, '#', $parts[3])"/>
+               <xsl:value-of xmlns="" select="concat(parts[1], '#', $id, '#', $parts[3])"/>
             </message>
             <e>
                <xsl:value-of select="concat(parts[1], '#', $id, '#', $parts[3])"/>
@@ -142,8 +142,8 @@
             <xsl:variable name="elements" select="($c/./e/text())"/>
             <xsl:for-each select="$elements[position() != last()]">
                <message xmlns="http://www.w3.org/1999/XSL/Transform">
-                  <xsl:text>E: </xsl:text>
-                  <xsl:value-of select="."/>
+                  <xsl:text xmlns="">E: </xsl:text>
+                  <xsl:value-of xmlns="" select="."/>
                </message>
                <xsl:variable name="i" select="position()"/>
                <xsl:variable name="last" select="last()"/>
@@ -163,9 +163,9 @@
          </xsl:when>
          <xsl:otherwise>
             <message xmlns="http://www.w3.org/1999/XSL/Transform">
-               <xsl:text>ERR: found a </xsl:text>
-               <xsl:value-of select="local-name()"/>
-               <xsl:text> without chain attribute</xsl:text>
+               <xsl:text xmlns="">ERR: found a </xsl:text>
+               <xsl:value-of xmlns="" select="local-name()"/>
+               <xsl:text xmlns=""> without chain attribute</xsl:text>
             </message>
          </xsl:otherwise>
       </xsl:choose>

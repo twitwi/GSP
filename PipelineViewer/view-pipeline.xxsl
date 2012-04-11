@@ -50,7 +50,7 @@
 "m | module" {m {xsl:copy-of select="@*"{}}}
 
 .define preprocess-chain chain="@chain" {
-    .var elements = "tokenize(@chain, '\\s*-\\s*')"
+    .var elements = "tokenize(normalize-space(@chain), '\\s*-\\s*')"
     .var doc = "/";
     .var newchainid = "generate-id(.)";
     .for "$elements" {
