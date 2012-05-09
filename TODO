@@ -1,6 +1,14 @@
 Unclassified Todos:
 * change the readme to a readme.md for github
 
+TODO for v 1.1:
+* (must)   cleanup TODO (what is done or not todo?)
+* (must)   handle all error reporting, not starting todos
+* (should) cool JMX export
+* (may)    string conversion? GC?
+* (may)    long support
+
+
 =============================
 === TODO from GSPExamples ===
 =============================
@@ -23,7 +31,6 @@ add examples with passive modules (reusing modules in a plain program)
 ================================
 === TODO from PipelineViewer ===
 ================================
-FIX: all inputs are named input in the generated graph
 IMPR: might use a left-input right-output convention
 
 
@@ -31,12 +38,11 @@ IMPR: might use a left-input right-output convention
 === TODO from GSPFramework ===
 ==============================
 
-* Investigate (and fix) where the output message in first cpp example comes from
+* Investigate (and fix) where the output message in first cpp example comes from (done? this was string conversion...)
 
 * a "-?" "--help" option that explores the pipeline and reports the
    variables, etc
 
-* 
 v
 * fix in GSPBaseUtils the For module with 0 as a period
 
@@ -64,9 +70,7 @@ v
 
 * CPP: namespaces
 
-* CPP: easy setters (orthogonal to gsp) : done
-
-* unallocated module when stopping pipeline
+* unallocated module when stopping pipeline : done????
 
 * idea: replace a#b#c by something asymetric (e.g. a(b)c or a[b]c or a]b[c or a)b(c (no <> as in xml)) ...
     <c chain="tick - intInput#half# - half - #th#string - str#dup#str - log"/>        current
@@ -94,7 +98,7 @@ v
 => it would also minize the requirements to build some java module (do
    not require jna if the op on pointers are usual)
 => could also put some custom metatype info in it (to pass it back to C)
-: done?
+: done? (is it IntBuffer ....?)
 
 * handle possibility for a module to know if it has some "clients" on an output
 * metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
