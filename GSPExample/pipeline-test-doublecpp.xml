@@ -1,0 +1,17 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline just tests 'double' both as parameters and passed value.%nTest in C++ and Java."/>
+
+    <m id="tick" type="ex:Counter" maxCount="65" period="10" warmupDelay="3500"/>
+    <m id="cons" type="ex:Console"/>
+    <f id="jsqrt" type="ex:SquareDouble" power="2"/>
+    <f id="div" type="c:NativeCppDemo.DivDouble" divisor=".5"/>
+
+    <!-- This would be a loop if "sqrt" weren't a factory -->
+    <c chain="tick - cons"/>
+    <c chain="tick - jsqrt - div - jsqrt - div - div - cons"/>
+
+</pipeline>
+

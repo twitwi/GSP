@@ -53,3 +53,25 @@ void Log::input(const char *message) {
 void Log::highlight(const char *message) {
     printf("MESSAGE: === %s ===\n", message);
 }
+
+DivDouble::DivDouble() : divisor(1) {
+}
+
+void DivDouble::setDivisor(double d) {
+    if (d != 0.0) {
+        this->divisor = d;
+    }
+}
+
+void DivDouble::input(double value) {
+    double out = value / this->divisor;
+    emitNamedEvent("output", out); // "output" is the default when writing pipelines
+    emitNamedEvent("double", out); // but we can add any output
+    char buf[128];
+    char *toSend = ftoa(buf, out);
+    emitNamedEvent("string", toSend);
+}
+
+void DivDouble::intInput(int value) {
+    input((double) value);
+}
