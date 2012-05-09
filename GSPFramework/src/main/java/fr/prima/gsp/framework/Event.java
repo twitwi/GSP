@@ -7,10 +7,7 @@ package fr.prima.gsp.framework;
 
 import com.sun.jna.Native;
 import fr.prima.gsp.framework.nativeutil.NativeType;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,12 +53,16 @@ public class Event {
             res = NativeType.pointer(NativeType.INT);
         } else if (FloatBuffer.class.isAssignableFrom(cl)) {
             res = NativeType.pointer(NativeType.FLOAT);
+        } else if (DoubleBuffer.class.isAssignableFrom(cl)) {
+            res = NativeType.pointer(NativeType.DOUBLE);
         } else if (ByteBuffer.class.isAssignableFrom(cl)) {
             res = NativeType.CHAR_POINTER;
         } else if (Integer.class.isAssignableFrom(cl)) {
             res = NativeType.INT;
         } else if (Float.class.isAssignableFrom(cl)) {
             res = NativeType.FLOAT;
+        } else if (Double.class.isAssignableFrom(cl)) {
+            res = NativeType.DOUBLE;
         } else if (Byte.class.isAssignableFrom(cl)) {
             res = NativeType.CHAR;
         } else if (Boolean.class.isAssignableFrom(cl)) {
@@ -86,12 +87,16 @@ public class Event {
             res = "Pi";
         } else if (FloatBuffer.class.isAssignableFrom(cl)) {
             res = "Pf";
+        } else if (DoubleBuffer.class.isAssignableFrom(cl)) {
+            res = "Pd";
         } else if (ByteBuffer.class.isAssignableFrom(cl)) {
             res = "Pc";
         } else if (Integer.class.isAssignableFrom(cl)) {
             res = "i";
         } else if (Float.class.isAssignableFrom(cl)) {
             res = "f";
+        } else if (Double.class.isAssignableFrom(cl)) {
+            res = "d";
         } else if (Byte.class.isAssignableFrom(cl)) {
             res = "c";
         } else {

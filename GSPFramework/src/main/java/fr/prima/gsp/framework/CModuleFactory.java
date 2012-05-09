@@ -284,6 +284,8 @@ public class CModuleFactory {
             put(Integer.class, NativeType.INT);
             put(Float.TYPE, NativeType.FLOAT);
             put(Float.class, NativeType.FLOAT);
+            put(Double.TYPE, NativeType.DOUBLE);
+            put(Double.class, NativeType.DOUBLE);
             put(Boolean.TYPE, NativeType.BOOL);
             put(Boolean.class, NativeType.BOOL);
             put(String.class, NativeType.CHAR_POINTER);
@@ -405,7 +407,7 @@ public class CModuleFactory {
         }
         private NativeType findBestParameterType(String parameterName, String text) {
             // TODO could infer type more precisely from text value (currently ignored)
-            for (NativeType t : Arrays.asList(NativeType.INT, NativeType.FLOAT, NativeType.BOOL, NativeType.CHAR_POINTER)) {
+            for (NativeType t : Arrays.asList(NativeType.INT, NativeType.DOUBLE, NativeType.FLOAT, NativeType.BOOL, NativeType.CHAR_POINTER)) {
                 NativeSymbolInfo f = bundle.finder.findAnyMethodForParameters(moduleTypeName, setter(parameterName), t);
                 if (f != null) {
                     return t;
@@ -450,7 +452,7 @@ public class CModuleFactory {
             {
                 put("char*", NativeType.CHAR_POINTER);
                 put("float", NativeType.FLOAT);
-                //put("double", NativeType.);
+                put("double", NativeType.DOUBLE);
                 put("int", NativeType.INT);
                 //put("long", NativeType.);
                 put("bool", NativeType.BOOL);
@@ -478,11 +480,11 @@ public class CModuleFactory {
                         return Float.parseFloat(text);
                     }
                 });
-//                put(NativeType.DOUBLE, new StringToNative() {
-//                    public Object toNative(String text) {
-//                        return Double.parseDouble(text);
-//                    }
-//                });
+                put(NativeType.DOUBLE, new StringToNative() {
+                    public Object toNative(String text) {
+                        return Double.parseDouble(text);
+                    }
+                });
                 put(NativeType.INT, new StringToNative() {
                     public Object toNative(String text) {
                         return Integer.parseInt(text);
