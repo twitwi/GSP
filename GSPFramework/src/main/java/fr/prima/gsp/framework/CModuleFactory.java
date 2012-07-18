@@ -9,6 +9,7 @@ import com.sun.jna.Callback;
 import com.sun.jna.Function;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.nativeutil.NativeFunctionFinder;
 import fr.prima.gsp.framework.nativeutil.NativeSymbolDemangler;
@@ -282,6 +283,7 @@ public class CModuleFactory {
         {
             put(Integer.TYPE, NativeType.INT);
             put(Integer.class, NativeType.INT);
+            put(NativeLong.class, NativeType.LONG);
             put(Float.TYPE, NativeType.FLOAT);
             put(Float.class, NativeType.FLOAT);
             put(Double.TYPE, NativeType.DOUBLE);
@@ -407,7 +409,7 @@ public class CModuleFactory {
         }
         private NativeType findBestParameterType(String parameterName, String text) {
             // TODO could infer type more precisely from text value (currently ignored)
-            for (NativeType t : Arrays.asList(NativeType.INT, NativeType.DOUBLE, NativeType.FLOAT, NativeType.BOOL, NativeType.CHAR_POINTER)) {
+            for (NativeType t : Arrays.asList(NativeType.INT, NativeType.LONG, NativeType.DOUBLE, NativeType.FLOAT, NativeType.BOOL, NativeType.CHAR_POINTER)) {
                 NativeSymbolInfo f = bundle.finder.findAnyMethodForParameters(moduleTypeName, setter(parameterName), t);
                 if (f != null) {
                     return t;
@@ -422,6 +424,7 @@ public class CModuleFactory {
             put("unsigned int", "j");
             put("float", "f");
             put("long", "l");
+            put("unsigned long", "m");
             put("double", "d");
             put("char", "c");
             put("bool", "b");
@@ -454,7 +457,8 @@ public class CModuleFactory {
                 put("float", NativeType.FLOAT);
                 put("double", NativeType.DOUBLE);
                 put("int", NativeType.INT);
-                //put("long", NativeType.);
+                put("long", NativeType.LONG);
+                put("unsigned long", NativeType.LONG);
                 put("bool", NativeType.BOOL);
                 //put("", NativeType.);
             }
@@ -490,11 +494,11 @@ public class CModuleFactory {
                         return Integer.parseInt(text);
                     }
                 });
-//                put("long", new StringToNative() {
-//                    public Object toNative(String text) {
-//                        return Long.parseLong(text);
-//                    }
-//                });
+                put(NativeType.LONG, new StringToNative() {
+                    public Object toNative(String text) {
+                        return new NativeLong(Long.parseLong(text));
+                    }
+                });
                 put(NativeType.BOOL, new StringToNative() {
                     public Object toNative(String text) {
                         return Boolean.parseBoolean(text);
@@ -529,7 +533,12 @@ public class CModuleFactory {
                 });
                 put("l", new NativeInterpreter() {
                     public Object interpret(Pointer pointer) {
-                        return pointer.getLong(0);
+                        return pointer.getNativeLong(0);
+                    }
+                });
+                put("m", new NativeInterpreter() {
+                    public Object interpret(Pointer pointer) {
+                        return pointer.getNativeLong(0);
                     }
                 });
             }
