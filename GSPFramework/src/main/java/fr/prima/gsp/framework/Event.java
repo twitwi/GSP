@@ -6,6 +6,7 @@
 package fr.prima.gsp.framework;
 
 import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
 import fr.prima.gsp.framework.nativeutil.NativeType;
 import java.nio.*;
 import java.util.HashMap;
@@ -59,6 +60,8 @@ public class Event {
             res = NativeType.CHAR_POINTER;
         } else if (Integer.class.isAssignableFrom(cl)) {
             res = NativeType.INT;
+        } else if (NativeLong.class.isAssignableFrom(cl)) {
+            res = NativeType.LONG;
         } else if (Float.class.isAssignableFrom(cl)) {
             res = NativeType.FLOAT;
         } else if (Double.class.isAssignableFrom(cl)) {
