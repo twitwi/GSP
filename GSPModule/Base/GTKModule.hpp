@@ -1,16 +1,29 @@
 #include <framework.h>
-#include <boost/thread.hpp>
+
+#include <cv.h>
 
 class GTKModule
 {
-private:
-	static bool already_initialized;
-	static boost::thread gtk_thread;
-	
 public:
 	Framework _framework;
-	GTKModule();
-	void initModule();
-};
 
+	GTKModule(void);
+
+	void initModule(void);
+    void stopModule(void);
+
+    void setName(const char *name);
+
+    void inputRGB(const unsigned char *rgb, int width, int height);
+    void input(const IplImage* ipl);
+
+    void refreshWindowImage(void);
+
+private:
+    GtkWidget *window;
+    GtkWidget *image;
+    GMutex *mutex;
+    GThread *gtkmainThread;
+};
 CLASS_AS_MODULE(GTKModule)
+
