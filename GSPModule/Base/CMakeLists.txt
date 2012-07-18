@@ -8,14 +8,14 @@ target_link_libraries( ImageSource ${Boost_THREAD_LIBRARY} ${OpenCV_LIBS} )
 
 add_library( ImageViewer SHARED ImageViewer.cpp ImageViewer.hpp )
 target_link_libraries( ImageViewer 
-    ${OpenCV_LIBS} ${GTK2_LIBRARIES} ${GTHREAD_LIBRARIES} )
+    ${Boost_THREAD_LIBRARY} ${OpenCV_LIBS} ${GTK2_LIBRARIES} ${GTHREAD_LIBRARIES} )
 
 add_library( RawToIpl SHARED RawToIpl.cpp RawToIpl.hpp )
 target_link_libraries( RawToIpl ${OpenCV_LIBS} )
 
 add_library( GTKModule SHARED GTKModule.cpp GTKModule.hpp )
 target_link_libraries( GTKModule 
-    ${Boost_THREAD_LIBRARY} ${GTHREAD_LIBRARIES} ${GTK2_LIBRARIES} )
+    ${GTHREAD_LIBRARIES} ${GTK2_LIBRARIES} ${OpenCV_LIBS} )
 
 add_library( ColorModules SHARED 
     ColorConvertor.cpp 
