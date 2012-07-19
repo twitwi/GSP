@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
@@ -68,6 +69,24 @@ public class DebugGUI extends AbstractModule {
                     spinner.setValue(Integer.parseInt(params[0]));
                 }
                 return spinner;
+            }
+        });
+        typeHandlers.put("boolean", new TypePresenter() {
+            @Override
+            public JComponent getPresenter(String fullType, final Controller action) {
+                final JCheckBox cb = new JCheckBox();
+                cb.addChangeListener(new ChangeListener() {
+
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        action.set(cb.isSelected() ? "true" : "false");
+                    }
+                });
+                String[] params = getParenthesisParameters(fullType);
+                if (params != null && params.length == 1) {
+                    cb.setSelected(Boolean.parseBoolean(params[0]));
+                }
+                return cb;
             }
         });
         // TODO java6 services extensibility on type->gui
