@@ -5,6 +5,7 @@ TODO for v 1.1:
 * (must)   cleanup TODO (what is done or not todo?)
 * (must)   handle all error reporting, not starting todos
 * (should) cool JMX export
+* (may)    java gsp should accept plain classes with public field or javabeans (using a by-convention approach, even for callbacks (maybe gspModuleInit...)) then they get wrapped in a real module
 * (may)    string conversion? GC?
 * (may)    long support
 
