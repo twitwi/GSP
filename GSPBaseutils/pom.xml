@@ -3,12 +3,34 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.prima</groupId>
-    <artifactId>GSPBaseutils</artifactId>
+    <artifactId>gsp-baseutils</artifactId>
     <packaging>jar</packaging>
     <version>1.2-SNAPSHOT</version>
     <name>GSPBaseutils</name>
-    <url>http://maven.apache.org</url>
+    <description>Some commonly used modules for the GSP Framework, all the modules are free of dependencies.</description>
+    <url>https://github.com/twitwi/GSP</url>
     
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gsp-framework</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <distributionManagement>
         <repository>
             <id>gh-repo</id>
@@ -21,30 +43,4 @@
         </snapshotRepository>
     </distributionManagement>
     
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gsp-framework</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 </project>
