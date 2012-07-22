@@ -5,9 +5,9 @@
 
 package fr.prima.gspbaseutils;
 
-import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.NativePointer;
 import fr.prima.gsp.framework.spi.AbstractModule;
+import org.bridj.Pointer;
 
 /**
  *
@@ -24,6 +24,6 @@ public class IntPointerToIntArray extends AbstractModule {
     }
 
     public static int[] convert(int length, NativePointer intPointer) {
-        return ((Pointer) intPointer.pointer).getIntArray(0, length);
+        return ((Pointer) intPointer.pointer).getInts(length);
     }
 }

@@ -5,8 +5,6 @@
 
 package fr.prima.gspbaseutils;
 
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.NativePointer;
 import fr.prima.gsp.framework.nativeutil.NativeType;
 import fr.prima.gsp.framework.spi.AbstractModule;
@@ -14,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bridj.Pointer;
 
 /**
  *
@@ -27,7 +26,7 @@ public class StringToCharPointer extends AbstractModule {
             ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length + 1);
             buf.put(bytes);
             buf.put((byte) 0);
-            output(Native.getDirectBufferPointer(buf));
+            output(Pointer.pointerToBuffer(buf));
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(StringToCharPointer.class.getName()).log(Level.SEVERE, null, ex);
         }

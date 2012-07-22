@@ -5,7 +5,6 @@
 
 package fr.prima.gspbaseutils;
 
-import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.NativePointer;
 import fr.prima.gsp.framework.spi.AbstractModule;
 import java.nio.IntBuffer;

@@ -5,11 +5,11 @@
 
 package fr.prima.gsp.framework;
 
-import com.sun.jna.Native;
 import fr.prima.gsp.framework.nativeutil.NativeType;
 import java.nio.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.bridj.Pointer;
 
 /**
  *
@@ -116,7 +116,8 @@ public class Event {
         for (int c = 0; c < i.length; c++) {
             if (information[c] instanceof Buffer) {
                 Buffer buf = (Buffer) information[c];
-                i[c] = new NativePointer(Native.getDirectBufferPointer((Buffer) buf), getType(buf.getClass()));
+                org.bridj.Pointer<Object> p = null;
+                i[c] = new NativePointer(Pointer.pointerToBuffer(buf), getType(buf.getClass()));
                 a[c] = getTypeName(buf.getClass());
                 //System.err.println("Translate buffer to: " + i[c]);
             } else if (information[c] instanceof NativePointer) { // we don't need to do anything to NativePointers

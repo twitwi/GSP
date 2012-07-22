@@ -5,8 +5,8 @@
 
 package fr.prima.gsp.demo;
 
-import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.spi.AbstractModule;
+import org.bridj.Pointer;
 
 /**
  *
@@ -15,7 +15,7 @@ import fr.prima.gsp.framework.spi.AbstractModule;
 public class CharPointerToString extends AbstractModule {
 
     public void input(Pointer p) {
-        output(p.getString(0));
+        output(p.getCString());
     }
 
     public void output(String s) {

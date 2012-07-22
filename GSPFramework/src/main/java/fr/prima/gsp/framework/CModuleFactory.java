@@ -5,15 +5,12 @@
 
 package fr.prima.gsp.framework;
 
-import com.sun.jna.Callback;
-import com.sun.jna.Function;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Pointer;
 import fr.prima.gsp.framework.nativeutil.NativeFunctionFinder;
 import fr.prima.gsp.framework.nativeutil.NativeSymbolDemangler;
-import fr.prima.gsp.framework.nativeutil.NativeType;
 import fr.prima.gsp.framework.nativeutil.NativeSymbolInfo;
+import fr.prima.gsp.framework.nativeutil.NativeType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bridj.BridJ;
+import org.bridj.JNI;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -43,9 +42,10 @@ public class CModuleFactory {
     {
         // code to avoid freeze in library loading (don't know why)
         // we just access to the Native class before anything else
+        /*
         if (Native.POINTER_SIZE < 4 || NativeLibrary.class.getName().isEmpty()) {
             System.err.println("This is quite strange");
-        }
+        }*/
     }
 
     Map<String, Bundle> bundles = new HashMap<String, Bundle>();
@@ -69,6 +69,7 @@ public class CModuleFactory {
     private Bundle getBundle(String bundleName) {
         Bundle bundle = bundles.get(bundleName);
         if (bundle == null) {
+            /*
             NativeLibrary.addSearchPath(bundleName, ".");
 
             String module_path = System.getenv("GSP_MODULES_PATH");
@@ -100,6 +101,15 @@ public class CModuleFactory {
 
                 // cannot load
                 // TODO report
+            }*/
+            try {
+                bundle = new Bundle(BridJ.getNativeLibrary(bundleName), NativeFunctionFinder.create(bundleName));
+                bundles.put(bundleName, bundle);
+                //bundle.jnalibrary = NativeLibrary.getInstance(bundleName);
+            } catch (Exception e) {
+                // TODO test NativeFunctionFinder also (add exceptions in it, or in the create or ...)
+                // cannot load
+                // TODO report
             }
         }
         return bundle;
@@ -108,7 +118,7 @@ public class CModuleFactory {
     private CModule createCModule(String bundleName, String moduleTypeName) {
         Bundle bundle = bundles.get(bundleName);
         CModule module = new CModule(bundle, bundleName, moduleTypeName);
-        if (module.that != Pointer.NULL) {
+        if (module.that != org.bridj.Pointer.NULL) {
 //            long moduleNumber = module.number;
 //            String moduleId = bundleName + " " + moduleTypeName + " " + moduleNumber;
             modules.add(module);
@@ -128,40 +138,55 @@ public class CModuleFactory {
     
     private static String sep = "__v__";
 
+    private static interface InvocableFacet {
+        void invoke(Object[] args);
+        org.bridj.Pointer<?> invokePointer(Object[] args);
+    }
+
     private class Bundle {
 
-        NativeLibrary library;
+        org.bridj.NativeLibrary library;
         NativeFunctionFinder finder;
+        //NativeLibrary jnalibrary;
+        /*
+
 
         private Bundle(NativeLibrary library,  NativeFunctionFinder finder) {
             this.library = library;
             this.finder = finder;
+        }*/
+
+        private Bundle(org.bridj.NativeLibrary nativeLibrary,  NativeFunctionFinder finder) {
+            this.library = nativeLibrary;
+            this.finder = finder;
         }
 
-        private Pointer createModule(String moduleTypeName, FrameworkCallback f) {
-            //Pointer res = f(moduleTypeName, "create").invokePointer(new Object[]{f.toPointer()});
-            Pointer res = f(moduleTypeName, "create").invokePointer(new Object[]{f});
-            if (res != Pointer.NULL) {
+        private org.bridj.Pointer<?> createModule(String moduleTypeName, FrameworkCallback f) {
+            //Pointer res = jnaf(moduleTypeName, "create").invokePointer(new Object[]{f});
+            org.bridj.Pointer<?> res = applyPointer(f(moduleTypeName, "create"), f);
+            if (res != org.bridj.Pointer.NULL) {
+            //if (res != Pointer.NULL) {
                 callCFunctionOptionally(moduleTypeName, "created", res);
+                return res;
             }
-            return res;
+            return null;
         }
 
-        private void setModuleParameter(String moduleTypeName, Pointer that, String parameterName, Object value) {
+        private void setModuleParameter(String moduleTypeName, org.bridj.Pointer that, String parameterName, Object value) {
             callCFunctionOrCppMethodOptionally(moduleTypeName, "set" + sep + parameterName, setter(parameterName), that, value);
         }
 
-        private void initModule(String moduleTypeName, Pointer that) {
+        private void initModule(String moduleTypeName, org.bridj.Pointer that) {
             callCFunctionOrElseCppMethodOptionallyIsCppCalled(moduleTypeName, "init", "initModule", that);
         }
 
-        private void stopModule(String moduleTypeName, Pointer that) {
+        private void stopModule(String moduleTypeName, org.bridj.Pointer that) {
             if (callCFunctionOrElseCppMethodOptionallyIsCppCalled(moduleTypeName, "stop", "stopModule", that)) {
-                f(moduleTypeName, "delete").invoke(new Object[]{that});
+                apply(f(moduleTypeName, "delete"), that);
             }
         }
 
-        private void receiveEvent(String moduleTypeName, Pointer that, String portName, Event e) {
+        private void receiveEvent(String moduleTypeName, org.bridj.Pointer that, String portName, Event e) {
             e = e.getCView();
             Object[] information = e.getInformation();
             Object[] thatAndParams = new Object[information.length + 1];
@@ -172,11 +197,19 @@ public class CModuleFactory {
             }
         }
 
-        private Function f(String functionName) {
+/*        private Function jnaf(String functionName) {
+            return jnaf(null, functionName);
+        }
+        private Function jnaf(String prefix, String functionName) {
+            return jnalibrary.getFunction((prefix == null ? "" : prefix + sep) + functionName);
+        }*/
+
+        private org.bridj.Pointer<?> f(String functionName) {
             return f(null, functionName);
         }
-        private Function f(String prefix, String functionName) {
-            return library.getFunction((prefix == null ? "" : prefix + sep) + functionName);
+        private org.bridj.Pointer<?> f(String prefix, String functionName) {
+            final String fullname = (prefix == null ? "" : prefix + sep) + functionName;
+            return library.getSymbolPointer(fullname);
         }
 
         /**
@@ -207,7 +240,7 @@ public class CModuleFactory {
 
         private boolean callCFunctionOptionally(String prefix, String functionName, Object... params) {
             try {
-                f(prefix, functionName).invoke(resolvePointers(params));
+                apply(f(prefix, functionName), params);
                 return true;
             } catch (UnsatisfiedLinkError err) {
                 debug("Failed calling C function '" + functionName + "'");
@@ -226,7 +259,7 @@ public class CModuleFactory {
                 //System.err.println("FOR: " + moduleTypeName + " " + cpp + " " + Arrays.asList(types) + " -> " + info);
                 debug("Mangled cpp method '" + moduleTypeName + "::" + cpp + "' as '" + (info == null ? "MISSING" : info.mangledName) + "'");
                 if (info != null) {
-                    f(info.mangledName).invoke(resolvePointers(thatAndParams));
+                    apply(f(info.mangledName), thatAndParams);
                     return true;
                 }
             } catch (UnsatisfiedLinkError err2) {
@@ -247,26 +280,36 @@ public class CModuleFactory {
             return res;
         }
 
+        private void apply(org.bridj.Pointer<?> f, Object ...args) {
+            args = resolvePointers(args);
+            Type[] classes = new Type[args.length];
+            for (int i = 0; i < classes.length; i++) {
+                classes[i] = args[i].getClass();
+            }
+            f.asDynamicFunction(null, Void.TYPE, classes).apply(args);
+        }
+        private org.bridj.Pointer<?> applyPointer(org.bridj.Pointer<?> f, FrameworkCallback arg) {
+            return (org.bridj.Pointer<?>) f.asDynamicFunction(null, org.bridj.Pointer.class, org.bridj.Pointer.class).apply(arg.toPointer());
+        }
+
     }
 
-    //private static abstract class FrameworkCallback extends Callback {
-    private static interface FrameworkCallback extends Callback {
-        public abstract void callback(String commandName, Pointer parameters);
+    private static abstract class FrameworkCallback extends org.bridj.Callback {
+    //private static interface FrameworkCallback extends Callback {
+        public abstract void callback(String commandName, org.bridj.Pointer parameters);
     }
 
-    private static Pointer[] extractNullTerminatedPointerArray(Pointer args) {
-        return args.getPointerArray(0);
-        /*
-        int pointerSize = JNI.POINTER_SIZE;
-        ArrayList<Pointer> res = new ArrayList<Pointer>();
-        Pointer cur;
+    private static org.bridj.Pointer[] extractNullTerminatedPointerArray(org.bridj.Pointer args) {
+        //return args.getPointerArray(0);
+        ArrayList<org.bridj.Pointer> res = new ArrayList<org.bridj.Pointer>();
+        int pointerSize = org.bridj.Pointer.SIZE;
+        org.bridj.Pointer cur;
         int index = 0;
-        while (Pointer.NULL != (cur = args.getPointer(index * pointerSize))) {
+        while (org.bridj.Pointer.NULL != (cur = args.getPointerAtOffset(index * pointerSize))) {
             res.add(cur);
             index++;
         }
-        return res.toArray(new Pointer[res.size()]);
-         */
+        return res.toArray(new org.bridj.Pointer[res.size()]);
     }
 
     private NativeType getNativeTypeForObject(Object o) {
@@ -294,7 +337,7 @@ public class CModuleFactory {
 
     private static class CModule extends BaseAbstractModule implements Module {
 
-        Pointer that;
+        org.bridj.Pointer<?> that;
         FrameworkCallback framework;
 
         Bundle bundle;
@@ -311,12 +354,12 @@ public class CModuleFactory {
             this.bundleName = bundleName;
             this.moduleTypeName = moduleTypeName;
             this.framework = new FrameworkCallback() {
-                public void callback(String commandName, Pointer parameters) {
+                public void callback(String commandName, org.bridj.Pointer parameters) {
                     cCallback(commandName, extractNullTerminatedPointerArray(parameters));
                 }
             };
             that = bundle.createModule(moduleTypeName, framework);
-            if (that == Pointer.NULL) return;
+            if (that == org.bridj.Pointer.NULL) return;
         }
 
         public EventReceiver getEventReceiver(final String portName) {
@@ -355,20 +398,20 @@ public class CModuleFactory {
         }
 
         // callback from C
-        private void cCallback(String commandName, Pointer[] parameters) {
+        private void cCallback(String commandName, org.bridj.Pointer[] parameters) {
             if ("param".equals(commandName)) {
                 // this is of pure C (non C++)
-                parameterTypes.put(parameters[1].getString(0), parameters[2].getString(0));
+                parameterTypes.put(parameters[1].getCString(), parameters[2].getCString());
             } else if ("emit".equals(commandName)) {
                 Object[] eventParameters = new Object[parameters.length / 2];
                 String[] eventParametersTypes = new String[parameters.length / 2];
                 for (int i = 1; i < parameters.length; i += 2) {
-                    String type = patchReportedType(parameters[i].getString(0));
+                    String type = patchReportedType(parameters[i].getCString());
                     Object value = getValueFromNative(type, parameters[i + 1]);
                     eventParameters[i / 2] = value;
                     eventParametersTypes[i / 2] = type;
                 }
-                emitNamedEvent(parameters[0].getString(0), eventParameters, eventParametersTypes);
+                emitNamedEvent(parameters[0].getCString(), eventParameters, eventParametersTypes);
             } else {
                 System.err.println("Unsupported callback type " + commandName);
             }
@@ -503,45 +546,45 @@ public class CModuleFactory {
             }
         };
         private static interface NativeInterpreter {
-            Object interpret(Pointer pointer);
+            Object interpret(org.bridj.Pointer pointer);
         }
         private static Map<String, NativeInterpreter> nativeInterpreters = new HashMap<String, NativeInterpreter>() {
             {
                 put("f", new NativeInterpreter() {
-                    public Object interpret(Pointer pointer) {
-                        return pointer.getFloat(0);
+                    public Object interpret(org.bridj.Pointer pointer) {
+                        return pointer.getFloat();
                     }
                 });
                 put("d", new NativeInterpreter() {
-                    public Object interpret(Pointer pointer) {
-                        return pointer.getDouble(0);
+                    public Object interpret(org.bridj.Pointer pointer) {
+                        return pointer.getDouble();
                     }
                 });
                 put("i", new NativeInterpreter() {
-                    public Object interpret(Pointer pointer) {
-                        return pointer.getInt(0);
+                    public Object interpret(org.bridj.Pointer pointer) {
+                        return pointer.getInt();
                     }
                 });
                 put("j", new NativeInterpreter() {
-                    public Object interpret(Pointer pointer) {
-                        return pointer.getInt(0);
+                    public Object interpret(org.bridj.Pointer pointer) {
+                        return pointer.getInt();
                     }
                 });
                 put("l", new NativeInterpreter() {
-                    public Object interpret(Pointer pointer) {
-                        return pointer.getLong(0);
+                    public Object interpret(org.bridj.Pointer pointer) {
+                        return pointer.getLong();
                     }
                 });
             }
         };
-        private Object getValueFromNative(String type, Pointer pointer) {
+        private Object getValueFromNative(String type, org.bridj.Pointer pointer) {
             NativeSymbolDemangler dem = NativeSymbolDemangler.create();
             NativeType t = dem.demangleType(bundleName, type);
             if (t == null) {
                 throw new RuntimeException("Null native type for " + bundleName + " type " + type);
             }
             if (t.isPointer()) {
-                return new NativePointer(pointer.getPointer(0), t);
+                return new NativePointer(pointer.getPointerAtOffset(0), t);
             }
             if (t.isCompound()) {
                 throw new UnsupportedOperationException("Unsupported direct stuct passing (use pointer or references): " + t.toString());
