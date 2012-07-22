@@ -4,13 +4,13 @@ package fr.prima.gspexample;
 
 import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModule;
-import com.sun.jna.Pointer;
+import org.bridj.Pointer;
 
 
 public class CharPointerToString extends AbstractModule {
 
     private void input(Pointer charPointer) {
-        output(charPointer.getString(0));
+        output(charPointer.getCString());
     }
 
     private void output(String s) {

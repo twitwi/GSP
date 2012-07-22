@@ -21,7 +21,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bridj.BridJ;
-import org.bridj.JNI;
+import org.bridj.DynamicFunction;
+import org.bridj.Pointer;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -181,9 +182,13 @@ public class CModuleFactory {
         }
 
         private void stopModule(String moduleTypeName, org.bridj.Pointer that) {
+            // the stop/stopModule is an optional callback
             if (callCFunctionOrElseCppMethodOptionallyIsCppCalled(moduleTypeName, "stop", "stopModule", that)) {
-                apply(f(moduleTypeName, "delete"), that);
+                // we used to call the delete here, but not sure why
+                //apply(f(moduleTypeName, "delete"), that);
             }
+            // we make the delete optional as old frameworks were not exporting it
+            callCFunctionOptionally(moduleTypeName, "delete", that);
         }
 
         private void receiveEvent(String moduleTypeName, org.bridj.Pointer that, String portName, Event e) {
@@ -240,7 +245,11 @@ public class CModuleFactory {
 
         private boolean callCFunctionOptionally(String prefix, String functionName, Object... params) {
             try {
-                apply(f(prefix, functionName), params);
+                Pointer f = f(prefix, functionName);
+                if (f == Pointer.NULL) {
+                    return false;
+                }
+                apply(f, params);
                 return true;
             } catch (UnsatisfiedLinkError err) {
                 debug("Failed calling C function '" + functionName + "'");
@@ -285,8 +294,27 @@ public class CModuleFactory {
             Type[] classes = new Type[args.length];
             for (int i = 0; i < classes.length; i++) {
                 classes[i] = args[i].getClass();
+                if (args[i] instanceof String) {
+                    args[i] = Pointer.pointerToString(args[i].toString(), Pointer.StringType.C, null);
+                    classes[i] = Pointer.class;
+                }
+                if (args[i] instanceof Pointer) { // for all subclasses of Pointer
+                    classes[i] = Pointer.class;
+                }
+                // TODO is there a cleaner way (e.g. removing a layer, instead of adding one) ???
+                if (args[i] instanceof Float) {
+                    classes[i] = float.class;
+                }
+                if (args[i] instanceof Integer) {
+                    classes[i] = int.class;
+                }
+                if (args[i] instanceof Boolean) {
+                    classes[i] = boolean.class;
+                }
+                //System.err.println("  ==  "+classes[i]+" => "+args[i].getClass()+" => "+args[i]);
             }
-            f.asDynamicFunction(null, Void.TYPE, classes).apply(args);
+            final DynamicFunction<Object> asDynamicFunction = f.asDynamicFunction(null, Void.TYPE, classes);
+            asDynamicFunction.apply(args);
         }
         private org.bridj.Pointer<?> applyPointer(org.bridj.Pointer<?> f, FrameworkCallback arg) {
             return (org.bridj.Pointer<?>) f.asDynamicFunction(null, org.bridj.Pointer.class, org.bridj.Pointer.class).apply(arg.toPointer());
@@ -294,9 +322,9 @@ public class CModuleFactory {
 
     }
 
-    private static abstract class FrameworkCallback extends org.bridj.Callback {
+    public static abstract class FrameworkCallback extends org.bridj.Callback {
     //private static interface FrameworkCallback extends Callback {
-        public abstract void callback(String commandName, org.bridj.Pointer parameters);
+        public abstract void callback(Pointer commandName, org.bridj.Pointer parameters);
     }
 
     private static org.bridj.Pointer[] extractNullTerminatedPointerArray(org.bridj.Pointer args) {
@@ -354,8 +382,8 @@ public class CModuleFactory {
             this.bundleName = bundleName;
             this.moduleTypeName = moduleTypeName;
             this.framework = new FrameworkCallback() {
-                public void callback(String commandName, org.bridj.Pointer parameters) {
-                    cCallback(commandName, extractNullTerminatedPointerArray(parameters));
+                public void callback(Pointer commandName, org.bridj.Pointer parameters) {
+                    cCallback(commandName.getCString(), extractNullTerminatedPointerArray(parameters));
                 }
             };
             that = bundle.createModule(moduleTypeName, framework);
@@ -445,6 +473,11 @@ public class CModuleFactory {
                 }
                 value = getNativeValueFromString(type, text);
             }
+            System.err.println("============== >>>>>>>>>>");
+            System.err.println(that.getClass()+" => "+that);
+            System.err.println(moduleTypeName);
+            System.err.println(parameterName);
+            System.err.println(value.getClass()+" => "+value);
             bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
             // could cache here
         }
