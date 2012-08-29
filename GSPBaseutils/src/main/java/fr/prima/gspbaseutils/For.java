@@ -33,6 +33,8 @@ public class For extends AbstractModuleEnablable {
     @ModuleParameter(initOnly = true)
     public int step = 1;
 
+    @ModuleParameter
+    public boolean emitEmptyAfter = true;
     /**
      * Should the assembly be shut down when the For ends?
      */
@@ -106,10 +108,17 @@ public class For extends AbstractModuleEnablable {
     }
 
     private synchronized void output() {
+        if (emitEmptyAfter) {
+            s();
+            i();
+            f();
+        }
         emitEvent();
-        s();
-        i();
-        f();
+        if (!emitEmptyAfter) {
+            s();
+            i();
+            f();
+        }
         count += step;
         if (interrupted.get() || (to != -1 && count >= to)) {
             timer.cancel();
