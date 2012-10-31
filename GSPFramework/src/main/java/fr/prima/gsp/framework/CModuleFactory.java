@@ -473,11 +473,13 @@ public class CModuleFactory {
                 }
                 value = getNativeValueFromString(type, text);
             }
+            /*
             System.err.println("============== >>>>>>>>>>");
             System.err.println(that.getClass()+" => "+that);
             System.err.println(moduleTypeName);
             System.err.println(parameterName);
             System.err.println(value.getClass()+" => "+value);
+            */
             bundle.setModuleParameter(moduleTypeName, that, parameterName, value);
             // could cache here
         }
