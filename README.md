@@ -2,12 +2,27 @@ GSP Framework
 =============
 
 This project is a framework to build and plug modules in Java, C++, Python, ...
+
 Please refer to the [GSP Tutorial](https://github.com/twitwi/GSPTutorial) for a proper introduction.
 
 
 
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
 
 OLD README FOLLOWS
+
+.
 
 = Visualizing a pipeline =
 ==========================
