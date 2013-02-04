@@ -18,19 +18,9 @@ import org.bridj.Pointer;
 public class Event {
     
     private Object[] information;
-    private String[] additionalTypeInformation;
 
-    public Event(Object[] information, String[] additionalTypeInformation) {
+    public Event(Object[] information) {
         this.information = information;
-        this.additionalTypeInformation = additionalTypeInformation;
-    }
-
-    public String[] getAdditionalTypeInformation() {
-        return additionalTypeInformation;
-    }
-
-    public String getAdditionalTypeInformation(int index) {
-        return additionalTypeInformation[index];
     }
 
     public Object[] getInformation() {
@@ -75,61 +65,22 @@ public class Event {
         return res;
     }
 
-    private Map<Class, String> nameCache = new HashMap<Class, String>();
-// TODO this is dirtily redundant
-    private String getTypeName(Class cl) {
-        String res = nameCache.get(cl);
-        if (res != null) {
-            return res;
-        }
-        if (false) {
-        } else if (IntBuffer.class.isAssignableFrom(cl)) {
-            res = "Pi";
-        } else if (FloatBuffer.class.isAssignableFrom(cl)) {
-            res = "Pf";
-        } else if (DoubleBuffer.class.isAssignableFrom(cl)) {
-            res = "Pd";
-        } else if (ByteBuffer.class.isAssignableFrom(cl)) {
-            res = "Pc";
-        } else if (Integer.class.isAssignableFrom(cl)) {
-            res = "i";
-        } else if (Float.class.isAssignableFrom(cl)) {
-            res = "f";
-        } else if (Double.class.isAssignableFrom(cl)) {
-            res = "d";
-        } else if (Byte.class.isAssignableFrom(cl)) {
-            res = "c";
-        } else {
-            System.err.println("Not found for class: " + cl);
-            return null;
-        }
-        nameCache.put(cl, res);
-        return res;
-    }
-
     public Event getCView() {
         //System.err.println(information.length + ": " + Arrays.toString(information) + " of types " + Arrays.toString(additionalTypeInformation));
         Object[] i = new Object[information.length];
         System.arraycopy(information, 0, i, 0, i.length);
-        String[] a = new String[additionalTypeInformation.length];
-        System.arraycopy(additionalTypeInformation, 0, i, 0, i.length);
         for (int c = 0; c < i.length; c++) {
             if (information[c] instanceof Buffer) {
                 Buffer buf = (Buffer) information[c];
                 org.bridj.Pointer<Object> p = null;
                 i[c] = new NativePointer(Pointer.pointerToBuffer(buf), getType(buf.getClass()));
-                a[c] = getTypeName(buf.getClass());
-                //System.err.println("Translate buffer to: " + i[c]);
             } else if (information[c] instanceof NativePointer) { // we don't need to do anything to NativePointers
                 i[c] = information[c];
-                // isn't a[c] deprecated? => Check that and remove all of them if deprecated
             } else {
                 i[c] = information[c];
-                a[c] = additionalTypeInformation[c] == null ? getTypeName(information[c].getClass()) : additionalTypeInformation[c];
-                //System.err.println("Copied: " + i[c] + " of type " + a[c]);
             }
         }
-        return new Event(i, a);
+        return new Event(i);
     }
 
 }

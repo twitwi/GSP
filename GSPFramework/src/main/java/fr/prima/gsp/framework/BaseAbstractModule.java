@@ -57,18 +57,11 @@ public abstract class BaseAbstractModule implements Module {
 
     protected boolean allowOpenEvents = false;
     
-    protected final void emitNamedEvent(String eventName, Object[] args, String[] types) {
-        List<EventReceiver> targets = listenersFor(eventName);
-        for (EventReceiver eventReceiver : targets) {
-            eventReceiver.receiveEvent(new Event(args, types));
-        }
-    }
-
     protected final void emitNamedEvent(String eventName, Object... args) {
         String[] types = new String[args.length];
         List<EventReceiver> targets = listenersFor(eventName);
         for (EventReceiver eventReceiver : targets) {
-            eventReceiver.receiveEvent(new Event(args, types));
+            eventReceiver.receiveEvent(new Event(args));
         }
     }
 
