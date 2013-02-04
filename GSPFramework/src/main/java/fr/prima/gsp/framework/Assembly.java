@@ -44,10 +44,12 @@ public class Assembly {
     Map<String, StringRewriter> prefixes = new HashMap<String, StringRewriter>();
 
     CModuleFactory cModuleFactory = new CModuleFactory();
+    PythonModuleFactory pythonModuleFactory = new PythonModuleFactory();
 
 
     public Assembly() {
         this.addPrefix("c", "[C-CODE]");
+        this.addPrefix("py", "[PYTHON-CODE]");
         this.addPrefix("java", identityStringRewriter());
     }
     public void stop() {
@@ -78,6 +80,8 @@ public class Assembly {
         Module newModule = null;
         if (typeDescriptor.startsWith("[C-CODE]")) {
             newModule = createCModule(typeDescriptor);
+        } else if (typeDescriptor.startsWith("[PYTHON-CODE]")) {
+            newModule = createPythonModule(typeDescriptor);
         } else {
             newModule = createJavaModule(typeDescriptor);
         }
@@ -161,6 +165,7 @@ public class Assembly {
         }
         return null;
     }
+
     private Module createCModule(String cLibAndType) {
         cLibAndType = cLibAndType.replaceFirst("\\[C-CODE\\]", "");
         String[] parts = cLibAndType.split("[.]");
@@ -169,6 +174,16 @@ public class Assembly {
             //throw new IllegalStateException("commented out, change this");
         } else {
             throw new IllegalArgumentException("Cannot find a single '.' in the C module type name: " + cLibAndType);
+        }
+    }
+    
+    private Module createPythonModule(String pythonModuleAndType) {
+        pythonModuleAndType = pythonModuleAndType.replaceFirst("\\[PYTHON-CODE\\]", "");
+        String[] parts = pythonModuleAndType.split("[.]");
+        if (parts.length == 2) {
+            return pythonModuleFactory.createModule(parts[0], parts[1]);
+        } else {
+            throw new IllegalArgumentException("Cannot find a single '.' in the Python module type name: " + pythonModuleAndType);
         }
     }
 

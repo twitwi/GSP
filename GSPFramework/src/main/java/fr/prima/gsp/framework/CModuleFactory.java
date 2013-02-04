@@ -363,6 +363,12 @@ public class CModuleFactory {
         }
     };
 
+    static Set<String> nonParameters = new HashSet<String>() {
+        {
+            add("id");
+            add("type");
+        }
+    };
     private static class CModule extends BaseAbstractModule implements Module {
 
         org.bridj.Pointer<?> that;
@@ -372,10 +378,6 @@ public class CModuleFactory {
         String bundleName;
         String moduleTypeName;
         Map<String, String> parameterTypes = new HashMap<String, String>();
-        private Set<String> nonParameters = new HashSet<String>() {{
-            add("id");
-            add("type");
-        }};
 
         private CModule(Bundle bundle, String bundleName, String moduleTypeName) {
             this.bundle = bundle;
