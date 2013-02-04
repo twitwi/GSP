@@ -98,8 +98,8 @@ class PythonModuleFactory {
 
         public PythonModule(Bundle bundle, String pythonModuleName, String typeName) {
             this.bundle = bundle;
-            Pointer<PyObject> pyClass = PyDict_GetItem(bundle.pythonModuleDict, sp(typeName));
-            pyClassInstance = PyObject_CallFunctionObjArgs(pyClass);
+            Pointer<PyObject> pyClass = PyDict_GetItemString(bundle.pythonModuleDict, s(typeName));
+            pyClassInstance = PyObject_CallFunctionObjArgs(pyClass, (Object) null);
             FrameworkCallback frameworkCallback = new FrameworkCallback() {
                 @Override
                 public Pointer<PyObject> callback(Pointer<PyObject> self, Pointer<PyObject> args, Pointer<PyObject> keywds) {
@@ -112,7 +112,7 @@ class PythonModuleFactory {
             callbackMethodDef.ml_name(s("gsp"));
             callbackMethodDef.ml_meth(frameworkCallback.toPointer());
             Pointer<PyObject> callbackMethodObject = PyCFunction_NewEx(Pointer.pointerTo(callbackMethodDef), pyClassInstance, pyNone());
-            PyObject_SetAttr(pyClassInstance, sp("gsp"), callbackMethodObject);
+            PyObject_SetAttrString(pyClassInstance, s("gsp"), callbackMethodObject);
         }
 
         @Override
@@ -127,16 +127,16 @@ class PythonModuleFactory {
 
         private void pythonCallback(Pointer<PyObject> self, Pointer<PyObject> args) {
             /*
-                Object[] eventParameters = new Object[parameters.length / 2];
-                String[] eventParametersTypes = new String[parameters.length / 2];
-                for (int i = 1; i < parameters.length; i += 2) {
-                    String type = patchReportedType(parameters[i].getCString());
-                    Object value = getValueFromNative(type, parameters[i + 1]);
-                    eventParameters[i / 2] = value;
-                    eventParametersTypes[i / 2] = type;
-                }
-                emitNamedEvent(parameters[0].getCString(), eventParameters, eventParametersTypes);
-                */
+             Object[] eventParameters = new Object[parameters.length / 2];
+             String[] eventParametersTypes = new String[parameters.length / 2];
+             for (int i = 1; i < parameters.length; i += 2) {
+             String type = patchReportedType(parameters[i].getCString());
+             Object value = getValueFromNative(type, parameters[i + 1]);
+             eventParameters[i / 2] = value;
+             eventParametersTypes[i / 2] = type;
+             }
+             emitNamedEvent(parameters[0].getCString(), eventParameters, eventParametersTypes);
+             */
         }
 
         public EventReceiver getEventReceiver(String portName) {
