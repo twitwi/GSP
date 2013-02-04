@@ -74,9 +74,7 @@ public class Event {
                 Buffer buf = (Buffer) information[c];
                 org.bridj.Pointer<Object> p = null;
                 i[c] = new NativePointer(Pointer.pointerToBuffer(buf), getType(buf.getClass()));
-            } else if (information[c] instanceof NativePointer) { // we don't need to do anything to NativePointers
-                i[c] = information[c];
-            } else {
+            } else { // we don't need to do anything to NativePointers or other types
                 i[c] = information[c];
             }
         }
