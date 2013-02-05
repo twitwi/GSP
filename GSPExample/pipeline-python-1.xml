@@ -2,12 +2,13 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrate simple mix of Java and Python modules.%nIt should count up to 3 then exit."/>
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrate simple mix of Java and Python modules.%nIt should count up to 3 (twice at the same time) then exit."/>
 
     <m id="tick" type="ex:Counter" maxCount="4"/>
     <m id="log" type="py:pythondemo.Log" hello="world"/>
 
     <c chain="tick#asString - log"/>
+    <c chain="tick - log"/>
 
 </pipeline>
 

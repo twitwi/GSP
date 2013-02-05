@@ -8,6 +8,7 @@ import com.heeere.python27.PyMethodDef;
 import com.heeere.python27.PyObject;
 import static com.heeere.python27.Python27Library.*;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -116,13 +117,13 @@ class PythonModuleFactory {
         }
 
         @Override
-        protected void stopModule() {
-            //throw new UnsupportedOperationException("Not supported yet.");
+        protected void initModule() {
+            callIfExists("initModule");
         }
 
         @Override
-        protected void initModule() {
-            //throw new UnsupportedOperationException("Not supported yet.");
+        protected void stopModule() {
+            callIfExists("stopModule");
         }
 
         private void pythonCallback(Pointer<PyObject> self, Pointer<PyObject> args) {
@@ -140,11 +141,24 @@ class PythonModuleFactory {
         }
 
         public EventReceiver getEventReceiver(String portName) {
+            final Pointer<PyObject> method = PyObject_GetAttrString(pyClassInstance, s(portName));
+            // TODO handle problem here
             return new EventReceiver() {
                 public void receiveEvent(Event e) {
+                    //Event pythonEvent = e.getPythonView();
                     //bundle.receiveEvent(moduleTypeName, that, portName, e);
+                    PyObject_CallFunctionObjArgs(method, eventToParameters(e));
                 }
             };
+        }
+
+        private Object[] eventToParameters(Event e) {
+            Object[] ei = e.getInformation();
+            Object[] res = new Object[ei.length + 1]; // add a null at the end
+            for (int c = 0; c < ei.length; c++) {
+                res[c] = getPythonView(ei[c]);
+            }
+            return res;
         }
 
         public void addConnector(String portName, EventReceiver eventReceiver) {
@@ -177,6 +191,38 @@ class PythonModuleFactory {
                     PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
                 }
                 // TODO, maybe use eval as a last resort
+            }
+        }
+
+        private void callIfExists(String methodName) {
+            Pointer<PyObject> method = PyObject_GetAttrString(pyClassInstance, s(methodName));
+            if (method != null) {
+                PyObject_CallFunctionObjArgs(method, (Object) null);
+            }
+        }
+    }
+    private static Map<Class, String> typeToBuildValueString = new IdentityHashMap<Class, String>() {
+        {
+            put(Integer.class, "i");
+            put(Long.class, "l");
+            put(Short.class, "h");
+            put(Float.class, "f");
+            put(Double.class, "d");
+        }
+    };
+
+    private static Object getPythonView(Object o) {
+        if (o == null) {
+            return pyNone();
+        } else if (o instanceof String) {
+            return Py_BuildValue(s("s"), s((String) o));
+        } else {
+            String pyBuildString = typeToBuildValueString.get(o.getClass());
+            if (pyBuildString != null) {
+                return Py_BuildValue(s(pyBuildString), o);
+            } else {
+                // wtd? TODO
+                return null;
             }
         }
     }

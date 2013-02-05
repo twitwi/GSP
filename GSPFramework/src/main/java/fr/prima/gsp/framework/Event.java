@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package fr.prima.gsp.framework;
 
 import fr.prima.gsp.framework.nativeutil.NativeType;
@@ -16,7 +15,7 @@ import org.bridj.Pointer;
  * Data inside this structure MUST not be modified! Be a good citizen.
  */
 public class Event {
-    
+
     private Object[] information;
 
     public Event(Object[] information) {
@@ -30,7 +29,6 @@ public class Event {
     public Object getInformation(int index) {
         return information[index];
     }
-
     private Map<Class, NativeType> cache = new HashMap<Class, NativeType>();
 
     private NativeType getType(Class cl) {
@@ -65,6 +63,7 @@ public class Event {
         return res;
     }
 
+    // TODO: maybe should not be in this class, maybe should not be split in this and the python one, maybe should be a common utility class
     public Event getCView() {
         //System.err.println(information.length + ": " + Arrays.toString(information) + " of types " + Arrays.toString(additionalTypeInformation));
         Object[] i = new Object[information.length];
