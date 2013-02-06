@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.bridj.BridJ;
+import org.bridj.CLong;
+import org.bridj.NativeList;
 import org.bridj.Pointer;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -37,7 +39,7 @@ class PythonModuleFactory {
         BridJ.addNativeLibraryAlias("python27", "python2.7");
         Py_Initialize();
         Pointer<PyObject> dict = PyImport_GetModuleDict();
-        Pointer<PyObject> builtin = PyDict_GetItemString(dict, s("__builtin__"));;
+        Pointer<PyObject> builtin = PyDict_GetItemString(dict, s("__builtin__"));
         pyTrue = PyObject_GetAttrString(builtin, s("True"));
         pyFalse = PyObject_GetAttrString(builtin, s("False"));
         pyBool = PyObject_Type(pyTrue);
@@ -113,15 +115,15 @@ class PythonModuleFactory {
                 @Override
                 public Pointer<PyObject> callback(Pointer<PyObject> self, Pointer<PyObject> args, Pointer<PyObject> keywds) {
                     pythonCallback(self, args);
-                    //System.err.println("CALLED BACK! AMAZING");
                     return pyNone();
                 }
             };
             PyMethodDef callbackMethodDef = new PyMethodDef();
-            callbackMethodDef.ml_name(s("gsp"));
+            callbackMethodDef.ml_name(s("emitNamedEvent"));
             callbackMethodDef.ml_meth(frameworkCallback.toPointer());
+            callbackMethodDef.ml_flags(METH_VARARGS);
             Pointer<PyObject> callbackMethodObject = PyCFunction_NewEx(Pointer.pointerTo(callbackMethodDef), pyClassInstance, pyNone());
-            PyObject_SetAttrString(pyClassInstance, s("gsp"), callbackMethodObject);
+            PyObject_SetAttrString(pyClassInstance, s("emitNamedEvent"), callbackMethodObject);
         }
 
         @Override
@@ -135,6 +137,32 @@ class PythonModuleFactory {
         }
 
         private void pythonCallback(Pointer<PyObject> self, Pointer<PyObject> args) {
+            //Pointer<Py_ssize_t> nArgs = PyTuple_Size(args);
+            int nArgs = nArgs(args);
+            System.err.println(nArgs);
+            //Pointer<PyObject> pointers = Pointer.allocateArray(P, nArgs); //Pointer.pointerToCLongs(0, 0);
+            //Pointer<PyObject> tmp = Pointer.allocate(PyObject.class);
+            //Pointer<PyObject> tmp2 = Pointer.allocate(PyObject.class);
+            Pointer<CLong> tmp = Pointer.allocateCLong();
+            Pointer<CLong> tmp2 = Pointer.allocateCLong();
+            System.err.println("B " + Long.toHexString(tmp.getPeer()) + " " + Long.toHexString(tmp2.getPeer()));
+            System.err.println("B " + Long.toHexString(tmp.getCLong()) + " " + Long.toHexString(tmp2.getCLong()));
+            int res;
+            //res = PyArg_ParseTuple(args, s("OO"), tmp.getReference(), tmp2.getReference());
+            //res = PyArg_ParseTuple(args, s("OO"), Pointer.pointerToPointer(tmp), Pointer.pointerToPointer(tmp2));
+            //res = PyArg_ParseTuple(args, s("OO"), Pointer.pointerToCLong(tmp.getPeer()), Pointer.pointerToCLong(tmp2.getPeer()));
+            res = PyArg_ParseTuple(args, s("OO"), tmp, tmp2);
+            //Pointer<PyObject> tmp = Pointer.pointerToAddress(pointers., null, null)
+            System.err.println(res + " " + Long.toHexString(tmp.getPeer()) + " " + Long.toHexString(tmp2.getPeer()));
+            System.err.println(res + " " + Long.toHexString(tmp.getCLong()) + " " + Long.toHexString(tmp2.getCLong()));
+            Pointer<PyObject> obj = (Pointer<PyObject>) Pointer.pointerToAddress(tmp.getCLong());
+             String eventName = PyString_AsStringJava(PyObject_Str(obj));
+             //String eventName = PyString_AsStringJava(tmp);
+             System.err.println(eventName);
+            /*
+             // TODO check
+             for (int c = 0; c < nArgs; c++) {
+             }*/
             /*
              Object[] eventParameters = new Object[parameters.length / 2];
              String[] eventParametersTypes = new String[parameters.length / 2];
@@ -213,6 +241,14 @@ class PythonModuleFactory {
                 PyObject_CallFunctionObjArgs(method, (Object) null);
             }
         }
+
+        private int nArgs(Pointer<PyObject> args) {
+            Pointer<Py_ssize_t> nArgs = PyTuple_Size(args);
+            // buggous wrapper?
+            return (int) nArgs.getPeer();
+            //System.err.println("+++++++++++++++++++++++++++++ "+Long.toHexString(nArgs.getPeer()));
+            //return (int) nArgs.getSizeT();
+        }
     }
     private static Map<Class, String> typeToBuildValueString = new IdentityHashMap<Class, String>() {
         {
@@ -238,5 +274,10 @@ class PythonModuleFactory {
                 return null;
             }
         }
+    }
+
+    private String PyString_AsStringJava(Pointer<PyObject> str) {
+        Pointer<Byte> arr = PyString_AsString(str);
+        return arr.getCString();
     }
 }

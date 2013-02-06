@@ -16,8 +16,8 @@ class Div:
         if not(self.enabled):
             return
         res = value / self.divisor
-        self.gsp("output", res)
-        self.gsp("string", str(res))
+        self.emitNamedEvent("output", res)
+        self.emitNamedEvent("string", str(res))
 
 
 class Log:
