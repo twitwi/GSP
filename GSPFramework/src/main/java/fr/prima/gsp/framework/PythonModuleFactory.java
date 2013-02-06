@@ -25,6 +25,9 @@ import org.w3c.dom.Node;
 class PythonModuleFactory {
 
     private boolean inited = false;
+    Pointer<PyObject> pyTrue;
+    Pointer<PyObject> pyFalse;
+    Pointer<PyObject> pyBool;
 
     private void lazyInit() {
         if (inited) {
@@ -33,6 +36,11 @@ class PythonModuleFactory {
         // Need LD_PRELOAD...
         BridJ.addNativeLibraryAlias("python27", "python2.7");
         Py_Initialize();
+        Pointer<PyObject> dict = PyImport_GetModuleDict();
+        Pointer<PyObject> builtin = PyDict_GetItemString(dict, s("__builtin__"));;
+        pyTrue = PyObject_GetAttrString(builtin, s("True"));
+        pyFalse = PyObject_GetAttrString(builtin, s("False"));
+        pyBool = PyObject_Type(pyTrue);
         inited = true;
     }
     // NOTE: what is called a module in Python (that can be imported) is called a Bundle here, to avoid conflict with PythonModule (for the gsp)
@@ -87,7 +95,7 @@ class PythonModuleFactory {
         /*  static PyObject *keywdarg_parrot(PyObject *self, PyObject *args, PyObject *keywds)  */
     }
 
-    private static class PythonModule extends BaseAbstractModule {
+    private class PythonModule extends BaseAbstractModule {
 
         Bundle bundle;
         //String pyClassName;
@@ -184,12 +192,13 @@ class PythonModuleFactory {
                 System.err.println("ERROR: could not find attribute '" + parameterName + "' in python object"); // TODO handle errors
             } else {
                 Pointer<PyObject> attrType = PyObject_Type(attr);
-                if (attrType == attr) { // handle the Boolean case bool (DUMMY if now)
-                    // TODO true,...
+                Pointer<PyObject> newVal;
+                if (attrType.equals(pyBool)) { // handle the Boolean case bool (DUMMY if now)
+                    newVal = Boolean.parseBoolean(text) ? pyTrue : pyFalse;
                 } else {
-                    Pointer<PyObject> newVal = PyObject_CallFunctionObjArgs(attrType, sp(text), null);
-                    PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
+                    newVal = PyObject_CallFunctionObjArgs(attrType, sp(text), null);
                 }
+                PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
                 // TODO, maybe use eval as a last resort
             }
         }
