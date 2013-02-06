@@ -8,7 +8,9 @@ class Div:
         self.divisor = 1. # to type it as double
 
     # a "gsp(...)" function will be injected
-    # TODO onDivisorChanged(oldVal, newVal) ??
+    def divisorChanged(self, oldVal, newVal):
+        if newVal == 0.:
+            self.divisor = oldVal
 
     def input(self, value):
         if not(self.enabled):
@@ -21,10 +23,10 @@ class Div:
 class Log:
     def __init__(self):
         print("Log class: creating instance")
-        self.hello = ""
+        self.hello = "world"
 
     def helloChanged(self, old, new):
-        print("Log class: hello value has been changed from "+str(old)+" to "+str(new)+" and is currently "+str(self.hello))
+        print("Log class: hello value has been changed from '"+str(old)+"' to '"+str(new)+"' and is currently '"+self.hello+"'")
 
     def input(self, message):
         #print(type(self.hello), self.hello)

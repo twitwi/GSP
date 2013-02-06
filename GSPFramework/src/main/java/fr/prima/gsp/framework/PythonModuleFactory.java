@@ -199,6 +199,10 @@ class PythonModuleFactory {
                     newVal = PyObject_CallFunctionObjArgs(attrType, sp(text), null);
                 }
                 PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
+                Pointer<PyObject> notificationMethod = PyObject_GetAttrString(pyClassInstance, s(parameterName + "Changed"));
+                if (notificationMethod != pyNone()) {
+                    PyObject_CallFunctionObjArgs(notificationMethod, attr, newVal);
+                }
                 // TODO, maybe use eval as a last resort
             }
         }
