@@ -1,0 +1,18 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="atinit" type="ex:MessageAtInit" msg="This pipeline shows the transfer of a C struct to python, then the reading with ctypes."/>
+
+    <m id="tick" type="ex:Counter" maxCount="3" period="500" warmupDelay="500"/>
+    <m id="m" type="c:AdvancedDemo.ProduceAndConsumeCustomType"/>
+    <m id="rec" type="py:pythoncpp.ReceiveCustom"/>
+
+    <c chain="tick - tick#m"/>
+    <c chain="m - rec"/>
+    <c chain="m - m"/>
+    <c chain="m#outputArray - inputArray#rec"/>
+
+
+</pipeline>
+

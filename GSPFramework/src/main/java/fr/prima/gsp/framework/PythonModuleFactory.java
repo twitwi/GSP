@@ -8,7 +8,6 @@ import com.heeere.python27.PyMethodDef;
 import com.heeere.python27.PyObject;
 import static com.heeere.python27.Python27Library.*;
 import com.heeere.python27.Python27Library.Py_ssize_t;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -17,7 +16,6 @@ import java.util.Map;
 import org.bridj.BridJ;
 import org.bridj.CLong;
 import org.bridj.Pointer;
-import org.bridj.util.StringUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -25,6 +23,9 @@ import org.w3c.dom.Node;
 /**
  *
  * @author remonet
+ * 
+ * 
+ * TODO: each call to python should test for return and print/clear the errors
  */
 class PythonModuleFactory {
 
@@ -168,7 +169,10 @@ class PythonModuleFactory {
             // TODO handle problem here
             return new EventReceiver() {
                 public void receiveEvent(Event e) {
-                    PyObject_CallFunctionObjArgs(method, eventToParameters(e));
+                    Pointer<PyObject> res = PyObject_CallFunctionObjArgs(method, eventToParameters(e));
+                    if (res == Pointer.NULL) {
+                        PyErr_Print();
+                    }
                 }
             };
         }
@@ -222,8 +226,10 @@ class PythonModuleFactory {
 
         private void callIfExists(String methodName) {
             Pointer<PyObject> method = PyObject_GetAttrString(pyClassInstance, s(methodName));
-            if (method != null) {
+            if (method != Pointer.NULL) {
                 PyObject_CallFunctionObjArgs(method, (Object) null);
+            } else {
+                PyErr_Clear();
             }
         }
 
@@ -252,12 +258,15 @@ class PythonModuleFactory {
             return Py_BuildValue(s("s"), s((String) o));
         } else if (o instanceof PythonPointer) {
             return ((PythonPointer) o).pointer;
+        } else if (o instanceof NativePointer) {
+            return Py_BuildValue(s("l"), NativePointerUtils.address((NativePointer) o));
         } else {
             String pyBuildString = typeToBuildValueString.get(o.getClass());
             if (pyBuildString != null) {
                 return Py_BuildValue(s(pyBuildString), o);
             } else {
                 // wtd? TODO
+                System.err.println("UNHANDLED TYPE " + o.getClass());
                 return null;
             }
         }
