@@ -7,6 +7,8 @@ package fr.prima.gsp.framework;
 import com.heeere.python27.PyMethodDef;
 import com.heeere.python27.PyObject;
 import static com.heeere.python27.Python27Library.*;
+import com.heeere.python27.Python27Library.Py_ssize_t;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -14,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import org.bridj.BridJ;
 import org.bridj.CLong;
-import org.bridj.NativeList;
 import org.bridj.Pointer;
+import org.bridj.util.StringUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -136,44 +138,29 @@ class PythonModuleFactory {
             callIfExists("stopModule");
         }
 
+        private String repeat(String what, int times) {
+            StringBuilder res = new StringBuilder();
+            for (int i = 0; i < times; i++) {
+                res.append(what);
+            }
+            return res.toString();
+        }
+
         private void pythonCallback(Pointer<PyObject> self, Pointer<PyObject> args) {
-            //Pointer<Py_ssize_t> nArgs = PyTuple_Size(args);
             int nArgs = nArgs(args);
-            System.err.println(nArgs);
-            //Pointer<PyObject> pointers = Pointer.allocateArray(P, nArgs); //Pointer.pointerToCLongs(0, 0);
-            //Pointer<PyObject> tmp = Pointer.allocate(PyObject.class);
-            //Pointer<PyObject> tmp2 = Pointer.allocate(PyObject.class);
-            Pointer<CLong> tmp = Pointer.allocateCLong();
-            Pointer<CLong> tmp2 = Pointer.allocateCLong();
-            System.err.println("B " + Long.toHexString(tmp.getPeer()) + " " + Long.toHexString(tmp2.getPeer()));
-            System.err.println("B " + Long.toHexString(tmp.getCLong()) + " " + Long.toHexString(tmp2.getCLong()));
+            Pointer<CLong>[] parametersPointers = new Pointer[nArgs];
+            for (int i = 0; i < parametersPointers.length; i++) {
+                parametersPointers[i] = Pointer.allocateCLong();
+            }
             int res;
-            //res = PyArg_ParseTuple(args, s("OO"), tmp.getReference(), tmp2.getReference());
-            //res = PyArg_ParseTuple(args, s("OO"), Pointer.pointerToPointer(tmp), Pointer.pointerToPointer(tmp2));
-            //res = PyArg_ParseTuple(args, s("OO"), Pointer.pointerToCLong(tmp.getPeer()), Pointer.pointerToCLong(tmp2.getPeer()));
-            res = PyArg_ParseTuple(args, s("OO"), tmp, tmp2);
-            //Pointer<PyObject> tmp = Pointer.pointerToAddress(pointers., null, null)
-            System.err.println(res + " " + Long.toHexString(tmp.getPeer()) + " " + Long.toHexString(tmp2.getPeer()));
-            System.err.println(res + " " + Long.toHexString(tmp.getCLong()) + " " + Long.toHexString(tmp2.getCLong()));
-            Pointer<PyObject> obj = (Pointer<PyObject>) Pointer.pointerToAddress(tmp.getCLong());
-             String eventName = PyString_AsStringJava(PyObject_Str(obj));
-             //String eventName = PyString_AsStringJava(tmp);
-             System.err.println(eventName);
-            /*
-             // TODO check
-             for (int c = 0; c < nArgs; c++) {
-             }*/
-            /*
-             Object[] eventParameters = new Object[parameters.length / 2];
-             String[] eventParametersTypes = new String[parameters.length / 2];
-             for (int i = 1; i < parameters.length; i += 2) {
-             String type = patchReportedType(parameters[i].getCString());
-             Object value = getValueFromNative(type, parameters[i + 1]);
-             eventParameters[i / 2] = value;
-             eventParametersTypes[i / 2] = type;
-             }
-             emitNamedEvent(parameters[0].getCString(), eventParameters, eventParametersTypes);
-             */
+            res = PyArg_ParseTuple(args, s(repeat("O", nArgs)), (Object[]) parametersPointers);
+            Pointer<PyObject> obj = (Pointer<PyObject>) Pointer.pointerToAddress(parametersPointers[0].getCLong());
+            String eventName = PyString_AsStringJava(obj);
+            PythonPointer[] eventParameters = new PythonPointer[nArgs - 1];
+            for (int i = 0; i < eventParameters.length; i++) {
+                eventParameters[i] = new PythonPointer((Pointer<PyObject>) Pointer.pointerToAddress(parametersPointers[i + 1].getCLong()));
+            }
+            emitNamedEvent(eventName, (Object[]) eventParameters);
         }
 
         public EventReceiver getEventReceiver(String portName) {
@@ -181,8 +168,6 @@ class PythonModuleFactory {
             // TODO handle problem here
             return new EventReceiver() {
                 public void receiveEvent(Event e) {
-                    //Event pythonEvent = e.getPythonView();
-                    //bundle.receiveEvent(moduleTypeName, that, portName, e);
                     PyObject_CallFunctionObjArgs(method, eventToParameters(e));
                 }
             };
@@ -265,6 +250,8 @@ class PythonModuleFactory {
             return pyNone();
         } else if (o instanceof String) {
             return Py_BuildValue(s("s"), s((String) o));
+        } else if (o instanceof PythonPointer) {
+            return ((PythonPointer) o).pointer;
         } else {
             String pyBuildString = typeToBuildValueString.get(o.getClass());
             if (pyBuildString != null) {

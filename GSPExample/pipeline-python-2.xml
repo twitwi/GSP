@@ -2,7 +2,7 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrate simple mix of Java and Python modules.%nIt should count simultaneously up to 10 by increments of 1/6 and up to 30 by increments of 1/2."/>
+    <m id="m" type="ex:MessageAtInit" msg="This pipeline illustrate simple mix of Java and Python modules.%nIt should (roughly) count simultaneously up to 10 by increments of 1/6 and up to 30 by increments of 1/2."/>
 
     <m id="tick" type="ex:Counter" maxCount="61" period="25" warmupDelay="3000"/>
     <m id="d1" type="py:pythondemo.Div" divisor="1.41421356"/>
