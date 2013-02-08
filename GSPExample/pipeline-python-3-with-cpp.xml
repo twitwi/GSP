@@ -7,12 +7,16 @@
     <m id="tick" type="ex:Counter" maxCount="3" period="500" warmupDelay="500"/>
     <m id="m" type="c:AdvancedDemo.ProduceAndConsumeCustomType"/>
     <m id="rec" type="py:pythoncpp.ReceiveCustom"/>
+    <m id="emit" type="py:pythoncpp.EmitCustom"/>
 
     <c chain="tick - tick#m"/>
     <c chain="m - rec"/>
     <c chain="m - m"/>
     <c chain="m#outputArray - inputArray#rec"/>
 
+    <c chain="tick - emit"/>
+    <c chain="emit - rec"/>
+    <c chain="emit - m"/>
 
 </pipeline>
 

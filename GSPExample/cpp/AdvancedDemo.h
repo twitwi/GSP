@@ -55,8 +55,11 @@ CLASS_AS_MODULE(ConsumeStl);
 
 
 struct CustomType { // for python ctypes test
+private: // to check that it does not break the layout
     float score;
-    int x, y;
+public:  // to check that it does not break the layout
+    int x,y;
+    friend class ProduceAndConsumeCustomType;
 };
 
 class ProduceAndConsumeCustomType {

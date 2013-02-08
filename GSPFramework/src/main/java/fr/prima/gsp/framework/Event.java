@@ -9,6 +9,7 @@ import java.nio.*;
 import java.util.HashMap;
 import java.util.Map;
 import org.bridj.Pointer;
+import static com.heeere.python27.Python27Library.*;
 
 /**
  *
@@ -71,13 +72,16 @@ public class Event {
         for (int c = 0; c < i.length; c++) {
             if (information[c] instanceof Buffer) {
                 Buffer buf = (Buffer) information[c];
-                org.bridj.Pointer<Object> p = null;
                 i[c] = new NativePointer(Pointer.pointerToBuffer(buf), getType(buf.getClass()));
+            } else if (information[c] instanceof PythonPointer) {
+                // TODO do a lot here to interpret the pointer of simple types... in the meantime only handles struct?
+                PythonPointer pypt = (PythonPointer) information[c];
+                long nativeAddress = PythonModuleFactory.sizeAsLong(PyInt_AsSsize_t(pypt.pointer));
+                i[c] = new NativePointer(Pointer.pointerToAddress(nativeAddress), NativeType.pointer(NativeType.struct("CustomType")));
             } else { // we don't need to do anything to NativePointers or other types
                 i[c] = information[c];
             }
         }
         return new Event(i);
     }
-
 }

@@ -57,7 +57,7 @@ void ProduceAndConsumeCustomType::tick(int tick) {
     for (int i = 0; i<size; i++) {
         arr[i].x = tick;
         arr[i].y = tick * i;
-        arr[i].score = (tick % size) == i ? 1.f*tick : .001f*tick;
+        arr[i].score = (tick % size) == i ? 1.f*tick : -.001f*tick;
     }
     emitNamedEvent("output", arr); // actually semantically meaning we send the first one
     emitNamedEvent("outputArray", size, arr);

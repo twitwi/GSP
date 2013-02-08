@@ -235,11 +235,15 @@ class PythonModuleFactory {
 
         private int nArgs(Pointer<PyObject> args) {
             Pointer<Py_ssize_t> nArgs = PyTuple_Size(args);
-            // buggous wrapper?
-            return (int) nArgs.getPeer();
+            return (int) sizeAsLong(nArgs);
             //System.err.println("+++++++++++++++++++++++++++++ "+Long.toHexString(nArgs.getPeer()));
             //return (int) nArgs.getSizeT();
         }
+    }
+
+    public static long sizeAsLong(Pointer<Py_ssize_t> s) {
+        // buggous wrapper?
+        return s.getPeer();
     }
     private static Map<Class, String> typeToBuildValueString = new IdentityHashMap<Class, String>() {
         {
