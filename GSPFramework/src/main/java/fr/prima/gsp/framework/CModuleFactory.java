@@ -434,14 +434,12 @@ public class CModuleFactory {
                 parameterTypes.put(parameters[1].getCString(), parameters[2].getCString());
             } else if ("emit".equals(commandName)) {
                 Object[] eventParameters = new Object[parameters.length / 2];
-                String[] eventParametersTypes = new String[parameters.length / 2];
                 for (int i = 1; i < parameters.length; i += 2) {
                     String type = patchReportedType(parameters[i].getCString());
                     Object value = getValueFromNative(type, parameters[i + 1]);
                     eventParameters[i / 2] = value;
-                    eventParametersTypes[i / 2] = type;
                 }
-                emitNamedEvent(parameters[0].getCString(), eventParameters, eventParametersTypes);
+                emitNamedEvent(parameters[0].getCString(), eventParameters);
             } else {
                 System.err.println("Unsupported callback type " + commandName);
             }
