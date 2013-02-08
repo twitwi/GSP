@@ -51,3 +51,26 @@ void ConsumeStl::input(std::string *str, std::vector<int> *vec) {
     delete[]buf;
 }
 
+void ProduceAndConsumeCustomType::tick(int tick) {
+    CustomType arr[3];
+    int size = 3;
+    for (int i = 0; i<size; i++) {
+        arr[i].x = tick;
+        arr[i].x = tick * i;
+        arr[i].score = (tick % size) == i ? .1f*tick : -.001f*tick;
+    }
+    emitNamedEvent("output", arr); // actually semantically meaning we send the first one
+    emitNamedEvent("outputArray", size, arr);
+}
+
+void ProduceAndConsumeCustomType::input(CustomType *value) {
+    printf("Received: %d,%d -> %f\n", value->x, value->y, value->score);
+}
+
+void ProduceAndConsumeCustomType::inputArray(int count, CustomType *values) {
+    printf("Received array of size %d\n", count);
+    for (int i = 0; i<count; i++) {
+        printf("  values[%d]: %d,%d -> %f\n", i, values[i].x, values[i].y, values[i].score);
+    }
+}
+

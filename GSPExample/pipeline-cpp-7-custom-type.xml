@@ -1,0 +1,14 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="tick" type="ex:Counter" maxCount="1" period="500" warmupDelay="500"/>
+    <m id="cons" type="ex:Console"/>
+    TODO comment (mostly a test for before python interaction)
+
+    <m id="m" type="c:AdvancedDemo.ProduceAndConsumeCustomType"/>
+
+    <c chain="tick - tick#m"/>
+    <c chain="m#outputArray - inputArray#m"/>
+
+</pipeline>

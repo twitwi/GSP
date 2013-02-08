@@ -52,3 +52,18 @@ public:
 };
 CLASS_AS_MODULE(ConsumeStl);
 
+
+
+struct CustomType { // for python ctypes test
+    float score;
+    int x, y;
+};
+
+class ProduceAndConsumeCustomType {
+public:
+    Framework _framework;
+    void tick(int i); // to produce
+    void input(CustomType *value);
+    void inputArray(int count, CustomType *values);
+};
+CLASS_AS_MODULE(ProduceAndConsumeCustomType);
