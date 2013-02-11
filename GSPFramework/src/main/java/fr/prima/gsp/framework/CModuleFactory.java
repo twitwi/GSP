@@ -305,8 +305,14 @@ public class CModuleFactory {
                 if (args[i] instanceof Float) {
                     classes[i] = float.class;
                 }
+                if (args[i] instanceof Double) {
+                    classes[i] = double.class;
+                }
                 if (args[i] instanceof Integer) {
                     classes[i] = int.class;
+                }
+                if (args[i] instanceof Long) {
+                    classes[i] = long.class;
                 }
                 if (args[i] instanceof Boolean) {
                     classes[i] = boolean.class;
@@ -353,6 +359,8 @@ public class CModuleFactory {
         {
             put(Integer.TYPE, NativeType.INT);
             put(Integer.class, NativeType.INT);
+            put(Long.TYPE, NativeType.LONG);
+            put(Long.class, NativeType.LONG);
             put(Float.TYPE, NativeType.FLOAT);
             put(Float.class, NativeType.FLOAT);
             put(Double.TYPE, NativeType.DOUBLE);
@@ -532,7 +540,7 @@ public class CModuleFactory {
                 put("float", NativeType.FLOAT);
                 put("double", NativeType.DOUBLE);
                 put("int", NativeType.INT);
-                //put("long", NativeType.);
+                put("long", NativeType.LONG);
                 put("bool", NativeType.BOOL);
                 //put("", NativeType.);
             }
@@ -568,11 +576,11 @@ public class CModuleFactory {
                         return Integer.parseInt(text);
                     }
                 });
-//                put("long", new StringToNative() {
-//                    public Object toNative(String text) {
-//                        return Long.parseLong(text);
-//                    }
-//                });
+                put(NativeType.LONG, new StringToNative() {
+                    public Object toNative(String text) {
+                        return Long.parseLong(text);
+                    }
+                });
                 put(NativeType.BOOL, new StringToNative() {
                     public Object toNative(String text) {
                         return Boolean.parseBoolean(text);

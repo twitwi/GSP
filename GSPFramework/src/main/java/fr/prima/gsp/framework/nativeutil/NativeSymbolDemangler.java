@@ -132,6 +132,7 @@ public abstract class NativeSymbolDemangler {
 
                 {
                     put("int", NativeType.INT);
+                    put("org.bridj.CLong", NativeType.LONG);
                     put("byte", NativeType.CHAR);
                     put("float", NativeType.FLOAT);
                     put("double", NativeType.DOUBLE);

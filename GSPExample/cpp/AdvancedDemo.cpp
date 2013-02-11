@@ -89,3 +89,8 @@ namespace heeere {
     }
 }
 
+
+void SimpleTypes::input(long i, double f, bool b, const char* s) {
+    printf("Received: %d %f %s %s\n", i, f, b ? "true" : "false", s);
+}
+

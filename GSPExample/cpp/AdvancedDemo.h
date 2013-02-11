@@ -83,3 +83,11 @@ namespace heeere {
     };
     CLASS_AS_MODULE(ProduceAndConsumeNSType);
 };
+
+
+class SimpleTypes {
+public:
+    Framework _framework;
+    void input(long i, double f, bool b, const char* s);
+};
+CLASS_AS_MODULE(SimpleTypes);

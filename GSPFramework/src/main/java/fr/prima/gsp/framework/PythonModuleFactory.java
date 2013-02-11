@@ -109,8 +109,9 @@ class PythonModuleFactory {
     private Pointer<PyObject> pyGSP(String methodName) {
         return PyObject_GetAttrString(pyGSP, s(methodName));
     }
-    boolean pyIsStructure(Pointer<PyObject> pypt) {
-        return PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructure"), pypt, null)) == 0;
+
+    boolean pyIsStructureOrArray(Pointer<PyObject> pypt) {
+        return PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructureOrArray"), pypt, null)) == 0;
     }
 
     long pyCAddress(Pointer<PyObject> pypt) {
@@ -119,6 +120,30 @@ class PythonModuleFactory {
 
     String pyCClassName(Pointer<PyObject> pypt) {
         return PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("cClassName"), pypt, null));
+    }
+
+    Object pySimpleTypeToJava(Pointer<PyObject> pypt) {
+        String typeString = PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("typeString"), pypt, null));
+        // TODO maybe redo with a Map and some kind of java8 closures
+        if ("NoneType".equals(typeString)) {
+            return null;
+        } else if ("int".equals(typeString)) {
+            // bypass wrapper problem (maybe todo change it)
+            return Long.parseLong(PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("valueString"), pypt, null)));
+            //return sizeAsLong(PyInt_AsSsize_t(pypt));
+        } else if ("float".equals(typeString)) {
+            return PyFloat_AsDouble(pypt);
+        } else if ("str".equals(typeString)) {
+            return PyString_AsStringJava(pypt);
+        } else if ("bool".equals(typeString)) {
+            return PyObject_Compare(pyTrue, pypt) == 0;
+        } else {
+            return null;
+        }
+    }
+
+    boolean pyIsString(Pointer<PyObject> pypt) {
+        return PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isString"), pypt, null)) == 0;
     }
 
     private static class Bundle {
@@ -257,7 +282,7 @@ class PythonModuleFactory {
                 }
                 PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
                 Pointer<PyObject> notificationMethod = PyObject_GetAttrString(pyClassInstance, s(parameterName + "Changed"));
-                if (notificationMethod != pyNone()) {
+                if (PyObject_Compare(notificationMethod, pyNone()) != 0) {
                     PyObject_CallFunctionObjArgs(notificationMethod, attr, newVal);
                 }
                 // TODO, maybe use eval as a last resort
@@ -316,6 +341,9 @@ class PythonModuleFactory {
         }
     }
 
+    public Pointer<Byte> PyString_AsCString(Pointer<PyObject> str) {
+        return PyString_AsString(str);
+    }
     private String PyString_AsStringJava(Pointer<PyObject> str) {
         Pointer<Byte> arr = PyString_AsString(str);
         return arr.getCString();

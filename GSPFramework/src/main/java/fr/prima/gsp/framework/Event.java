@@ -70,30 +70,37 @@ public class Event {
         Object[] i = new Object[information.length];
         System.arraycopy(information, 0, i, 0, i.length);
         for (int c = 0; c < i.length; c++) {
-            if (information[c] instanceof Buffer) {
-                Buffer buf = (Buffer) information[c];
-                i[c] = new NativePointer(Pointer.pointerToBuffer(buf), getType(buf.getClass()));
-            } else if (information[c] instanceof PythonPointer) {
-                // TODO do a "lot" here to interpret the pointer of simple types... in the meantime only handles struct?
-                i[c] = getCViewOfPythonPointer((PythonPointer) information[c]);
-            } else { // we don't need to do anything to NativePointers or other types
-                i[c] = information[c];
-            }
+            i[c] = getCViewOfStuff(information[c]);
         }
         return new Event(i);
+    }
+
+    private Object getCViewOfStuff(Object o) {
+        if (o instanceof Buffer) {
+            Buffer buf = (Buffer) o;
+            return new NativePointer(Pointer.pointerToBuffer(buf), getType(buf.getClass()));
+        } else if (o instanceof PythonPointer) {
+            return getCViewOfPythonPointer((PythonPointer) o);
+        } else { // we don't need to do anything to NativePointers or other types
+            return o;
+        }
     }
 
     private Object getCViewOfPythonPointer(PythonPointer pypt) {
         PythonModuleFactory py = PythonModuleFactory.instance;
         //long nativeAddress = PythonModuleFactory.sizeAsLong(PyInt_AsSsize_t(pypt.pointer));
-        if (py.pyIsStructure(pypt.pointer)) {
+        if (py.pyIsStructureOrArray(pypt.pointer)) {
             long nativeAddress = py.pyCAddress(pypt.pointer);
             String nativeType = py.pyCClassName(pypt.pointer);
             String[] ns = nativeType.split("::");
             int last = ns.length - 1;
             NativeType struct = NativeType.struct(Arrays.copyOf(ns, last), ns[last], null);
             return new NativePointer(Pointer.pointerToAddress(nativeAddress), NativeType.pointer(struct));
+        } else if (py.pyIsString(pypt.pointer)) {
+            Pointer<Byte> cstr = py.PyString_AsCString(pypt.pointer);
+            return new NativePointer(cstr, NativeType.CHAR_POINTER);
+        } else {
+            return getCViewOfStuff(py.pySimpleTypeToJava(pypt.pointer));
         }
-        return null;
     }
 }

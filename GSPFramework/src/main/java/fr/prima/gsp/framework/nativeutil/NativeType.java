@@ -13,12 +13,13 @@ public abstract class NativeType {
 
     //
     public static final NativeType INT = simple("int");
+    public static final NativeType LONG = simple("long");
     public static final NativeType FLOAT = simple("float");
     public static final NativeType DOUBLE = simple("double");
     public static final NativeType BOOL = simple("bool");
     public static final NativeType CHAR = simple("char");
     public static final NativeType VOID = simple("void");
-    public static final NativeType[] nonPointersTypes = new NativeType[]{INT, FLOAT, DOUBLE, BOOL, CHAR, VOID};
+    public static final NativeType[] nonPointersTypes = new NativeType[]{INT, LONG, FLOAT, DOUBLE, BOOL, CHAR, VOID};
 
     public static NativeType stdString() {
         String[] std = new String[]{"std"};

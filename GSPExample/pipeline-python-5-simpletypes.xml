@@ -1,0 +1,13 @@
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="atinit" type="ex:MessageAtInit" msg="This pipeline shows the transfer of simple types to/from python and C."/>
+
+    <m id="tick" type="ex:Counter" maxCount="3" period="500" warmupDelay="500"/>
+    <m id="cc" type="c:AdvancedDemo.SimpleTypes"/>
+    <m id="py" type="py:pythoncpp.SimpleTypes"/>
+
+    <c chain="tick - py - cc - view#py"/>
+    <c chain="       py -      view#py"/>
+
+</pipeline>
