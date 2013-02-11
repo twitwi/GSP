@@ -13,10 +13,13 @@
     <c chain="m - rec"/>
     <c chain="m - m"/>
     <c chain="m#outputArray - inputArray#rec"/>
+    <c chain="m#outputArray - inputArray#m"/>
 
     <c chain="tick - emit"/>
     <c chain="emit - rec"/>
     <c chain="emit - m"/>
+    <!--c chain="emit#outputArray - inputArray#rec"/> the python example is actually not emitting array
+    <c chain="emit#outputArray - inputArray#m"/-->
 
 </pipeline>
 

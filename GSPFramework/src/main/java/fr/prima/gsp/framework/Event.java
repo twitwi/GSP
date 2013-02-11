@@ -74,14 +74,23 @@ public class Event {
                 Buffer buf = (Buffer) information[c];
                 i[c] = new NativePointer(Pointer.pointerToBuffer(buf), getType(buf.getClass()));
             } else if (information[c] instanceof PythonPointer) {
-                // TODO do a lot here to interpret the pointer of simple types... in the meantime only handles struct?
-                PythonPointer pypt = (PythonPointer) information[c];
-                long nativeAddress = PythonModuleFactory.sizeAsLong(PyInt_AsSsize_t(pypt.pointer));
-                i[c] = new NativePointer(Pointer.pointerToAddress(nativeAddress), NativeType.pointer(NativeType.struct("CustomType")));
+                // TODO do a "lot" here to interpret the pointer of simple types... in the meantime only handles struct?
+                i[c] = getCViewOfPythonPointer((PythonPointer) information[c]);
             } else { // we don't need to do anything to NativePointers or other types
                 i[c] = information[c];
             }
         }
         return new Event(i);
+    }
+
+    private Object getCViewOfPythonPointer(PythonPointer pypt) {
+        PythonModuleFactory py = PythonModuleFactory.instance;
+        //long nativeAddress = PythonModuleFactory.sizeAsLong(PyInt_AsSsize_t(pypt.pointer));
+        if (py.pyIsStructure(pypt.pointer)) {
+            long nativeAddress = py.pyCAddress(pypt.pointer);
+            String nativeType = py.pyCClassName(pypt.pointer);
+            return new NativePointer(Pointer.pointerToAddress(nativeAddress), NativeType.pointer(NativeType.struct(nativeType)));
+        }
+        return null;
     }
 }

@@ -4,6 +4,7 @@
  */
 package fr.prima.gsp.framework;
 
+import com.heeere.python27.PyCompilerFlags;
 import com.heeere.python27.PyMethodDef;
 import com.heeere.python27.PyObject;
 import static com.heeere.python27.Python27Library.*;
@@ -13,6 +14,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import org.bridj.BridJ;
 import org.bridj.CLong;
 import org.bridj.Pointer;
@@ -23,8 +25,8 @@ import org.w3c.dom.Node;
 /**
  *
  * @author remonet
- * 
- * 
+ *
+ *
  * TODO: each call to python should test for return and print/clear the errors
  */
 class PythonModuleFactory {
@@ -33,6 +35,8 @@ class PythonModuleFactory {
     Pointer<PyObject> pyTrue;
     Pointer<PyObject> pyFalse;
     Pointer<PyObject> pyBool;
+    Pointer<PyObject> pyGSP;
+    public static PythonModuleFactory instance = null; // dirty...
 
     private void lazyInit() {
         if (inited) {
@@ -41,16 +45,37 @@ class PythonModuleFactory {
         // Need LD_PRELOAD...
         BridJ.addNativeLibraryAlias("python27", "python2.7");
         Py_Initialize();
-        Pointer<PyObject> dict = PyImport_GetModuleDict();
-        Pointer<PyObject> builtin = PyDict_GetItemString(dict, s("__builtin__"));
-        pyTrue = PyObject_GetAttrString(builtin, s("True"));
-        pyFalse = PyObject_GetAttrString(builtin, s("False"));
-        pyBool = PyObject_Type(pyTrue);
+        { // get some built-in
+            Pointer<PyObject> dict = PyImport_GetModuleDict();
+            Pointer<PyObject> builtin = PyDict_GetItemString(dict, s("__builtin__"));
+            pyTrue = PyObject_GetAttrString(builtin, s("True"));
+            pyFalse = PyObject_GetAttrString(builtin, s("False"));
+            pyBool = PyObject_Type(pyTrue);
+        }
+        { // load the GSP framework part written in python
+            int res = PyRun_SimpleStringFlags(s(getPythonCode()), flags(Py_file_input));
+            if (res != 0) {
+                PyErr_Print();// ??? does it work for non-exceptions?
+            }
+            Pointer<PyObject> dict = PyModule_GetDict(PyImport_AddModule(s("__main__")));
+            pyGSP = PyDict_GetItemString(dict, s("GSP"));
+        }
+        instance = this;
         inited = true;
     }
     // NOTE: what is called a module in Python (that can be imported) is called a Bundle here, to avoid conflict with PythonModule (for the gsp)
     Map<String, Bundle> bundles = new HashMap<String, Bundle>();
     List<Module> modules = new LinkedList<Module>();
+
+    private Pointer<PyCompilerFlags> flags(int i) {
+        PyCompilerFlags res = new PyCompilerFlags();
+        res.cf_flags(i);
+        return Pointer.pointerTo(res);
+    }
+
+    private String getPythonCode() {
+        return new Scanner(PythonModuleFactory.class.getResourceAsStream("/gsp.py"), "UTF-8").useDelimiter("\\A").next();
+    }
 
     public Module createModule(String pythonModuleName, String typeName) {
         lazyInit();
@@ -79,6 +104,21 @@ class PythonModuleFactory {
 
     public static Pointer<PyObject> pyNone() {
         return Py_BuildValue(s(""));
+    }
+
+    private Pointer<PyObject> pyGSP(String methodName) {
+        return PyObject_GetAttrString(pyGSP, s(methodName));
+    }
+    boolean pyIsStructure(Pointer<PyObject> pypt) {
+        return PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructure"), pypt, null)) == 0;
+    }
+
+    long pyCAddress(Pointer<PyObject> pypt) {
+        return sizeAsLong(PyInt_AsSsize_t(PyObject_CallFunctionObjArgs(pyGSP("cAddress"), pypt, null)));
+    }
+
+    String pyCClassName(Pointer<PyObject> pypt) {
+        return PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("cClassName"), pypt, null));
     }
 
     private static class Bundle {
