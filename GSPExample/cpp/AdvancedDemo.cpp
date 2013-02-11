@@ -52,7 +52,7 @@ void ConsumeStl::input(std::string *str, std::vector<int> *vec) {
 }
 
 void ProduceAndConsumeCustomType::tick(int tick) {
-    int size = 3;
+    long size = 3;
     CustomType *arr = new CustomType[size];
     for (int i = 0; i<size; i++) {
         arr[i].x = tick;
@@ -68,8 +68,8 @@ void ProduceAndConsumeCustomType::input(CustomType *value) {
     printf("Received: %d,%d \t-> %f\n", value->x, value->y, value->score);
 }
 
-void ProduceAndConsumeCustomType::inputArray(int count, CustomType *values) {
-    printf("Received array of size %d\n", count);
+void ProduceAndConsumeCustomType::inputArray(long count, CustomType *values) {
+    printf("Received array of size %d\n", (int)count);
     for (int i = 0; i<count; i++) {
         printf("  values[%d]: %d,%d \t-> %f\n", i, values[i].x, values[i].y, values[i].score);
     }
@@ -91,6 +91,6 @@ namespace heeere {
 
 
 void SimpleTypes::input(long i, double f, bool b, const char* s) {
-    printf("Received: %d %f %s %s\n", i, f, b ? "true" : "false", s);
+    printf("Received: %d %f %s %s\n", (int)i, f, b ? "true" : "false", s);
 }
 

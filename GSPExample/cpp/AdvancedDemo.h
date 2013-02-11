@@ -67,7 +67,7 @@ public:
     Framework _framework;
     void tick(int i); // to produce
     void input(CustomType *value);
-    void inputArray(int count, CustomType *values);
+    void inputArray(long count, CustomType *values);
 };
 CLASS_AS_MODULE(ProduceAndConsumeCustomType);
 
