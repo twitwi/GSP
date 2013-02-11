@@ -70,3 +70,16 @@ public:
     void inputArray(int count, CustomType *values);
 };
 CLASS_AS_MODULE(ProduceAndConsumeCustomType);
+
+
+namespace heeere {
+    struct Type {int x,y;};
+
+    class ProduceAndConsumeNSType {
+    public:
+        Framework _framework;
+        void input(int i); // to produce
+        void o(Type *value);
+    };
+    CLASS_AS_MODULE(ProduceAndConsumeNSType);
+};

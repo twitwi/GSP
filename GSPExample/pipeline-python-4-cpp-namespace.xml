@@ -1,0 +1,17 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="atinit" type="ex:MessageAtInit" msg="This pipeline shows the transfer of a C struct to python, then the reading with ctypes."/>
+
+    <m id="tick" type="ex:Counter" maxCount="3" period="500" warmupDelay="500"/>
+    <m id="cc" type="c:AdvancedDemo.ProduceAndConsumeNSType"/>
+    <m id="py" type="py:pythoncpp.NSModule"/>
+
+    <c chain="tick - py - o#py"/>
+    <c chain="       py - o#cc"/>
+    <c chain="tick - cc - o#py"/>
+    <c chain="       cc - o#cc"/>
+
+</pipeline>
+

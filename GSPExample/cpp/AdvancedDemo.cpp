@@ -75,3 +75,17 @@ void ProduceAndConsumeCustomType::inputArray(int count, CustomType *values) {
     }
 }
 
+
+namespace heeere {
+    void ProduceAndConsumeNSType::input(int i) {
+        Type *c = new Type;
+        c->x = i;
+        c->y = i*10 + i;
+        emitNamedEvent("output", c);
+        delete c;
+    }
+    void ProduceAndConsumeNSType::o(Type *value) {
+        printf("Received: %d,%d\n", value->x, value->y);
+    }
+}
+

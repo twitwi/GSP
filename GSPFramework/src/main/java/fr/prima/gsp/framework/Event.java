@@ -8,8 +8,8 @@ import fr.prima.gsp.framework.nativeutil.NativeType;
 import java.nio.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 import org.bridj.Pointer;
-import static com.heeere.python27.Python27Library.*;
 
 /**
  *
@@ -89,7 +89,10 @@ public class Event {
         if (py.pyIsStructure(pypt.pointer)) {
             long nativeAddress = py.pyCAddress(pypt.pointer);
             String nativeType = py.pyCClassName(pypt.pointer);
-            return new NativePointer(Pointer.pointerToAddress(nativeAddress), NativeType.pointer(NativeType.struct(nativeType)));
+            String[] ns = nativeType.split("::");
+            int last = ns.length - 1;
+            NativeType struct = NativeType.struct(Arrays.copyOf(ns, last), ns[last], null);
+            return new NativePointer(Pointer.pointerToAddress(nativeAddress), NativeType.pointer(struct));
         }
         return null;
     }
