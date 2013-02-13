@@ -113,34 +113,46 @@ class PythonModuleFactory {
     }
 
     boolean pyIsStructureOrArray(Pointer<PyObject> pypt) {
-        return PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructureOrArray"), pypt, null)) == 0;
+        ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+        boolean res = PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructureOrArray"), pypt, null)) == 0;
+        PyGILState_Release(state);
+        return res;
     }
 
     long pyCAddress(Pointer<PyObject> pypt) {
-        return sizeAsLong(PyInt_AsSsize_t(PyObject_CallFunctionObjArgs(pyGSP("cAddress"), pypt, null)));
+        ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+        long res = sizeAsLong(PyInt_AsSsize_t(PyObject_CallFunctionObjArgs(pyGSP("cAddress"), pypt, null)));
+        return res;
     }
 
     String pyCClassName(Pointer<PyObject> pypt) {
-        return PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("cClassName"), pypt, null));
+        ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+        String res = PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("cClassName"), pypt, null));
+        return res;
     }
 
     Object pySimpleTypeToJava(Pointer<PyObject> pypt) {
-        String typeString = PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("typeString"), pypt, null));
-        // TODO maybe redo with a Map and some kind of java8 closures
-        if ("NoneType".equals(typeString)) {
-            return null;
-        } else if ("int".equals(typeString)) {
-            // bypass wrapper problem (maybe todo change it)
-            return Long.parseLong(PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("valueString"), pypt, null)));
-            //return sizeAsLong(PyInt_AsSsize_t(pypt));
-        } else if ("float".equals(typeString)) {
-            return PyFloat_AsDouble(pypt);
-        } else if ("str".equals(typeString)) {
-            return PyString_AsStringJava(pypt);
-        } else if ("bool".equals(typeString)) {
-            return PyObject_Compare(pyTrue, pypt) == 0;
-        } else {
-            return null;
+        ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+        try {
+            String typeString = PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("typeString"), pypt, null));
+            // TODO maybe redo with a Map and some kind of java8 closures
+            if ("NoneType".equals(typeString)) {
+                return null;
+            } else if ("int".equals(typeString)) {
+                // bypass wrapper problem (maybe todo change it)
+                return Long.parseLong(PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("valueString"), pypt, null)));
+                //return sizeAsLong(PyInt_AsSsize_t(pypt));
+            } else if ("float".equals(typeString)) {
+                return PyFloat_AsDouble(pypt);
+            } else if ("str".equals(typeString)) {
+                return PyString_AsStringJava(pypt);
+            } else if ("bool".equals(typeString)) {
+                return PyObject_Compare(pyTrue, pypt) == 0;
+            } else {
+                return null;
+            }
+        } finally {
+            PyGILState_Release(state);
         }
     }
 
@@ -179,6 +191,7 @@ class PythonModuleFactory {
 
         public PythonModule(Bundle bundle, String pythonModuleName, String typeName) {
             this.bundle = bundle;
+            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             Pointer<PyObject> pyClass = PyDict_GetItemString(bundle.pythonModuleDict, s(typeName));
             pyClassInstance = PyObject_CallFunctionObjArgs(pyClass, (Object) null);
             FrameworkCallback frameworkCallback = new FrameworkCallback() {
@@ -194,6 +207,7 @@ class PythonModuleFactory {
             callbackMethodDef.ml_flags(METH_VARARGS);
             Pointer<PyObject> callbackMethodObject = PyCFunction_NewEx(Pointer.pointerTo(callbackMethodDef), pyClassInstance, pyNone());
             PyObject_SetAttrString(pyClassInstance, s("emitNamedEvent"), callbackMethodObject);
+            PyGILState_Release(state);
         }
 
         @Override
@@ -277,6 +291,7 @@ class PythonModuleFactory {
             if (attr == null) {
                 System.err.println("ERROR: could not find attribute '" + parameterName + "' in python object"); // TODO handle errors
             } else {
+                ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
                 Pointer<PyObject> attrType = PyObject_Type(attr);
                 Pointer<PyObject> newVal;
                 if (attrType.equals(pyBool)) { // handle the Boolean case bool (DUMMY if now)
@@ -290,16 +305,19 @@ class PythonModuleFactory {
                     PyObject_CallFunctionObjArgs(notificationMethod, attr, newVal);
                 }
                 // TODO, maybe use eval as a last resort
+                PyGILState_Release(state);
             }
         }
 
         private void callIfExists(String methodName) {
+            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             Pointer<PyObject> method = PyObject_GetAttrString(pyClassInstance, s(methodName));
             if (method != Pointer.NULL) {
                 PyObject_CallFunctionObjArgs(method, (Object) null);
             } else {
                 PyErr_Clear();
             }
+            PyGILState_Release(state);
         }
 
         private int nArgs(Pointer<PyObject> args) {
@@ -348,6 +366,7 @@ class PythonModuleFactory {
     public Pointer<Byte> PyString_AsCString(Pointer<PyObject> str) {
         return PyString_AsString(str);
     }
+
     private String PyString_AsStringJava(Pointer<PyObject> str) {
         Pointer<Byte> arr = PyString_AsString(str);
         return arr.getCString();
