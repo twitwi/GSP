@@ -36,6 +36,7 @@ public abstract class BaseAbstractModule implements Module {
         stopModule();
     }
     // generates a pseudo element to delegate
+    @Override
     public final void configure(String attributeName, String value) {
         try {
             DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
@@ -58,7 +59,6 @@ public abstract class BaseAbstractModule implements Module {
     protected boolean allowOpenEvents = false;
     
     protected final void emitNamedEvent(String eventName, Object... args) {
-        String[] types = new String[args.length];
         List<EventReceiver> targets = listenersFor(eventName);
         for (EventReceiver eventReceiver : targets) {
             eventReceiver.receiveEvent(new Event(args));

@@ -34,4 +34,8 @@ public class NativePointerUtils {
     public static long address(NativePointer pointer) {
         return ((Pointer) pointer.pointer).getPeer();
     }
+
+    public static boolean isNull(NativePointer pointer) {
+        return pointer.pointer == Pointer.NULL;
+    }
 }
