@@ -18,6 +18,7 @@ import java.util.Scanner;
 import org.bridj.BridJ;
 import org.bridj.CLong;
 import org.bridj.Pointer;
+import org.bridj.ValuedEnum;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -62,6 +63,7 @@ class PythonModuleFactory {
         }
         instance = this;
         inited = true;
+        PyEval_ReleaseLock();
     }
     // NOTE: what is called a module in Python (that can be imported) is called a Bundle here, to avoid conflict with PythonModule (for the gsp)
     Map<String, Bundle> bundles = new HashMap<String, Bundle>();
@@ -234,10 +236,12 @@ class PythonModuleFactory {
             // TODO handle problem here
             return new EventReceiver() {
                 public void receiveEvent(Event e) {
+                    ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
                     Pointer<PyObject> res = PyObject_CallFunctionObjArgs(method, eventToParameters(e));
                     if (res == Pointer.NULL) {
                         PyErr_Print();
                     }
+                    PyGILState_Release(state);
                 }
             };
         }
