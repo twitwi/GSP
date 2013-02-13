@@ -350,7 +350,12 @@ class PythonModuleFactory {
         } else if (o instanceof PythonPointer) {
             return ((PythonPointer) o).pointer;
         } else if (o instanceof NativePointer) {
-            return Py_BuildValue(s("l"), NativePointerUtils.address((NativePointer) o));
+            NativePointer np = (NativePointer) o;
+            if (NativePointerUtils.isNull(np)) {
+                return pyNone();
+            } else {
+                return Py_BuildValue(s("l"), NativePointerUtils.address((NativePointer) o));
+            }
         } else {
             String pyBuildString = typeToBuildValueString.get(o.getClass());
             if (pyBuildString != null) {
