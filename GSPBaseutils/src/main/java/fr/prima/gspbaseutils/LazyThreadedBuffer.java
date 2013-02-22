@@ -21,14 +21,14 @@ import java.util.logging.Logger;
  *
  * @author twilight
  */
-public class GroupingBuffer extends AbstractModuleWithoutEventReceiver {
+public class LazyThreadedBuffer extends AbstractModuleWithoutEventReceiver {
 
     @ModuleParameter
     public int queueCapacity = 100;
     //
     Thread thread = null;
 
-    public GroupingBuffer() {
+    public LazyThreadedBuffer() {
         this.allowOpenEvents = true;
     }
 
@@ -39,7 +39,7 @@ public class GroupingBuffer extends AbstractModuleWithoutEventReceiver {
             public void run() {
                 runningThread();
             }
-        }, "Thread for module " + GroupingBuffer.class.getName());
+        }, "Thread for module " + LazyThreadedBuffer.class.getName());
         thread.start();
     }
 
@@ -64,7 +64,7 @@ public class GroupingBuffer extends AbstractModuleWithoutEventReceiver {
                 }
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(GroupingBuffer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LazyThreadedBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     //
@@ -79,7 +79,7 @@ public class GroupingBuffer extends AbstractModuleWithoutEventReceiver {
                     try {
                         events.put(e);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(GroupingBuffer.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(LazyThreadedBuffer.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             };
