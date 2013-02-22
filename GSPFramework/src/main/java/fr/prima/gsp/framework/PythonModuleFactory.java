@@ -46,7 +46,7 @@ class PythonModuleFactory {
         // Need LD_PRELOAD...
         BridJ.addNativeLibraryAlias("python27", "python2.7");
         Py_Initialize();
-        { // get some built-in
+        { // get some built-in, optimistic (no checks)
             Pointer<PyObject> dict = PyImport_GetModuleDict();
             Pointer<PyObject> builtin = PyDict_GetItemString(dict, s("__builtin__"));
             pyTrue = PyObject_GetAttrString(builtin, s("True"));
@@ -109,7 +109,11 @@ class PythonModuleFactory {
     }
 
     private Pointer<PyObject> pyGSP(String methodName) {
-        return PyObject_GetAttrString(pyGSP, s(methodName));
+        Pointer<PyObject> res = PyObject_GetAttrString(pyGSP, s(methodName));
+        if (res == Pointer.NULL) {
+            PyErr_Print();
+        }
+        return res;
     }
 
     boolean pyIsStructureOrArray(Pointer<PyObject> pypt) {
@@ -169,7 +173,15 @@ class PythonModuleFactory {
         private Bundle(String pythonModuleName) {
             this.name = pythonModuleName;
             this.pythonModule = PyImport_ImportModule(s(pythonModuleName));
-            this.pythonModuleDict = PyModule_GetDict(pythonModule);
+            if (this.pythonModule == Pointer.NULL) {
+                PyErr_Print();
+                return;
+            }
+            this.pythonModuleDict = PyModule_GetDict(this.pythonModule);
+            if (this.pythonModule == Pointer.NULL) {
+                PyErr_Print();
+                // should throw/report
+            }
         }
     }
 
@@ -193,7 +205,15 @@ class PythonModuleFactory {
             this.bundle = bundle;
             ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             Pointer<PyObject> pyClass = PyDict_GetItemString(bundle.pythonModuleDict, s(typeName));
+            if (pyClass == Pointer.NULL) {
+                PyErr_Print();
+                // should throw/report
+            }
             pyClassInstance = PyObject_CallFunctionObjArgs(pyClass, (Object) null);
+            if (pyClassInstance == Pointer.NULL) {
+                PyErr_Print();
+                // should throw/report
+            }
             FrameworkCallback frameworkCallback = new FrameworkCallback() {
                 @Override
                 public Pointer<PyObject> callback(Pointer<PyObject> self, Pointer<PyObject> args, Pointer<PyObject> keywds) {
