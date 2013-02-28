@@ -8,6 +8,7 @@ class Div:
         self.divisor = 1. # to type it as double
 
     # a "gsp(...)" function will be injected
+    
     def divisorChanged(self, oldVal, newVal):
         if newVal == 0.:
             self.divisor = oldVal

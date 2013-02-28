@@ -307,24 +307,35 @@ class PythonModuleFactory {
         }
 
         private void setParameter(String parameterName, String text) {
-            Pointer<PyObject> attr = PyObject_GetAttrString(pyClassInstance, s(parameterName));
-            if (attr == null) {
-                System.err.println("ERROR: could not find attribute '" + parameterName + "' in python object"); // TODO handle errors
-            } else {
-                ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
-                Pointer<PyObject> attrType = PyObject_Type(attr);
-                Pointer<PyObject> newVal;
-                if (attrType.equals(pyBool)) { // handle the Boolean case bool (DUMMY if now)
-                    newVal = Boolean.parseBoolean(text) ? pyTrue : pyFalse;
+            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+            try {
+                Pointer<PyObject> attr = PyObject_GetAttrString(pyClassInstance, s(parameterName));
+                if (attr == null) {
+                    System.err.println("ERROR: could not find attribute '" + parameterName + "' in python object"); // TODO report handle errors at a higher level
                 } else {
-                    newVal = PyObject_CallFunctionObjArgs(attrType, sp(text), null);
+                    Pointer<PyObject> attrType = PyObject_Type(attr);
+                    Pointer<PyObject> newVal;
+                    if (attrType.equals(pyBool)) { // handle the Boolean case
+                        newVal = Boolean.parseBoolean(text) ? pyTrue : pyFalse;
+                    } else {
+                        newVal = PyObject_CallFunctionObjArgs(attrType, sp(text), null);
+                        if (newVal == Pointer.NULL) {
+                            PyErr_Print();
+                            return;
+                        }
+                    }
+                    PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
+                    Pointer<PyObject> notificationMethod = PyObject_GetAttrString(pyClassInstance, s(parameterName + "Changed"));
+                    if (PyObject_Compare(notificationMethod, pyNone()) != 0) {
+                        Pointer<PyObject> res = PyObject_CallFunctionObjArgs(notificationMethod, attr, newVal, null);
+                        if (res == Pointer.NULL) {
+                            PyErr_Print();
+                            return;
+                        }
+                    }
+                    // TODO, maybe use eval as a last resort
                 }
-                PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
-                Pointer<PyObject> notificationMethod = PyObject_GetAttrString(pyClassInstance, s(parameterName + "Changed"));
-                if (PyObject_Compare(notificationMethod, pyNone()) != 0) {
-                    PyObject_CallFunctionObjArgs(notificationMethod, attr, newVal);
-                }
-                // TODO, maybe use eval as a last resort
+            } finally {
                 PyGILState_Release(state);
             }
         }
