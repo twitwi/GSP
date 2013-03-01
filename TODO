@@ -1,7 +1,13 @@
-Unclassified Todos:
-* change the readme to a readme.md for github
 
-TODO for v 1.1:
+Python TODO:
+* must not accept affect of inexisting parameter (should not start)
+
+CPP TODO:
+* full inheritance (call input port from parent)
+* full inheritance (accept parameters from parent)
+* full inheritance (call onChange from parent if exists)
+
+TODO for v *:
 * (must)   cleanup TODO (what is done or not todo?)
 * (must)   handle all error reporting, not starting todos
 * (should) cool JMX export

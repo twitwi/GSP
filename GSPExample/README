@@ -50,3 +50,23 @@ have a look at GSPBaseutils and the modules it provides. For example you have:
 
 ###GO='java -cp  ../GSPBaseutils/target/*:../GSPFramework/target/dependency/*:../GSPFramework/target/*:java fr.prima.gsp.Launcher'
 
+
+## How to test/run the python modules
+
+Need the wrapped python. Need some env conf:
+
+     export PYTHONPATH=python
+     export LD_LIBRARY_PATH=build/cpp
+     export LD_PRELOAD=/usr/lib/libpython2.7.so
+     GO="java -cp  ../GSPFramework/target/dependency/*:../GSPFramework/target/*:./build/java/GSPExampleJava.jar fr.prima.gsp.Launcher"    
+
+     $GO pipeline-python-1.xml
+     $GO pipeline-python-2.xml
+     $GO pipeline-python-2.xml log.hello=da log.hello=plop tick.warmupDelay=0 tick.period=1 d3.enabled=false
+     $GO pipeline-python-2.xml log.hello=da log.hello=plop tick.warmupDelay=0 tick.period=1 d2.enabled=false
+     $GO pipeline-python-3-with-cpp.xml tick.warmupDelay=299 tick.maxCount=3
+     $GO pipeline-python-4-cpp-namespace.xml tick.warmupDelay=299 tick.maxCount=3
+     $GO pipeline-python-5-simpletypes.xml tick.warmupDelay=299 tick.maxCount=5
+
+
+

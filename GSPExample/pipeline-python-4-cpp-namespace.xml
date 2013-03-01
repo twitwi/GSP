@@ -2,7 +2,7 @@
 <pipeline>
     <namespace ex="fr.prima.gspexample"/>
 
-    <m id="atinit" type="ex:MessageAtInit" msg="This pipeline shows the transfer of a C struct to python, then the reading with ctypes."/>
+    <m id="atinit" type="ex:MessageAtInit" msg="This pipeline shows the transfer of a C struct with namespace to python, then the reading with ctypes."/>
 
     <m id="tick" type="ex:Counter" maxCount="3" period="500" warmupDelay="500"/>
     <m id="cc" type="c:AdvancedDemo.ProduceAndConsumeNSType"/>
