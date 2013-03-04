@@ -1,5 +1,6 @@
 
 import ctypes as gsp__ctypes
+from ast import literal_eval as make_tuple
 
 class gsp__:
     def isStructureOrArray(self, o):
@@ -21,5 +22,7 @@ class gsp__:
         return str(o)
     def isString(self, o):
         return type(o) == str
+    def makeTuple(self, s):
+        return make_tuple(s)
 
 GSP = gsp__()

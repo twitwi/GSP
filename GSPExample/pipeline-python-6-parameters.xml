@@ -1,0 +1,11 @@
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="atinit" type="ex:MessageAtInit" msg="This pipeline shows some python specific parameter hacks."/>
+
+    <m id="tick" type="ex:Counter" maxCount="1" period="1"/>
+    <m id="py" type="py:pythondemo.Parameters"/>
+
+    <c chain="tick - py"/>
+
+</pipeline>

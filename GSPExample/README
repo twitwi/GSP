@@ -68,5 +68,6 @@ Need the wrapped python. Need some env conf:
      $GO pipeline-python-4-cpp-namespace.xml tick.warmupDelay=299 tick.maxCount=3
      $GO pipeline-python-5-simpletypes.xml tick.warmupDelay=299 tick.maxCount=5
 
-
+     $GO pipeline-python-6-parameters.xml
+     $GO pipeline-python-6-parameters.xml py.pint=111 py.pfloat=1.11E2 py.pstr=Hi py.ptuple='(0, 255, 0)'
 

@@ -36,6 +36,7 @@ class PythonModuleFactory {
     Pointer<PyObject> pyTrue;
     Pointer<PyObject> pyFalse;
     Pointer<PyObject> pyBool;
+    Pointer<PyObject> pyTuple;
     Pointer<PyObject> pyGSP;
     public static PythonModuleFactory instance = null; // dirty...
 
@@ -52,6 +53,7 @@ class PythonModuleFactory {
             pyTrue = PyObject_GetAttrString(builtin, s("True"));
             pyFalse = PyObject_GetAttrString(builtin, s("False"));
             pyBool = PyObject_Type(pyTrue);
+            pyTuple = PyObject_GetAttrString(builtin, s("tuple"));
         }
         { // load the GSP framework part written in python
             int res = PyRun_SimpleStringFlags(s(getPythonCode()), flags(Py_file_input));
@@ -115,7 +117,15 @@ class PythonModuleFactory {
         }
         return res;
     }
-
+    
+    Pointer<PyObject> pyHasLockMakeTuple(String s) {
+        Pointer<PyObject> res = PyObject_CallFunctionObjArgs(pyGSP("makeTuple"), sp(s), null);
+        if (res == Pointer.NULL) {
+            PyErr_Print();
+        }
+        return res;        
+    }
+        
     boolean pyIsStructureOrArray(Pointer<PyObject> pypt) {
         ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
         boolean res = PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructureOrArray"), pypt, null)) == 0;
@@ -317,6 +327,8 @@ class PythonModuleFactory {
                     Pointer<PyObject> newVal;
                     if (attrType.equals(pyBool)) { // handle the Boolean case
                         newVal = Boolean.parseBoolean(text) ? pyTrue : pyFalse;
+                    } else if (attrType.equals(pyTuple)) { // special case for tuples
+                        newVal = pyHasLockMakeTuple(text);
                     } else {
                         newVal = PyObject_CallFunctionObjArgs(attrType, sp(text), null);
                         if (newVal == Pointer.NULL) {
@@ -326,7 +338,9 @@ class PythonModuleFactory {
                     }
                     PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
                     Pointer<PyObject> notificationMethod = PyObject_GetAttrString(pyClassInstance, s(parameterName + "Changed"));
-                    if (PyObject_Compare(notificationMethod, pyNone()) != 0) {
+                    if (notificationMethod == Pointer.NULL) {
+                        PyErr_Clear();
+                    } else {
                         Pointer<PyObject> res = PyObject_CallFunctionObjArgs(notificationMethod, attr, newVal, null);
                         if (res == Pointer.NULL) {
                             PyErr_Print();

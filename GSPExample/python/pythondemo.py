@@ -41,3 +41,15 @@ class Log:
 
     def stopModule(self):
         print("Log class: receiving stopModule callback")
+
+class Parameters:
+    pint = 0
+    pfloat = 0.
+    pstr = "hello"
+    ptuple = (255,0,0)
+    def input(self, i):
+        print "pint:", self.pint
+        print "pfloat:", self.pfloat
+        print "pstr:", self.pstr
+        print "ptuple:", self.ptuple
+        
