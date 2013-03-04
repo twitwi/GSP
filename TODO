@@ -2,10 +2,11 @@
 Python TODO:
 * must not accept affect of inexisting parameter (should not start)
 
-CPP TODO:
+CPP related TODO:
 * full inheritance (call input port from parent)
 * full inheritance (accept parameters from parent)
 * full inheritance (call onChange from parent if exists)
+* when fail to create a module, tell which one
 
 TODO for v *:
 * (must)   cleanup TODO (what is done or not todo?)
