@@ -117,15 +117,15 @@ class PythonModuleFactory {
         }
         return res;
     }
-    
+
     Pointer<PyObject> pyHasLockMakeTuple(String s) {
         Pointer<PyObject> res = PyObject_CallFunctionObjArgs(pyGSP("makeTuple"), sp(s), null);
         if (res == Pointer.NULL) {
             PyErr_Print();
         }
-        return res;        
+        return res;
     }
-        
+
     boolean pyIsStructureOrArray(Pointer<PyObject> pypt) {
         ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
         boolean res = PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructureOrArray"), pypt, null)) == 0;
@@ -207,9 +207,9 @@ class PythonModuleFactory {
         //String pyClassName;
         //Pointer<PyObject> pyClass;
         Pointer<PyObject> pyClassInstance;
-        //FrameworkCallback frameworkCallback;
-        //PyMethodDef callbackMethodDef = new PyMethodDef();
-        //Pointer<PyObject> callbackMethodObject;
+        FrameworkCallback frameworkCallback;
+        PyMethodDef callbackMethodDef = new PyMethodDef();
+        Pointer<PyObject> callbackMethodObject;
 
         public PythonModule(Bundle bundle, String pythonModuleName, String typeName) {
             this.bundle = bundle;
@@ -224,18 +224,18 @@ class PythonModuleFactory {
                 PyErr_Print();
                 // should throw/report
             }
-            FrameworkCallback frameworkCallback = new FrameworkCallback() {
+            frameworkCallback = new FrameworkCallback() {
                 @Override
                 public Pointer<PyObject> callback(Pointer<PyObject> self, Pointer<PyObject> args, Pointer<PyObject> keywds) {
                     pythonCallback(self, args);
                     return pyNone();
                 }
             };
-            PyMethodDef callbackMethodDef = new PyMethodDef();
+            callbackMethodDef = new PyMethodDef();
             callbackMethodDef.ml_name(s("emitNamedEvent"));
             callbackMethodDef.ml_meth(frameworkCallback.toPointer());
             callbackMethodDef.ml_flags(METH_VARARGS);
-            Pointer<PyObject> callbackMethodObject = PyCFunction_NewEx(Pointer.pointerTo(callbackMethodDef), pyClassInstance, pyNone());
+            callbackMethodObject = PyCFunction_NewEx(Pointer.pointerTo(callbackMethodDef), pyClassInstance, pyNone());
             PyObject_SetAttrString(pyClassInstance, s("emitNamedEvent"), callbackMethodObject);
             PyGILState_Release(state);
         }
@@ -259,6 +259,7 @@ class PythonModuleFactory {
         }
 
         private void pythonCallback(Pointer<PyObject> self, Pointer<PyObject> args) {
+            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             int nArgs = nArgs(args);
             Pointer<CLong>[] parametersPointers = new Pointer[nArgs];
             for (int i = 0; i < parametersPointers.length; i++) {
@@ -273,6 +274,7 @@ class PythonModuleFactory {
                 eventParameters[i] = new PythonPointer((Pointer<PyObject>) Pointer.pointerToAddress(parametersPointers[i + 1].getCLong()));
             }
             emitNamedEvent(eventName, (Object[]) eventParameters);
+            PyGILState_Release(state);
         }
 
         public EventReceiver getEventReceiver(String portName) {
