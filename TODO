@@ -1,57 +1,49 @@
 
-Python TODO:
-* must not accept affect of inexisting parameter (should not start)
+# TODO
 
-CPP related TODO:
+## Python related
+* error handling in general, incl: must not accept affect of inexisting parameter (should not start)
+
+## CPP related TODO:
+* when fail to create a module, tell which one
+* when anything happen, is there a way of putting info in the stack trace? or thread name (only in debug mode)?
 * full inheritance (call input port from parent)
 * full inheritance (accept parameters from parent)
 * full inheritance (call onChange from parent if exists)
-* when fail to create a module, tell which one
 
-TODO for v *:
-* (must)   cleanup TODO (what is done or not todo?)
-* (must)   handle all error reporting, not starting todos
+## Framework 
+* have a default value for variables in the xml file
+* ^ should not start if unset example pure-java-5 should not start if parameters are missing!
+* have some arithmetic with variables in the xml file
+* handle possibility for a module to know if it has some "clients" on an output (by asking the framework)
+
+## Unclassified
+* handle all error reporting, not starting todos
 * (should) cool JMX export
 * (may)    java gsp should accept plain classes with public field or javabeans (using a by-convention approach, even for callbacks (maybe gspModuleInit...)) then they get wrapped in a real module
 * (may)    string conversion? GC?
-* (may)    long support
+* (may)    done? long support
+* design passive module stuff
+* metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
+* OPT: add a define that generate a human oriented version of the struct (use e.g. ___NL___ for new lines, then replace them all by a real new line in the helper script)
+* a "-?" "--help" option that explores the pipeline and reports the variables, etc
+* gsp-inspect?
+
+## GSPExamples
+* CPP: check in Div::input that the local vars are still needed. namespace the example
+* java: check README instructions (how to compile, framework jar path)
+* CPP: add examples using FIELD_WITH_SETTER and STRING_FIELD_WITH_SETTER
+* more: add examples with (new) passive modules (reusing modules in a plain program)
+
+## TODO from PipelineViewer
+* IMPR: might use a left-input right-output convention?
+* interactive version, as a web server? with more info on overlay?
 
 
-=============================
-=== TODO from GSPExamples ===
-=============================
-C/CPP:
-check framework.h synchronicity
-
-CPP:
-check in Div::input that the local vars are still needed.
-namespace the example
-
-java:
-check README instructions (how to compile, framework jar path)
-
-CPP:
-add examples using FIELD_WITH_SETTER and STRING_FIELD_WITH_SETTER
-
-more:
-add examples with passive modules (reusing modules in a plain program)
-
-================================
-=== TODO from PipelineViewer ===
-================================
-IMPR: might use a left-input right-output convention
 
 
-==============================
-=== TODO from GSPFramework ===
-==============================
 
-* Investigate (and fix) where the output message in first cpp example comes from (done? this was string conversion...)
-
-* a "-?" "--help" option that explores the pipeline and reports the
-   variables, etc
-
-v
+# OLD VRAC
 * fix in GSPBaseUtils the For module with 0 as a period
 
 * handle the fact that string get garbage collected (C++ should do a copy on receive or at least we can try to prevent gc for parameters (not that simple) until the pipeline is gc'ed)
@@ -70,9 +62,6 @@ v
 ** thread fork/join
 ** merger/extractor (parameter list ...) (option: emit at each change or emit when all changed at least once or emit when all changed once (block others before that))
 
-* omiscid utils?
-
-* example pure-java-5 should not start if parameters are missing!
 
 * handle cpp class inheritance if we can get the info somewhere
 
@@ -101,18 +90,5 @@ v
 
 
 
-* could pass a more opaque structure as Pointer (when invoking a java
-   method with a C/C++ pointer)
-=> it would also minize the requirements to build some java module (do
-   not require jna if the op on pointers are usual)
-=> could also put some custom metatype info in it (to pass it back to C)
-: done? (is it IntBuffer ....?)
 
-* handle possibility for a module to know if it has some "clients" on an output
-* metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
-
-* OPT: add a define that generate a human oriented version of the struct (use e.g. ___NL___ for new lines, then replace them all by a real new line in the helper script)
-
-
-java -Djava.library.path=. -cp  ../GSPExample/java:../GSPFramework/target/dependency/*:../GSPFramework/target/gsp-framework-1.1-SNAPSHOT.jar:java fr.prima.gsp.Launcher ../GSPExample/pipeline-cpp-3-with-param.xml p=20
 
