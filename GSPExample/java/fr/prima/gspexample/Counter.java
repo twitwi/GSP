@@ -26,10 +26,11 @@ public class Counter extends AbstractModule {
 
     private int count = 0;
 
-    Timer timer = new Timer("Timer Thread for the Clock GSP Module");
+    Timer timer = null;
 
     @Override
     protected synchronized void initModule() {
+        timer = new Timer("Timer Thread for the Clock GSP Module");
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
