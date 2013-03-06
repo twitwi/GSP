@@ -227,15 +227,50 @@ public class Assembly {
     }
     private final List<Runnable> postInitHooks = new ArrayList<Runnable>();
 
+    public static class AssemblySubException extends Exception {
+
+        public List<Object> infos = new ArrayList<Object>();
+
+        public AssemblySubException(Object... info) {
+            infos.addAll(Arrays.asList(info));
+        }
+
+        public int size() {
+            return infos.size();
+        }
+
+        public void absorb(Exception e) {
+            if (e instanceof AssemblySubException) {
+                infos.addAll(((AssemblySubException) e).infos);
+            } else {
+                infos.add(e);
+            }
+        }
+        
+        public boolean reportErrors() {
+            if (infos.isEmpty()) {
+                return false;
+            }
+            for (Object object : infos) {
+                System.err.println("   +++   " + object.toString());
+            }
+            return true;
+        }
+    }
+
     public static abstract class ReadFromXMLHandler {
         public void namespace(Element e) {}
         public void module(Element e) {}
         public void connector(Element e) {}
         public void factory(Element e) {}
+        public void beforeInit() {}
+        public void beforePostInit() {}
+        public void done() {}
     }
     public int generatedId = 999999;
     public String generatedIdPrefix = "_auto_gen_";
     public void readFromXML(InputStream input, Option<ReadFromXMLHandler> obs) {
+        AssemblySubException errors = new AssemblySubException();
         try {
             ReadFromXMLHandler h = obs.getOr(new ReadFromXMLHandler() {});
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -249,84 +284,103 @@ public class Assembly {
                     String name = attributes.item(i).getNodeName();
                     String content = attributes.item(i).getTextContent();
                     if (prefixes.containsKey(name)) {
-                        throw new IllegalArgumentException("Namespace '" + name + "' is already defined as '" + prefixes.get(name) + "'.");
+                        errors.absorb(new AssemblySubException("Namespace '" + name + "' is already defined as '" + prefixes.get(name) + "'."));
                     }
                     addPrefix(name, content + ".");
                 }
             }
+            if (errors.reportErrors()) {
+                return;
+            }
             for (Element e : list(root.getElementsByTagName("f"), root.getElementsByTagName("factory"))) {
-                h.factory(e);
-                String id = e.getAttribute("id");
-                String type = e.getAttribute("type");
-                addModuleFactory(e.getAttribute("id"), type, e);
-                log("Registered factory with id '" + id + "' for type '" + type + "'");
-            }
-            for (Element e : list(root.getElementsByTagName("m"), root.getElementsByTagName("module"))) {
-                h.module(e);
-                addModule(e.getAttribute("id"), e.getAttribute("type"), e);
-            }
-            for (Element e : list(root.getElementsByTagName("c"), root.getElementsByTagName("connector"))) {
-                h.connector(e);
-                if (e.hasAttribute("chain")) {
-                    String[] parts = e.getAttribute("chain").trim().split(chainSeparator);
-                    //int imax = parts.length - 2;
-                    for (int i = 0; i < parts.length - 1; i++) {
-                        String e1 = parts[i];
-                        String e2 = parts[i+1];
-
-                        String id = generateId();
-                        String fromModule;
-                        String fromPort = "";
-                        {
-                            String[] from = e1.split(chainPortSeparator, -1);
-                            if (from.length == 1) {
-                                fromModule = from[0];
-                            } else {
-                                fromModule = from[1 - is(i == 0)];
-                                fromPort = from[2 - is(i == 0)];
-                            }
-                            if (fromPort.isEmpty()) {
-                                fromPort = "output";
-                            }
-                        }
-                        String toModule;
-                        String toPort = "";
-                        String nextFrom = "";
-                        {
-                            String[] to = e2.split(chainPortSeparator, -1);
-                            if (to.length ==  1) {
-                                toModule = to[0];
-                            } else {
-                                toModule = to[1];
-                                toPort = to[0];
-                                if (to.length == 3) {
-                                    nextFrom = to[2];
-                                }
-                            }
-                            if (toPort.isEmpty()) {
-                                toPort = "input";
-                            }
-                        }
-                        fromModule = createModuleIfIdIsFactory(fromModule);
-                        toModule = createModuleIfIdIsFactory(toModule);
-                        addConnector(id, fromModule, fromPort, toModule, toPort);
-                        parts[i + 1] = chainPortSeparator + toModule + chainPortSeparator + nextFrom;
-                    }
-                } else {
-                    // TODO should report an error
-                    /*
+                try {
+                    h.factory(e);
                     String id = e.getAttribute("id");
-                    if (id.isEmpty()) {
-                        id = generatedIdPrefix + (generatedId--);
-                    }
-                    addConnector(id, e.getAttribute("from"), e.getAttribute("to"));
-                     */
+                    String type = e.getAttribute("type");
+                    addModuleFactory(e.getAttribute("id"), type, e);
+                    log("Registered factory with id '" + id + "' for type '" + type + "'");
+                } catch (Exception ex) {
+                    errors.absorb(ex);
                 }
             }
+            for (Element e : list(root.getElementsByTagName("m"), root.getElementsByTagName("module"))) {
+                try {
+                    h.module(e);
+                    addModule(e.getAttribute("id"), e.getAttribute("type"), e);
+                } catch (Exception ex) {
+                    errors.absorb(ex);
+                }
+            }
+            if (errors.reportErrors()) {
+                return;
+            }
+            for (Element e : list(root.getElementsByTagName("c"), root.getElementsByTagName("connector"))) {
+                try {
+                    h.connector(e);
+                    if (e.hasAttribute("chain")) {
+                        String[] parts = e.getAttribute("chain").trim().split(chainSeparator);
+                        //int imax = parts.length - 2;
+                        for (int i = 0; i < parts.length - 1; i++) {
+                            String e1 = parts[i];
+                            String e2 = parts[i + 1];
+
+                            String id = generateId();
+                            String fromModule;
+                            String fromPort = "";
+                            {
+                                String[] from = e1.split(chainPortSeparator, -1);
+                                if (from.length == 1) {
+                                    fromModule = from[0];
+                                } else {
+                                    fromModule = from[1 - is(i == 0)];
+                                    fromPort = from[2 - is(i == 0)];
+                                }
+                                if (fromPort.isEmpty()) {
+                                    fromPort = "output";
+                                }
+                            }
+                            String toModule;
+                            String toPort = "";
+                            String nextFrom = "";
+                            {
+                                String[] to = e2.split(chainPortSeparator, -1);
+                                if (to.length == 1) {
+                                    toModule = to[0];
+                                } else {
+                                    toModule = to[1];
+                                    toPort = to[0];
+                                    if (to.length == 3) {
+                                        nextFrom = to[2];
+                                    }
+                                }
+                                if (toPort.isEmpty()) {
+                                    toPort = "input";
+                                }
+                            }
+                            fromModule = createModuleIfIdIsFactory(fromModule);
+                            toModule = createModuleIfIdIsFactory(toModule);
+                            addConnector(id, fromModule, fromPort, toModule, toPort);
+                            parts[i + 1] = chainPortSeparator + toModule + chainPortSeparator + nextFrom;
+                        }
+                    } else {
+                        errors.absorb(new AssemblySubException(e.getTagName() + " should have a 'chain' attribute"));
+                    }
+                } catch (Exception ex) {
+                    errors.absorb(ex);
+                }
+
+            }
+            if (errors.reportErrors()) {
+                return;
+            }
+
+            h.beforeInit();
             for (Map.Entry<String, Module> e : modules.entrySet()) {
                 e.getValue().init();
             }
+            h.beforePostInit();
             callPostInitHooks();
+            h.done();
         } catch (Exception ex) {
             Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -392,6 +446,12 @@ public class Assembly {
     }
     public static StringRewriter identityStringRewriter() {
         return new StringRewriter() {
+
+            @Override
+            public String toString() {
+                return "identity()";
+            }
+            
             public String rewrite(String s) {
                 return s;
             }
@@ -402,6 +462,12 @@ public class Assembly {
     }
     final public void addPrefix(String prefix, final String newPrefix) {
         prefixes.put(prefix, new StringRewriter() {
+
+            @Override
+            public String toString() {
+                return newPrefix;
+            }
+            
             public String rewrite(String s) {
                 return newPrefix + s;
             }

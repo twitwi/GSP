@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package fr.prima.gsp;
 
 import fr.prima.gsp.framework.Assembly;
@@ -18,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -38,7 +38,9 @@ public class Launcher {
             System.setProperty("java.library.path", "/usr/lib:/usr/lib/jni:/home/twilight/projects/GSP/GSPExample/build/cpp");
             System.setProperty("gsp.module.path", "/usr/lib:/usr/lib/jni:/home/twilight/projects/GSP/GSPExample/build/cpp");
             main(new String[]{"../GSPExample/test.xml"});
-            if (true) return;
+            if (true) {
+                return;
+            }
             main(new String[]{"pipeline-simple-with-parameter.xml", "p=100", "s=10", "fps.samples=2"});
             main(new String[]{"--help"});
             return;
@@ -81,9 +83,9 @@ public class Launcher {
             }
         }
 
+        final AtomicBoolean done = new AtomicBoolean(false);
         Assembly a = new Assembly();
         a.readFromXML(inputStream, Option.<Assembly.ReadFromXMLHandler>create(new Assembly.ReadFromXMLHandler() {
-
             @Override
             public void namespace(Element e) {
                 patch(e);
@@ -131,13 +133,24 @@ public class Launcher {
                     });
                     attributes.item(i).setTextContent(val);
                 }
-            };
+            }
+
+            @Override
+            public void beforeInit() {
+                // TODO there should be some error reporting when readFromXML fails (currently it swallows exceptions)
+                if (!unreplaced.isEmpty() || !modulesNotFound.isEmpty()) {
+                    throw new IllegalArgumentException("Unreplaced variables " + unreplaced.toString() + " ; Not found modules " + modulesNotFound.toString());
+                }
+            }
+
+            @Override
+            public void done() {
+                done.set(true);
+            }
+            
+            
         }));
-        // TODO there should be some error reporting when readFromXML fails (currently it swallows exceptions)
-        if (!unreplaced.isEmpty() || !modulesNotFound.isEmpty()) {
-            throw new IllegalArgumentException("Unreplaced variables " + unreplaced.toString() + " ; Not found modules " + modulesNotFound.toString());
-        }
-        return Option.create(a);
+        return Option.create(done.get() ? a : null);
     }
 
     private Map<String, String> readParameters(String[] parameters) {
@@ -153,7 +166,6 @@ public class Launcher {
     }
 
     // --------------------------------- //
-
     public Option<Assembly> load(String[] args) throws IOException {
         if (args.length == 0) {
             throw new IllegalArgumentException();
@@ -174,5 +186,4 @@ public class Launcher {
         }
         return Option.create((File) null);
     }
-    
 }

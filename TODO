@@ -12,17 +12,21 @@
 * full inheritance (call onChange from parent if exists)
 
 ## Framework 
+* have a proper message (usage) when starting without options (and/or with --help) ...
 * have a default value for variables in the xml file
 * ^ should not start if unset example pure-java-5 should not start if parameters are missing!
-* have some arithmetic with variables in the xml file
+* have some arithmetic/expressions with variables in the xml file (e.g. with juel, http://juel.sourceforge.net/)
 * handle possibility for a module to know if it has some "clients" on an output (by asking the framework)
+* GSP_DEBUG=threadname/logcalls/logprefix:=====/...
 
 ## Unclassified
 * handle all error reporting, not starting todos
 * (should) cool JMX export
-* (may)    java gsp should accept plain classes with public field or javabeans (using a by-convention approach, even for callbacks (maybe gspModuleInit...)) then they get wrapped in a real module
-* (may)    string conversion? GC?
-* (may)    done? long support
+* (should) bash completion helper!!!
+* (may) java gsp should accept plain classes with public field or javabeans (using a by-convention approach, even for callbacks (maybe gspModuleInit...)) then they get wrapped in a real module
+* (may) string conversion? GC?
+* (may) done? long support
+* (may) add support for fancy command line stuffs e.g. for [ period=1 warmupDelay=0 ], or curly {} as it seems ok (allow also for[ period=1 warmup=0 ] (no space after for))
 * design passive module stuff
 * metamodules in .xml (a module as an assembly of modules) (could be a special type of modules like C modules with a namespace c: ==> e.g. xml:path/to/metatrucs.xml/Div)
 * OPT: add a define that generate a human oriented version of the struct (use e.g. ___NL___ for new lines, then replace them all by a real new line in the helper script)

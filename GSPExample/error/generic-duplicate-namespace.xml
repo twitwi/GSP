@@ -1,0 +1,19 @@
+
+<pipeline>
+
+    <namespace ex="fr.prima.gspexample"/>
+    <namespace ex="fr.prima.gspexample2"/>
+    <namespace ex="fr.prima.gspexample3"/>
+    <namespace da="fr.prima.gspexample2"/>
+    <namespace da="fr.prima.gspexample3"/>
+    <namespace java="mouhah"/>
+    <namespace c="mouhah"/>
+    <namespace py="mouhah"/>
+
+    <!-- this below should not happen given that an error should be thrown before -->
+    <m id="tick" type="ex:Counter" maxCount="4" period="1"/>
+    <m id="cons" type="ex:Console"/>
+    <c chain="tick - cons"/>
+
+</pipeline>
+
