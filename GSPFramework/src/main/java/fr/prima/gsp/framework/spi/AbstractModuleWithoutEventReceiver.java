@@ -12,6 +12,7 @@ import fr.prima.gsp.framework.ModuleParameter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
 /**
  *
@@ -72,6 +74,15 @@ public abstract class AbstractModuleWithoutEventReceiver extends BaseAbstractMod
     }
 
     private void configureMe(Element conf) {
+        List<String> confAttributes = new ArrayList<String>();
+        {
+            NamedNodeMap attributes = conf.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                confAttributes.add(attributes.item(i).getNodeName());
+            }
+            confAttributes.remove("id");
+            confAttributes.remove("type");
+        }
         for (Field field : Assembly.getClassAndSuperClassFields(this.getClass())) {
             try {
                 ModuleParameter annotation = field.getAnnotation(ModuleParameter.class);
@@ -82,6 +93,7 @@ public abstract class AbstractModuleWithoutEventReceiver extends BaseAbstractMod
                 String attributeValue = conf.getAttribute(parameterName);
                 Object value = readValue(field.getType(), attributeValue);
                 if (value != null) {
+                    confAttributes.remove(parameterName);
                     if (annotation.initOnly()) {
                         this.checkInitOnlyForParameter(parameterName + " (" + field.getName() + ")");
                     }
@@ -89,9 +101,11 @@ public abstract class AbstractModuleWithoutEventReceiver extends BaseAbstractMod
                     invoke(this, annotation.change());
                 }
             } catch (Exception ex) {
-                // TODO
-                Logger.getLogger(AbstractModule.class.getName()).log(Level.SEVERE, null, ex);
+                throw new Assembly.AssemblySubException(ex);
             }
+        }
+        if (!confAttributes.isEmpty()) {
+            throw new Assembly.AssemblySubException("Some parameters were not handled by module of type '" + this.getClass().getCanonicalName() + "': " + confAttributes);
         }
     }
     private Map<Class, Class> buildableFromString = new HashMap<Class, Class>() {

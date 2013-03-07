@@ -20,6 +20,7 @@
 * GSP_DEBUG=threadname/logcalls/logprefix:=====/...
 
 ## Unclassified
+* test with buggous modules on all aspects (constructor, initModule, setParam listener, stopModule, ...)
 * handle all error reporting, not starting todos
 * (should) cool JMX export
 * (should) bash completion helper!!!

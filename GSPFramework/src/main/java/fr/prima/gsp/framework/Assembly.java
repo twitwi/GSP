@@ -157,13 +157,12 @@ public class Assembly {
             }
             return res;
         } catch (InstantiationException ex) {
-            Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
+            throw new AssemblySubException(ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
+            throw new AssemblySubException(ex);
         } catch (ClassNotFoundException ex) {
             throw new IllegalArgumentException("For module type '" + className + "': class '" + className + "' not found", ex);
         }
-        return null;
     }
 
     private Module createCModule(String cLibAndType) {
@@ -227,19 +226,25 @@ public class Assembly {
     }
     private final List<Runnable> postInitHooks = new ArrayList<Runnable>();
 
-    public static class AssemblySubException extends Exception {
+    public static class AssemblySubException extends RuntimeException {
 
         public List<Object> infos = new ArrayList<Object>();
 
         public AssemblySubException(Object... info) {
-            infos.addAll(Arrays.asList(info));
+            for (Object o : info) {
+                if (o instanceof Exception) {
+                    absorb((Exception) o);
+                } else {
+                    infos.add(o);
+                }
+            }
         }
 
         public int size() {
             return infos.size();
         }
 
-        public void absorb(Exception e) {
+        final public void absorb(Exception e) {
             if (e instanceof AssemblySubException) {
                 infos.addAll(((AssemblySubException) e).infos);
             } else {

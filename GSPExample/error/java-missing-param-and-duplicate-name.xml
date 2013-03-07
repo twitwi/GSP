@@ -1,0 +1,16 @@
+
+<pipeline>
+
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="hu"  type="ex:Console" NOPE="world" NEPO="world"/>
+    <m id="hu2" type="ex:Console" NOPE="world" NEPO="world"/>
+    <m id="hu2" type="ex:Console" NOPE="world" NEPO="world"/>
+
+    <!-- this below should not happen given that an error should be thrown before -->
+    <m id="tick" type="ex:Counter" maxCount="4" period="1"/>
+    <m id="cons" type="ex:Console"/>
+    <c chain="tick - cons"/>
+
+</pipeline>
+
