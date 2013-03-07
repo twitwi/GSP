@@ -84,13 +84,13 @@ public abstract class AbstractModuleWithoutEventReceiver extends BaseAbstractMod
             confAttributes.remove("type");
         }
         for (Field field : Assembly.getClassAndSuperClassFields(this.getClass())) {
+            ModuleParameter annotation = field.getAnnotation(ModuleParameter.class);
+            if (annotation == null) {
+                continue;
+            }
+            String parameterName = annotation.name().isEmpty() ? field.getName() : annotation.name();
+            String attributeValue = conf.getAttribute(parameterName);
             try {
-                ModuleParameter annotation = field.getAnnotation(ModuleParameter.class);
-                if (annotation == null) {
-                    continue;
-                }
-                String parameterName = annotation.name().isEmpty() ? field.getName() : annotation.name();
-                String attributeValue = conf.getAttribute(parameterName);
                 Object value = readValue(field.getType(), attributeValue);
                 if (value != null) {
                     confAttributes.remove(parameterName);
@@ -101,7 +101,7 @@ public abstract class AbstractModuleWithoutEventReceiver extends BaseAbstractMod
                     invoke(this, annotation.change());
                 }
             } catch (Exception ex) {
-                throw new Assembly.AssemblySubException(ex);
+                throw new Assembly.AssemblySubException(new RuntimeException("Exception while setting '" + field.getName() + "' of type '" + field.getType().getCanonicalName() + "' to value '" + attributeValue + "' (attribute of class " + this.getClass().getCanonicalName() + ")", ex));
             }
         }
         if (!confAttributes.isEmpty()) {

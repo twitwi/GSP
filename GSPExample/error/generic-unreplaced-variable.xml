@@ -1,0 +1,14 @@
+
+<pipeline>
+
+    <namespace ex="fr.prima.gspexample"/>
+
+    <m id="cons1" type="ex:MessageAtInit" msg="${variiii}"/>
+
+    <!-- this below should not happen given that an error should be thrown before -->
+    <m id="tick" type="ex:Counter" maxCount="4" period="1"/>
+    <m id="cons" type="ex:Console"/>
+    <c chain="tick - cons"/>
+
+</pipeline>
+

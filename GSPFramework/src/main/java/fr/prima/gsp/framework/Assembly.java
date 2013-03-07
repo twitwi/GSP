@@ -251,15 +251,24 @@ public class Assembly {
                 infos.add(e);
             }
         }
-        
+
         public boolean reportErrors() {
             if (infos.isEmpty()) {
                 return false;
             }
+            System.err.println();
+            System.err.println(infos.size() == 1 ? "ERROR SPOTTED" : "ERRORS SPOTTED");
             for (Object object : infos) {
                 System.err.println("   +++   " + object.toString());
             }
+            System.err.println();
             return true;
+        }
+
+        public void throwIfNotEmpty() {
+            if (size() > 0) {
+                throw this;
+            }
         }
     }
 
@@ -373,19 +382,37 @@ public class Assembly {
                 } catch (Exception ex) {
                     errors.absorb(ex);
                 }
-
             }
             if (errors.reportErrors()) {
                 return;
             }
 
-            h.beforeInit();
+            try {
+                h.beforeInit();
+            } catch (Exception ex) {
+                errors.absorb(ex);
+            }
+            if (errors.reportErrors()) {
+                return;
+            }
             for (Map.Entry<String, Module> e : modules.entrySet()) {
                 e.getValue().init();
             }
-            h.beforePostInit();
+            try {
+                h.beforePostInit();
+            } catch (Exception ex) {
+                errors.absorb(ex);
+            }
+            if (errors.reportErrors()) {
+                return;
+            }
             callPostInitHooks();
-            h.done();
+            try {
+                h.done();
+            } catch (Exception ex) {
+                errors.absorb(ex);
+            }
+            errors.reportErrors();
         } catch (Exception ex) {
             Logger.getLogger(Assembly.class.getName()).log(Level.SEVERE, null, ex);
         }

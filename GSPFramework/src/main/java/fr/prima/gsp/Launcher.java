@@ -138,9 +138,14 @@ public class Launcher {
             @Override
             public void beforeInit() {
                 // TODO there should be some error reporting when readFromXML fails (currently it swallows exceptions)
-                if (!unreplaced.isEmpty() || !modulesNotFound.isEmpty()) {
-                    throw new IllegalArgumentException("Unreplaced variables " + unreplaced.toString() + " ; Not found modules " + modulesNotFound.toString());
+                Assembly.AssemblySubException ex = new Assembly.AssemblySubException();
+                if (!unreplaced.isEmpty()) {
+                    ex.absorb(new Assembly.AssemblySubException("Unset variables: " + unreplaced.toString()));
                 }
+                if (!modulesNotFound.isEmpty()) {
+                    ex.absorb(new Assembly.AssemblySubException("Modules from command line not found: " + modulesNotFound.toString()));
+                }
+                ex.throwIfNotEmpty();
             }
 
             @Override

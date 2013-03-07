@@ -12,7 +12,8 @@
      $GO generic-duplicate-namespace.xml
      $GO java-missing-type.xml
      $GO java-missing-param-and-duplicate-name.xml
-
+     $GO generic-unreplaced-variable.xml
+     $GO generic-unreplaced-variable.xml da.plop=t
 
 # Python error cases
 
