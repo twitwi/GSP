@@ -7,7 +7,7 @@
      GO="java -cp  ../../GSPFramework/target/dependency/*:../../GSPFramework/target/*:../build/java/GSPExampleJava.jar fr.prima.gsp.Launcher"    
 
 
-# Java/core error cases
+# Java and core error cases
 
      $GO generic-duplicate-namespace.xml
      $GO java-missing-type.xml
@@ -15,7 +15,12 @@
      $GO generic-unreplaced-variable.xml
      $GO generic-unreplaced-variable.xml da.plop=t
 
+
 # Python error cases
 
+     $GO python-missing-file.xml 
+     $GO python-missing-class.xml 
+     $GO python-missing-param.xml 
+     $GO python-wrong-param-type.xml 
 
 

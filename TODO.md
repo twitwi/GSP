@@ -20,6 +20,8 @@
 * GSP_DEBUG=threadname/logcalls/logprefix:=====/...
 
 ## Unclassified
+* test missing input etc
+* test python tuple param problem
 * test with buggous modules on all aspects (constructor, initModule, setParam listener, stopModule, ...)
 * handle all error reporting, not starting todos
 * (should) cool JMX export

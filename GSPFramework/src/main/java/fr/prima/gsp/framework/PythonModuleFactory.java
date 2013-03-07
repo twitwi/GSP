@@ -59,6 +59,7 @@ class PythonModuleFactory {
             int res = PyRun_SimpleStringFlags(s(getPythonCode()), flags(Py_file_input));
             if (res != 0) {
                 PyErr_Print();// ??? does it work for non-exceptions?
+                throw new RuntimeException("Error while executing gsp internal python functions (gsp.py)");
             }
             Pointer<PyObject> dict = PyModule_GetDict(PyImport_AddModule(s("__main__")));
             pyGSP = PyDict_GetItemString(dict, s("GSP"));
@@ -118,11 +119,8 @@ class PythonModuleFactory {
         return res;
     }
 
-    Pointer<PyObject> pyHasLockMakeTuple(String s) {
+    Pointer<PyObject> pyHasLockMakeTupleNoErrHandling(String s) {
         Pointer<PyObject> res = PyObject_CallFunctionObjArgs(pyGSP("makeTuple"), sp(s), null);
-        if (res == Pointer.NULL) {
-            PyErr_Print();
-        }
         return res;
     }
 
@@ -185,12 +183,12 @@ class PythonModuleFactory {
             this.pythonModule = PyImport_ImportModule(s(pythonModuleName));
             if (this.pythonModule == Pointer.NULL) {
                 PyErr_Print();
-                return;
+                throw new RuntimeException("Error while importing python module/file '" + pythonModuleName + "'");
             }
             this.pythonModuleDict = PyModule_GetDict(this.pythonModule);
             if (this.pythonModule == Pointer.NULL) {
                 PyErr_Print();
-                // should throw/report
+                throw new RuntimeException("Could not get dict for python module/file '" + pythonModuleName + "'");
             }
         }
     }
@@ -204,7 +202,7 @@ class PythonModuleFactory {
     private class PythonModule extends BaseAbstractModule {
 
         Bundle bundle;
-        //String pyClassName;
+        String pyClassName;
         //Pointer<PyObject> pyClass;
         Pointer<PyObject> pyClassInstance;
         FrameworkCallback frameworkCallback;
@@ -213,16 +211,17 @@ class PythonModuleFactory {
 
         public PythonModule(Bundle bundle, String pythonModuleName, String typeName) {
             this.bundle = bundle;
+            this.pyClassName = typeName;
             ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             Pointer<PyObject> pyClass = PyDict_GetItemString(bundle.pythonModuleDict, s(typeName));
             if (pyClass == Pointer.NULL) {
                 PyErr_Print();
-                // should throw/report
+                throw new RuntimeException("In python module '" + bundle.name + "' could not find class '" + typeName + "'");
             }
             pyClassInstance = PyObject_CallFunctionObjArgs(pyClass, (Object) null);
             if (pyClassInstance == Pointer.NULL) {
                 PyErr_Print();
-                // should throw/report
+                throw new RuntimeException("In python module '" + bundle.name + "' could not invoke contructor for class '" + typeName + "'");
             }
             frameworkCallback = new FrameworkCallback() {
                 @Override
@@ -279,7 +278,10 @@ class PythonModuleFactory {
 
         public EventReceiver getEventReceiver(String portName) {
             final Pointer<PyObject> method = PyObject_GetAttrString(pyClassInstance, s(portName));
-            // TODO handle problem here
+            if (method == Pointer.NULL) {
+                PyErr_Print();
+                throw new RuntimeException("In gsp python module of type '" + bundle.name + "." + pyClassName + "', could not find input with name '" + portName + "'");
+            }
             return new EventReceiver() {
                 public void receiveEvent(Event e) {
                     ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
@@ -323,30 +325,35 @@ class PythonModuleFactory {
             try {
                 Pointer<PyObject> attr = PyObject_GetAttrString(pyClassInstance, s(parameterName));
                 if (attr == null) {
-                    System.err.println("ERROR: could not find attribute '" + parameterName + "' in python object"); // TODO report handle errors at a higher level
+                    throw new RuntimeException("Could not find attribute '" + parameterName + "' in python object of type '" + bundle.name + "." + pyClassName + "'");
                 } else {
                     Pointer<PyObject> attrType = PyObject_Type(attr);
                     Pointer<PyObject> newVal;
                     if (attrType.equals(pyBool)) { // handle the Boolean case
                         newVal = Boolean.parseBoolean(text) ? pyTrue : pyFalse;
                     } else if (attrType.equals(pyTuple)) { // special case for tuples
-                        newVal = pyHasLockMakeTuple(text);
+                        newVal = pyHasLockMakeTupleNoErrHandling(text);
+                        if (newVal == Pointer.NULL) {
+                            PyErr_Print();
+                            throw new RuntimeException("Could not make tuple for attribute '" + parameterName + "' from value '" + text + "' (in python object of type '" + bundle.name + "." + pyClassName + "')");
+                        }
                     } else {
                         newVal = PyObject_CallFunctionObjArgs(attrType, sp(text), null);
                         if (newVal == Pointer.NULL) {
                             PyErr_Print();
-                            return;
+                            throw new RuntimeException("Could not call constructor for attribute '" + parameterName + "' from value '" + text + "' (in python object of type '" + bundle.name + "." + pyClassName + "')");
                         }
                     }
                     PyObject_SetAttrString(pyClassInstance, s(parameterName), newVal);
-                    Pointer<PyObject> notificationMethod = PyObject_GetAttrString(pyClassInstance, s(parameterName + "Changed"));
+                    String cbName = parameterName + "Changed";
+                    Pointer<PyObject> notificationMethod = PyObject_GetAttrString(pyClassInstance, s(cbName));
                     if (notificationMethod == Pointer.NULL) {
                         PyErr_Clear();
                     } else {
                         Pointer<PyObject> res = PyObject_CallFunctionObjArgs(notificationMethod, attr, newVal, null);
                         if (res == Pointer.NULL) {
                             PyErr_Print();
-                            return;
+                            throw new RuntimeException("Problem while calling callback for attribute '" + parameterName + "' (callback is " + cbName + ") (in python object of type '" + bundle.name + "." + pyClassName + "')");
                         }
                     }
                     // TODO, maybe use eval as a last resort
