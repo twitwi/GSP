@@ -15,6 +15,12 @@
      $GO generic-unreplaced-variable.xml
      $GO generic-unreplaced-variable.xml da.plop=t
 
+# C++ error cases
+
+     $GO cpp-missing-library.xml
+     $GO cpp-missing-class.xml
+     $GO cpp-missing-param.xml
+     $GO cpp-wrong-param.xml
 
 # Python error cases
 

@@ -33,6 +33,14 @@ import org.w3c.dom.Node;
  */
 public class CModuleFactory {
 
+    private static RuntimeException ex(String string, Exception ex) {
+        return new Assembly.AssemblySubException(new RuntimeException(string, ex));
+        //return new Assembly.AssemblySubException(new RuntimeException(string, ex));
+    }
+    private static RuntimeException ex(String string) {
+        return new Assembly.AssemblySubException(string);
+    }
+
     private void debug(String message) {
         Logger.getLogger(CModuleFactory.class.getName()).log(Level.FINEST, message);
     }
@@ -108,6 +116,7 @@ public class CModuleFactory {
                 bundles.put(bundleName, bundle);
                 //bundle.jnalibrary = NativeLibrary.getInstance(bundleName);
             } catch (Exception e) {
+                throw ex("Could not load native bundle/library with name '" + bundleName + "'", e);
                 // TODO test NativeFunctionFinder also (add exceptions in it, or in the create or ...)
                 // cannot load
                 // TODO report
@@ -119,14 +128,8 @@ public class CModuleFactory {
     private CModule createCModule(String bundleName, String moduleTypeName) {
         Bundle bundle = bundles.get(bundleName);
         CModule module = new CModule(bundle, bundleName, moduleTypeName);
-        if (module.that != org.bridj.Pointer.NULL) {
-//            long moduleNumber = module.number;
-//            String moduleId = bundleName + " " + moduleTypeName + " " + moduleNumber;
-            modules.add(module);
-            return module;
-        } else {
-            return null;
-        }
+        modules.add(module);
+        return module;
     }
 
     public static String capFirst(String s) {
@@ -198,7 +201,7 @@ public class CModuleFactory {
             System.arraycopy(information, 0, thatAndParams, 1, information.length);
             thatAndParams[0] = that;
             if (!callCFunctionOrCppMethodOptionally(moduleTypeName, "event" + sep + portName, portName, thatAndParams)) {
-                throw new RuntimeException("cannot receive this event " + moduleTypeName + "." + portName + Arrays.asList(e.getInformation()));
+                throw ex("cannot receive this event " + moduleTypeName + "." + portName + Arrays.asList(e.getInformation()));
             }
         }
 
@@ -396,8 +399,14 @@ public class CModuleFactory {
                     cCallback(commandName.getCString(), extractNullTerminatedPointerArray(parameters));
                 }
             };
-            that = bundle.createModule(moduleTypeName, framework);
-            if (that == org.bridj.Pointer.NULL) return;
+            try {
+                that = bundle.createModule(moduleTypeName, framework);
+            } catch (Exception e) {
+                throw ex("Error creating native module of type '" + moduleTypeName + "' from bundle/library '" + bundleName + "'", e);
+            }
+            if (that == org.bridj.Pointer.NULL) {
+                throw ex("Error (null returned) creating native module of type '" + moduleTypeName + "' from bundle/library '" + bundleName + "'");
+            }
         }
 
         public EventReceiver getEventReceiver(final String portName) {
@@ -449,7 +458,7 @@ public class CModuleFactory {
                 }
                 emitNamedEvent(parameters[0].getCString(), eventParameters);
             } else {
-                System.err.println("Unsupported callback type " + commandName);
+                throw ex("Native, internal problem, unsupported callback type " + commandName);
             }
         }
 
@@ -460,12 +469,8 @@ public class CModuleFactory {
             // could we reuse some mapping for a lib? (not that useful)
             try {
                 return stringToNatives.get(type).toNative(text);
-            } catch (NullPointerException ex) {
-                System.err.println("problem with type '" + type + "' to interpret '" + text + "'");
-                throw ex;
-            } catch (RuntimeException ex) {
-                System.err.println("problem with type '" + type + "' to interpret '" + text + "'");
-                throw ex;
+            } catch (Exception ex) {
+                throw ex("Problem with type '" + type + "' to interpret '" + text + "'", ex);
             }
         }
 
@@ -477,7 +482,7 @@ public class CModuleFactory {
             } else {
                 NativeType type = findBestParameterType(parameterName, text);
                 if (type == null) {
-                    throw new RuntimeException("Could not find any native type (setter) for '" + parameterName + "' (with value '" + text + "')");
+                    throw ex("Could not find any native type (setter) for '" + parameterName + "' (with value '" + text + "')");
                 }
                 value = getNativeValueFromString(type, text);
             }
@@ -553,7 +558,7 @@ public class CModuleFactory {
             {
                 put(null, new StringToNative() {
                     public Object toNative(String text) {
-                        throw new RuntimeException("null access in stringToNatives (missing mapping in cStringTypeToNativeType?)");
+                        throw ex("Null access in stringToNatives (missing mapping in cStringTypeToNativeType?)");
                     }
                 });
                 put(NativeType.CHAR_POINTER, new StringToNative() {
@@ -624,19 +629,19 @@ public class CModuleFactory {
             NativeSymbolDemangler dem = NativeSymbolDemangler.create();
             NativeType t = dem.demangleType(bundleName, type);
             if (t == null) {
-                throw new RuntimeException("Null native type for " + bundleName + " type " + type);
+                throw ex("Null native type for " + bundleName + " type " + type);
             }
             if (t.isPointer()) {
                 return new NativePointer(pointer.getPointerAtOffset(0), t);
             }
             if (t.isCompound()) {
-                throw new UnsupportedOperationException("Unsupported direct stuct passing (use pointer or references): " + t.toString());
+                throw ex("Unsupported direct stuct passing (use pointer or references): " + t.toString());
             }
             // could find a way to reuse jna mapping but I didn't managed to :(
             try {
                 return nativeInterpreters.get(type).interpret(pointer);
             } catch (NullPointerException ex) {
-                throw new RuntimeException("NPE while reading value for native type '" + type + "'", ex);
+                throw ex("NPE while reading value for native type '" + type + "'", ex);
             }
         }
 
