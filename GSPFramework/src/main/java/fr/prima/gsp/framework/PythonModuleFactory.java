@@ -8,7 +8,6 @@ import com.heeere.python27.PyCompilerFlags;
 import com.heeere.python27.PyMethodDef;
 import com.heeere.python27.PyObject;
 import static com.heeere.python27.Python27Library.*;
-import com.heeere.python27.Python27Library.Py_ssize_t;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Scanner;
 import org.bridj.BridJ;
 import org.bridj.CLong;
+import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
 import org.bridj.ValuedEnum;
 import org.w3c.dom.Element;
@@ -125,7 +125,7 @@ class PythonModuleFactory {
     }
 
     boolean pyIsStructureOrArray(Pointer<PyObject> pypt) {
-        ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+        IntValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
         boolean res = PyObject_Compare(pyTrue, PyObject_CallFunctionObjArgs(pyGSP("isStructureOrArray"), pypt, null)) == 0;
         PyGILState_Release(state);
         return res;
@@ -133,7 +133,7 @@ class PythonModuleFactory {
 
     long pyCAddress(Pointer<PyObject> pypt) {
         ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
-        long res = sizeAsLong(PyInt_AsSsize_t(PyObject_CallFunctionObjArgs(pyGSP("cAddress"), pypt, null)));
+        long res = PyInt_AsSsize_t(PyObject_CallFunctionObjArgs(pyGSP("cAddress"), pypt, null));
         return res;
     }
 
@@ -144,7 +144,7 @@ class PythonModuleFactory {
     }
 
     Object pySimpleTypeToJava(Pointer<PyObject> pypt) {
-        ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+        IntValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
         try {
             String typeString = PyString_AsStringJava(PyObject_CallFunctionObjArgs(pyGSP("typeString"), pypt, null));
             // TODO maybe redo with a Map and some kind of java8 closures
@@ -212,7 +212,7 @@ class PythonModuleFactory {
         public PythonModule(Bundle bundle, String pythonModuleName, String typeName) {
             this.bundle = bundle;
             this.pyClassName = typeName;
-            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+            IntValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             Pointer<PyObject> pyClass = PyDict_GetItemString(bundle.pythonModuleDict, s(typeName));
             if (pyClass == Pointer.NULL) {
                 PyErr_Print();
@@ -258,7 +258,7 @@ class PythonModuleFactory {
         }
 
         private void pythonCallback(Pointer<PyObject> self, Pointer<PyObject> args) {
-            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+            IntValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             int nArgs = nArgs(args);
             Pointer<CLong>[] parametersPointers = new Pointer[nArgs];
             for (int i = 0; i < parametersPointers.length; i++) {
@@ -284,7 +284,7 @@ class PythonModuleFactory {
             }
             return new EventReceiver() {
                 public void receiveEvent(Event e) {
-                    ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+                    IntValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
                     Pointer<PyObject> res = PyObject_CallFunctionObjArgs(method, eventToParameters(e));
                     if (res == Pointer.NULL) {
                         PyErr_Print();
@@ -321,7 +321,7 @@ class PythonModuleFactory {
         }
 
         private void setParameter(String parameterName, String text) {
-            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+            IntValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             try {
                 Pointer<PyObject> attr = PyObject_GetAttrString(pyClassInstance, s(parameterName));
                 if (attr == null) {
@@ -364,7 +364,7 @@ class PythonModuleFactory {
         }
 
         private void callIfExists(String methodName) {
-            ValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
+            IntValuedEnum<PyGILState_STATE> state = PyGILState_Ensure();
             Pointer<PyObject> method = PyObject_GetAttrString(pyClassInstance, s(methodName));
             if (method != Pointer.NULL) {
                 PyObject_CallFunctionObjArgs(method, (Object) null);
@@ -375,17 +375,11 @@ class PythonModuleFactory {
         }
 
         private int nArgs(Pointer<PyObject> args) {
-            Pointer<Py_ssize_t> nArgs = PyTuple_Size(args);
-            return (int) sizeAsLong(nArgs);
-            //System.err.println("+++++++++++++++++++++++++++++ "+Long.toHexString(nArgs.getPeer()));
-            //return (int) nArgs.getSizeT();
+            long nArgs = PyTuple_Size(args);
+            return (int) nArgs;
         }
     }
 
-    public static long sizeAsLong(Pointer<Py_ssize_t> s) {
-        // buggous wrapper?
-        return s.getPeer();
-    }
     private static Map<Class, String> typeToBuildValueString = new IdentityHashMap<Class, String>() {
         {
             put(Integer.class, "i");
