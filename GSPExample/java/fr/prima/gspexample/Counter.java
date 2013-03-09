@@ -51,7 +51,7 @@ public class Counter extends AbstractModule {
         count++;
         if (count == maxCount) {
             timer.cancel();
-            assembly.stop();
+            //assembly.stop();
         }
     }
 
