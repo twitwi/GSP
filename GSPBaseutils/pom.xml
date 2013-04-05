@@ -5,7 +5,7 @@
     <groupId>fr.prima</groupId>
     <artifactId>gsp-baseutils</artifactId>
     <packaging>jar</packaging>
-    <version>2.0</version>
+    <version>2.1-SNAPSHOT</version>
     <name>GSPBaseutils</name>
     <description>Some commonly used modules for the GSP Framework, all the modules are free of dependencies.</description>
     <url>https://github.com/twitwi/GSP</url>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gsp-framework</artifactId>
-            <version>2.0</version>
+            <version>2.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
