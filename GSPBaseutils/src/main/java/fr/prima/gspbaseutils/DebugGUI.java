@@ -8,7 +8,12 @@ package fr.prima.gspbaseutils;
 import fr.prima.gsp.framework.Assembly;
 import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModule;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +24,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -104,6 +111,41 @@ public class DebugGUI extends AbstractModule {
                     cb.setSelected(Boolean.parseBoolean(params[0]));
                 }
                 return cb;
+            }
+        });
+        typeHandlers.put("string", new TypePresenter() {
+            @Override
+            public JComponent getPresenter(String fullType, final Controller action) {
+                final JTextField text = new JTextField();
+                text.addActionListener(new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        action.set(text.getText());
+                    }
+                });
+                return text;
+            }
+        });
+        typeHandlers.put("stringarea", new TypePresenter() {
+            @Override
+            public JComponent getPresenter(String fullType, final Controller action) {
+                final JTextArea text = new JTextArea();
+                text.addKeyListener(new KeyAdapter() {
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        text.setBackground(new Color(255, 130, 130));
+                        super.keyTyped(e); //To change body of generated methods, choose Tools | Templates.
+
+                        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                            //if (e.getKeyCode() == KeyEvent.VK_ENTER && e.isControlDown()) {
+                            action.set(text.getText());
+                            text.setBackground(Color.WHITE);
+                        }
+                    }
+
+                });
+                return text;
             }
         });
         // TODO java6 services extensibility on type->gui
