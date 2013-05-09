@@ -9,13 +9,17 @@ import fr.prima.gsp.framework.Assembly;
 import fr.prima.gsp.framework.ModuleParameter;
 import fr.prima.gsp.framework.spi.AbstractModule;
 import java.awt.Dimension;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -25,12 +29,24 @@ import javax.swing.event.ChangeListener;
  */
 public class DebugGUI extends AbstractModule {
 
+    @ModuleParameter(change = "onChangeExitOnClose")
+    public boolean exitOnClose = false;
+
+    public void onChangeExitOnClose() {
+        loadF();
+        f.setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DO_NOTHING_ON_CLOSE);
+    }
+
     public static interface Controller {
+
         void set(String s);
     }
+
     public static interface TypePresenter {
+
         JComponent getPresenter(String fullType, Controller action);
     }
+
     public static String[] getParenthesisParameters(String fullType) {
         return fullType.trim().replaceAll("^[^(]*[(](.*)[)]$", "$1").split(" *, *");
     }
@@ -47,6 +63,7 @@ public class DebugGUI extends AbstractModule {
     }
 
     final Map<String, TypePresenter> typeHandlers = new HashMap<String, TypePresenter>();
+
     @Override
     protected void initModule() {
         typeHandlers.put("int", new TypePresenter() {
@@ -94,12 +111,31 @@ public class DebugGUI extends AbstractModule {
     }
 
     JFrame f;
-    private void initUI() {
+
+    private void loadF() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        loadF();
+                    }
+                });
+            } catch (InterruptedException ex) {
+                Logger.getLogger(DebugGUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex) {
+                Logger.getLogger(DebugGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return;
+        }
         if (f == null) {
             f = new JFrame("GSP Debug UI");
             f.getContentPane().setLayout(new BoxLayout(f.getContentPane(), BoxLayout.PAGE_AXIS));
             f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
+    }
+
+    private void initUI() {
+        loadF();
         f.getContentPane().removeAll();
         for (String element : what.trim().split(" *; *")) {
             String[] parts = element.split(" *: *");
