@@ -1,0 +1,239 @@
+
+<pipeline>
+    <namespace ex="fr.prima.gspexample"/>
+    <namespace gsp="fr.prima.gspbaseutils"/>
+
+    <m id="m" type="ex:MessageAtInit" msg="TODO"/>
+
+    <m id="timing" type="gsp:StopWatch" />
+    <c chain="timing - cons"/>
+    <m id="m0" type="ex:Square" power="1" />
+    <c chain="m0 - +:#timing"/>
+    <c chain="m100 - +:#timing"/>
+
+    NB: at 1000, we get stackoverflow...
+
+<!--    
+     for i in $(seq 100) ; do echo '<m id="m'$i'" type="ex:Square" power="1.01" />' ; echo '    <c chain="m'$i' - +#timing"/>'; echo '    <c chain="m'$(($i - 1))' - m'$i'"/>' ; done
+
+     for i in $(seq 100) ; do echo '<m id="m'$i'" type="ex:Square" power="1.01" />' ; echo '    <c chain="m'$(($i - 1))' - m'$i'"/>' ; done
+
+     for i in $(seq 1000) ; do echo '<m id="m'$i'" type="c:NativeCppDemo.Div" divisor="1"  />' ; echo '    <c chain="m'$(($i - 1))' - m'$i'"/>' ; done
+-->
+
+<m id="m1" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m0 - m1"/>
+<m id="m2" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m1 - m2"/>
+<m id="m3" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m2 - m3"/>
+<m id="m4" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m3 - m4"/>
+<m id="m5" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m4 - m5"/>
+<m id="m6" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m5 - m6"/>
+<m id="m7" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m6 - m7"/>
+<m id="m8" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m7 - m8"/>
+<m id="m9" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m8 - m9"/>
+<m id="m10" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m9 - m10"/>
+<m id="m11" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m10 - m11"/>
+<m id="m12" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m11 - m12"/>
+<m id="m13" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m12 - m13"/>
+<m id="m14" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m13 - m14"/>
+<m id="m15" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m14 - m15"/>
+<m id="m16" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m15 - m16"/>
+<m id="m17" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m16 - m17"/>
+<m id="m18" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m17 - m18"/>
+<m id="m19" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m18 - m19"/>
+<m id="m20" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m19 - m20"/>
+<m id="m21" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m20 - m21"/>
+<m id="m22" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m21 - m22"/>
+<m id="m23" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m22 - m23"/>
+<m id="m24" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m23 - m24"/>
+<m id="m25" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m24 - m25"/>
+<m id="m26" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m25 - m26"/>
+<m id="m27" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m26 - m27"/>
+<m id="m28" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m27 - m28"/>
+<m id="m29" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m28 - m29"/>
+<m id="m30" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m29 - m30"/>
+<m id="m31" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m30 - m31"/>
+<m id="m32" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m31 - m32"/>
+<m id="m33" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m32 - m33"/>
+<m id="m34" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m33 - m34"/>
+<m id="m35" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m34 - m35"/>
+<m id="m36" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m35 - m36"/>
+<m id="m37" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m36 - m37"/>
+<m id="m38" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m37 - m38"/>
+<m id="m39" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m38 - m39"/>
+<m id="m40" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m39 - m40"/>
+<m id="m41" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m40 - m41"/>
+<m id="m42" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m41 - m42"/>
+<m id="m43" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m42 - m43"/>
+<m id="m44" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m43 - m44"/>
+<m id="m45" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m44 - m45"/>
+<m id="m46" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m45 - m46"/>
+<m id="m47" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m46 - m47"/>
+<m id="m48" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m47 - m48"/>
+<m id="m49" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m48 - m49"/>
+<m id="m50" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m49 - m50"/>
+<m id="m51" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m50 - m51"/>
+<m id="m52" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m51 - m52"/>
+<m id="m53" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m52 - m53"/>
+<m id="m54" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m53 - m54"/>
+<m id="m55" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m54 - m55"/>
+<m id="m56" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m55 - m56"/>
+<m id="m57" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m56 - m57"/>
+<m id="m58" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m57 - m58"/>
+<m id="m59" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m58 - m59"/>
+<m id="m60" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m59 - m60"/>
+<m id="m61" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m60 - m61"/>
+<m id="m62" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m61 - m62"/>
+<m id="m63" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m62 - m63"/>
+<m id="m64" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m63 - m64"/>
+<m id="m65" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m64 - m65"/>
+<m id="m66" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m65 - m66"/>
+<m id="m67" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m66 - m67"/>
+<m id="m68" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m67 - m68"/>
+<m id="m69" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m68 - m69"/>
+<m id="m70" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m69 - m70"/>
+<m id="m71" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m70 - m71"/>
+<m id="m72" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m71 - m72"/>
+<m id="m73" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m72 - m73"/>
+<m id="m74" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m73 - m74"/>
+<m id="m75" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m74 - m75"/>
+<m id="m76" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m75 - m76"/>
+<m id="m77" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m76 - m77"/>
+<m id="m78" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m77 - m78"/>
+<m id="m79" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m78 - m79"/>
+<m id="m80" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m79 - m80"/>
+<m id="m81" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m80 - m81"/>
+<m id="m82" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m81 - m82"/>
+<m id="m83" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m82 - m83"/>
+<m id="m84" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m83 - m84"/>
+<m id="m85" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m84 - m85"/>
+<m id="m86" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m85 - m86"/>
+<m id="m87" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m86 - m87"/>
+<m id="m88" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m87 - m88"/>
+<m id="m89" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m88 - m89"/>
+<m id="m90" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m89 - m90"/>
+<m id="m91" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m90 - m91"/>
+<m id="m92" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m91 - m92"/>
+<m id="m93" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m92 - m93"/>
+<m id="m94" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m93 - m94"/>
+<m id="m95" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m94 - m95"/>
+<m id="m96" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m95 - m96"/>
+<m id="m97" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m96 - m97"/>
+<m id="m98" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m97 - m98"/>
+<m id="m99" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m98 - m99"/>
+<m id="m100" type="c:NativeCppDemo.Div" divisor="1"  />
+    <c chain="m99 - m100"/>
+
+
+
+
+
+
+    <m id="tick" type="ex:Counter" maxCount="65" period="10" warmupDelay="1"/>
+    <m id="cons" type="ex:Console"/>
+
+
+    <!-- This would be a loop if "sqrt" weren't a factory -->
+    <c chain="tick - m0"/>
+    <!--c chain="tick - cons"/-->
+
+</pipeline>
+
