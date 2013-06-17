@@ -34,17 +34,6 @@ public class Launcher {
 
     public static void main(String[] args) throws IOException {
         // TODO catch anything and display correct message (and localized)
-        if (args.length == 0) {
-            System.setProperty("java.library.path", "/usr/lib:/usr/lib/jni:/home/twilight/projects/GSP/GSPExample/build/cpp");
-            System.setProperty("gsp.module.path", "/usr/lib:/usr/lib/jni:/home/twilight/projects/GSP/GSPExample/build/cpp");
-            main(new String[]{"../GSPExample/test.xml"});
-            if (true) {
-                return;
-            }
-            main(new String[]{"pipeline-simple-with-parameter.xml", "p=100", "s=10", "fps.samples=2"});
-            main(new String[]{"--help"});
-            return;
-        }
         if (Arrays.asList(args).contains("--help")) {
             showHelp();
             return;
@@ -65,7 +54,10 @@ public class Launcher {
 
 
         Launcher cli = new Launcher();
-        Assembly assembly = cli.load(args).get();
+        Assembly assembly = cli.load(args).getOr(null);
+        if (assembly == null) {
+            System.err.println("Could not load pipeline file: '" + args[0] + "'");
+        }
     }
 
     private static void showHelp() {
