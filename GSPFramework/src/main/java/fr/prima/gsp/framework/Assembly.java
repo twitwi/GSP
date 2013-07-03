@@ -44,7 +44,15 @@ public class Assembly {
     Map<String, StringRewriter> prefixes = new HashMap<String, StringRewriter>();
 
     CModuleFactory cModuleFactory = new CModuleFactory();
-    PythonModuleFactory pythonModuleFactory = new PythonModuleFactory();
+    private PythonModuleFactory pythonModuleFactory = null;
+    PythonModuleFactory getPythonModuleFactory() {
+        // Lazy init to avoid needing the python jar to work (when python is not used)
+        // does not even try to be thread safe
+        if (pythonModuleFactory == null) {
+            pythonModuleFactory = new PythonModuleFactory();
+        }
+        return pythonModuleFactory;
+    }
 
 
     public Assembly() {
@@ -180,7 +188,7 @@ public class Assembly {
         pythonModuleAndType = pythonModuleAndType.replaceFirst("\\[PYTHON-CODE\\]", "");
         String[] parts = pythonModuleAndType.split("[.]");
         if (parts.length == 2) {
-            return pythonModuleFactory.createModule(parts[0], parts[1]);
+            return getPythonModuleFactory().createModule(parts[0], parts[1]);
         } else {
             throw new IllegalArgumentException("Cannot find a single '.' in the Python module type name: " + pythonModuleAndType);
         }
