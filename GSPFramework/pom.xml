@@ -5,7 +5,7 @@
     <groupId>fr.prima</groupId>
     <artifactId>gsp-framework</artifactId>
     <packaging>jar</packaging>
-    <version>2.1</version>
+    <version>2.2-SNAPSHOT</version>
     <name>GSPFramework</name>
     <description>Main artifact for the GSP Framework, contains the framework with Java and C/C++ module handling.</description>
     <url>https://github.com/twitwi/GSP</url>
