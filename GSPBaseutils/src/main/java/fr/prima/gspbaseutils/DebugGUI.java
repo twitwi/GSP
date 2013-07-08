@@ -95,6 +95,28 @@ public class DebugGUI extends AbstractModule {
                 return spinner;
             }
         });
+        typeHandlers.put("float", new TypePresenter() {
+            @Override
+            public JComponent getPresenter(String fullType, final Controller action) {
+                final JSpinner spinner = new JSpinner();
+                spinner.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        try {
+                            Float.parseFloat(spinner.getValue().toString());
+                            action.set(spinner.getValue().toString());
+                        } catch (NumberFormatException ex) {
+                            System.err.println("NFE: " + spinner.getValue().toString());
+                        }
+                    }
+                });
+                String[] params = getParenthesisParameters(fullType);
+                if (params != null && params.length == 1) {
+                    spinner.setValue(Float.parseFloat(params[0]));
+                }
+                return spinner;
+            }
+        });
         typeHandlers.put("boolean", new TypePresenter() {
             @Override
             public JComponent getPresenter(String fullType, final Controller action) {
