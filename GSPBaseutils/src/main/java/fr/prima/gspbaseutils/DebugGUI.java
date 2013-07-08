@@ -23,6 +23,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -73,6 +74,18 @@ public class DebugGUI extends AbstractModule {
 
     @Override
     protected void initModule() {
+        typeHandlers.put("separator", new TypePresenter() {
+            @Override
+            public JComponent getPresenter(String fullType, final Controller action) {
+                String content = "";
+                String[] params = getParenthesisParameters(fullType);
+                if (params != null && params.length == 1) {
+                    content = params[0];
+                }
+                JLabel separator = new JLabel(content);
+                return separator;
+            }
+        });
         typeHandlers.put("int", new TypePresenter() {
             @Override
             public JComponent getPresenter(String fullType, final Controller action) {
